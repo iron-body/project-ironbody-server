@@ -1,7 +1,7 @@
-// const { HttpError, ctrlWrapper } = require('../helpers');
-// const { Contact } = require('../models/contact');
+const { HttpError, ctrlWrapper } = require('../helpers');
+const { Product } = require('../models/product');
 
-// const listContacts = async (req, res) => {
+const listProducts = async (req, res) => {
 //   const { _id: owner } = req.user;
 //   const { page = 1, limit = 10, favorite = false } = req.query;
 //   console.log(favorite);
@@ -11,8 +11,9 @@
 //     limit,
 //   }).populate('owner', 'name');
 
-//   res.json(contacts);
-// };
+    const result = await Product.find()
+  res.json(result);
+};
 // const getContactById = async (req, res) => {
 //   const { _id: owner } = req.user;
 //   const response = await Contact.findById({ owner }, req.params.contactId, '-createdAt -updatedAt');
@@ -65,11 +66,11 @@
 //   res.status(200).json(updateFavorite);
 // };
 
-// module.exports = {
-//   listContacts: ctrlWrapper(listContacts),
+module.exports = {
+  listProducts: ctrlWrapper(listProducts),
 //   getContactById: ctrlWrapper(getContactById),
 //   addContact: ctrlWrapper(addContact),
 //   removeContact: ctrlWrapper(removeContact),
 //   updateContact: ctrlWrapper(updateContact),
 //   updateFavorite: ctrlWrapper(updateFavorite),
-// };
+};
