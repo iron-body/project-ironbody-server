@@ -97,16 +97,24 @@ const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().pattern(passwordRegex).required(),
 });
+const userDataSchema = Joi.object({
+  height: Joi.number().min(150).required(),
+  
+    currentWeight: Joi.number().min(30).required(),
+    desiredWeight: Joi.number().min(30).required(),
 
-// const validValues = ['starter', 'pro', 'business'];
-// const updateSubscriptionSchema = Joi.object({
-//   subscription: Joi.string()
-//     .valid(...validValues)
-//     .required(),
-// });
+   // ! add checking - older 18 years
+
+  birthday: Joi.string().pattern(dateRegexp).required(),
+    blood: Joi.number().valid(...bloodList).required(),
+    sex: Joi.string().valid(...sexList).required(),
+    levelActivity: Joi.number().valid(...levelActivityList).required(),
+  
+})
 const schemas = {
   registerSchema,
   loginSchema,
-  // updateSubscriptionSchema,
+  userDataSchema
+
 };
 module.exports = { User, schemas };
