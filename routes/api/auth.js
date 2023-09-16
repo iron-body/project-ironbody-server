@@ -15,5 +15,6 @@ router.patch(
   ctrl.updateSubscriptionCtrl,
 );
 router.patch('/avatars', auth, upload.single('avatar'), ctrl.updateAvatarCtrl);
+router.post('/refresh', ctrl.refreshCtrl);
 
 module.exports = router;

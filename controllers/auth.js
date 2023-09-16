@@ -1,45 +1,81 @@
-const { ctrlWrapper, HttpError } = require('../helpers');
-const { User } = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const gravatar = require('gravatar');
-const Jimp = require('jimp');
-const path = require('path');
-const fs = require('fs/promises');
+const { ctrlWrapper, HttpError } = require("../helpers");
+const { User } = require("../models/user");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const Jimp = require("jimp");
+const path = require("path");
+const fs = require("fs/promises");
 
 const { SECRET_KEY } = process.env;
-const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
+// Функція для реєстрації нового користувача
 const registerCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    throw HttpError(409, 'Email in use');
+    throw HttpError(409, "Email in use"); // Помилка 409 - Конфлікт
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
-  const newUser = await User.create({ ...req.body, password: hashedPassword, avatarUrl });
-  res.status(201).json({ user: { email: newUser.email, subscription: newUser.subscription } });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashedPassword,
+    avatarUrl,
+  });
+  res.status(201).json({
+    user: { email: newUser.email, subscription: newUser.subscription },
+  });
 };
+
+// Функція для входу користувача
 const loginCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    throw HttpError(401, 'Email or password is not valid');
+    throw HttpError(401, "Email or password is not valid"); // Помилка 401 - Не авторизовано
   }
   const comparePassword = await bcrypt.compare(password, user.password);
   if (!comparePassword) {
-    throw HttpError(401, 'Email or password is not valid');
+    throw HttpError(401, "Email or password is not valid");
   }
   const payload = { id: user._id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '12h' });
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
   await User.findByIdAndUpdate(user._id, { token });
-  res.status(200).json({ token, user: { email: user.email, subscription: user.subscription } });
+  res.status(200).json({
+    token,
+    user: { email: user.email, subscription: user.subscription },
+  });
+};
+
+// Створюємо маршрут для refresh token
+const refreshCtrl = async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    throw HttpError(401, "Refresh token is required");
+  }
+  try {
+    const decoded = jwt.verify(refreshToken, SECRET_KEY);
+    const user = await User.findById(decoded.id);
+    if (!user || !user.token || refreshToken !== user.token.refreshToken) {
+      throw HttpError(401, "Invalid refresh token");
+    }
+    const payload = { id: user._id };
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
+    await User.findByIdAndUpdate(user._id, { token });
+    res.status(200).json({
+      token,
+      user: { email: user.email, subscription: user.subscription },
+    });
+  } catch (error) {
+    throw HttpError(401, "Invalid refresh token");
+  }
 };
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: null });
-  res.status(204).json({ message: 'Logout success' });
+  res.status(204).json({ message: "Logout success" });
 };
 const getCurrentCtrl = (req, res) => {
   const { email, subscription } = req.user;
@@ -49,17 +85,19 @@ const updateSubscriptionCtrl = async (req, res) => {
   const { _id, subscription } = req.user;
   const newSubscription = req.body.subscription;
   if (newSubscription === subscription) {
-    throw HttpError(409, 'Invalid subscription');
+    throw HttpError(409, "Invalid subscription"); // Помилка 409 - Конфлікт
   }
   const updatedSubscription = await User.findByIdAndUpdate(
     _id,
     { $set: { subscription: newSubscription } },
-    { new: true },
+    { new: true }
   );
   if (!updatedSubscription) {
-    throw HttpError(409, 'Not Found');
+    throw HttpError(409, "Not Found"); // Помилка 409 - Конфлікт
   }
-  res.status(200).json({ message: `new subscription is ${updatedSubscription.subscription}` });
+  res.status(200).json({
+    message: `new subscription is ${updatedSubscription.subscription}`,
+  });
 };
 const updateAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
@@ -69,7 +107,7 @@ const updateAvatarCtrl = async (req, res) => {
   await fs.rename(tempUpload, resultUpload);
   const image = await Jimp.read(resultUpload);
   await image.resize(250, 250).write(resultUpload);
-  const avatarUrl = path.join('avatars', filename);
+  const avatarUrl = path.join("avatars", filename);
   await User.findByIdAndUpdate(_id, { avatarUrl });
 
   console.log(avatarUrl);
@@ -83,4 +121,5 @@ module.exports = {
   getCurrentCtrl: ctrlWrapper(getCurrentCtrl),
   updateSubscriptionCtrl: ctrlWrapper(updateSubscriptionCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
+  refreshCtrl: ctrlWrapper(refreshCtrl),
 };
