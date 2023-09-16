@@ -21,39 +21,43 @@ const productsCategoryList = ["alcoholic drinks",
     "sesame",
     "soft drinks",
     "vegetables and herbs"]
+
 const productSchema = new Schema(
     {
-//       "weight": 100,
-//   "calories": 112,
-//   "category": "fish",
-//   "title": "marlin",
-//   "groupBloodNotAllowed": {
-//     "1": false,
-//     "2": false,
-//     "3": false,
-//     "4": false
-//   }
-
     title: {
       type: String,
-      required: [true, 'Set title of product'],
+    required: [true, 'Set title of product'],
         },
-        category:{
+    category:{
             type: String,
             enum: productsCategoryList,
-      required: [true, 'Set category of product'],
+    required: [true, 'Set category of product'],
         },
         calories: {
             type: Number,
-      required: [true, 'Set amount of calories'],
+    required: [true, 'Set amount of calories'],
         },
         weight: {
             type: Number,
-      required: [true, 'Set weight'],
+    required: [true, 'Set weight'],
         },
-        groupBloodNotAllowed: {
-           type: Boolean,
-           default: false, 
+    groupBloodNotAllowed: {
+            "1": {
+            type: Boolean,
+            required: true
+            },
+            "2": {
+            type: Boolean,
+            required: true
+            },
+            "3": {
+            type: Boolean,
+            required: true
+            },
+            "4": {
+            type: Boolean,
+            required: true
+            }
         },
 
     owner: {
@@ -68,18 +72,22 @@ const productSchema = new Schema(
 const Product = model('product', productSchema);
 productSchema.post('save', handleMongooseError);
 
-// const addSchema = Joi.object({
-//   name: Joi.string().min(2).required(),
-//   email: Joi.string().email().required(),
-//   phone: Joi.string().pattern(phoneRegex).required(),
-//   favorite: Joi.boolean(),
-// });
-// const updateFavoriteSchema = Joi.object({
-//   favorite: Joi.boolean().required(),
-// });
+const addProductSchema = Joi.object({
+    title: Joi.string().required(),
+    category: Joi.string().valid(...productsCategoryList).required(),
+    calories: Joi.number().required(),
+    weight: Joi.string().required(), 
+    groupBloodNotAllowed: Joi.object({
+    "1": Joi.boolean().required(),
+    "2": Joi.boolean().required(),
+    "3": Joi.boolean().required(),
+    "4": Joi.boolean().required(),
+  }).required(),
+})
+
 
 const schemas = {
-  addSchema,
-//   updateFavoriteSchema,
+  addProductSchema,
+
 };
 module.exports = { Product, schemas };
