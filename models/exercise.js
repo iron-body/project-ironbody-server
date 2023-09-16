@@ -26,6 +26,7 @@ name: {
       type: String,
       required: [true, 'Set category of equipment'],
         },
+        // ? що це
         target: {
             type: String
         },
@@ -34,7 +35,7 @@ name: {
             type: Number,
       required: [true, 'Set amount of burnedCalories'],
         },
-        "time": {
+        time: {
             type: Number,
       required: [true, 'Set time in min'],
         },
@@ -53,6 +54,20 @@ name: {
 const Exercise = model('exercise', exerciseSchema);
 exerciseSchema.post('save', handleMongooseError);
 
+
+const addExerciseSchema = Joi.obj({
+    name: Joi.string().min(3).required(),
+    
+    bodypart: Joi.string().required(),
+    equipment: Joi.string().required(),
+
+        // ? що таке таргет
+        target: Joi.string().required(),
+
+        burnedCalories: Joi.number().required(),
+        time: Joi.number().required(),
+})
+
 // const addSchema = Joi.object({
 //   name: Joi.string().min(2).required(),
 //   email: Joi.string().email().required(),
@@ -64,7 +79,7 @@ exerciseSchema.post('save', handleMongooseError);
 // });
 
 const schemas = {
-  addSchema,
+  addExerciseSchema,
 //   updateFavoriteSchema,
 };
 module.exports = { Exercise, schemas };

@@ -34,7 +34,11 @@ const userSchema = new Schema(
     //   enum: ['starter', 'pro', 'business'],
     //   default: 'starter',
     // },
-    token: {
+    accessToken: {
+      type: String,
+      default: null,
+    },
+    refreshToken: {
       type: String,
       default: null,
     },
@@ -57,12 +61,25 @@ const userSchema = new Schema(
       min: 35,
       required:true,
     },
+
     birthday: {
-        type: String,
-      match: dateRegexp,
-      // ! add checking - older 18 years
-      requered: true,
+    type: Date,
+    required: true,
+    validate: {
+      validator: function (value) {
+        // Перевірка, чи вік більше або рівний 18 рокам
+        const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365); // Розрахунок віку в роках
+        return age >= 18;
+      },
+      message: 'Ви повинні бути старше 18 років.',
     },
+  },
+    // birthday: {
+    //     type: String,
+    //   match: dateRegexp,
+    //   // ! add checking - older 18 years
+    //   requered: true,
+    // },
     
     blood: {
       type: Number,
@@ -97,15 +114,21 @@ const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().pattern(passwordRegex).required(),
 });
+
+
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
   
     currentWeight: Joi.number().min(30).required(),
     desiredWeight: Joi.number().min(30).required(),
 
-   // ! add checking - older 18 years
+   birthday: Joi.date()
+    .max('now')
+    .iso()
+    .required()
+    .less('18 years'),
 
-  birthday: Joi.string().pattern(dateRegexp).required(),
+  // birthday: Joi.string().pattern(dateRegexp).required(),
     blood: Joi.number().valid(...bloodList).required(),
     sex: Joi.string().valid(...sexList).required(),
     levelActivity: Joi.number().valid(...levelActivityList).required(),
