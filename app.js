@@ -5,7 +5,7 @@ require('dotenv').config();
 
 // const contactsRouter = require('./routes/api/contacts');
 const authRouter = require('./routes/api/auth');
-const productsRouter = require('./routes/api/products')
+const productsRouter = require('./routes/api/productsRoute')
 const exercisesRouter = require('./routes/api/exercises')
 
 const app = express();
