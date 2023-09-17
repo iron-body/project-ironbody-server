@@ -2,10 +2,9 @@ const { Schema, model } = require("mongoose");
 const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
 
-// eslint-disable-next-line no-useless-escape
-const emailRegex =  /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 const passwordRegex = /^(?=.*[a-zA-Z]{6})(?=.*\d)[a-zA-Z\d]{7}$/;
-const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
+// const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ["male", "female"];
 const levelActivityList = [1, 2, 3, 4, 5];
@@ -14,7 +13,7 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'John Doe'],
+      required: [true, "Name is required"],
     },
     email: {
       type: String,
@@ -56,24 +55,16 @@ const userSchema = new Schema(
       required: true,
     },
     birthday: {
-    type: Date,
-    required: true,
-    validate: {
-      validator: function (value) {
-        // Перевірка, чи вік більше або рівний 18 рокам
-        const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365); // Розрахунок віку в роках
-        return age >= 18;
+      type: Date,
+      required: true,
+      validate: {
+        validator: function (value) {
+          const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
+          return age >= 18;
+        },
+        message: "You must be at least 18 years old.",
       },
-      message: 'Ви повинні бути старше 18 років.',
     },
-  },
-    // birthday: {
-    //     type: String,
-    //   match: dateRegexp,
-    //   // ! add checking - older 18 years
-    //   requered: true,
-    // },
-    
     blood: {
       type: Number,
       enum: bloodList,
@@ -112,11 +103,11 @@ const userDataSchema = Joi.object({
     currentWeight: Joi.number().min(30).required(),
     desiredWeight: Joi.number().min(30).required(),
 
-  //  birthday: Joi.date()
-  //   .max('now')
-  //   .iso()
-  //   .required()
-  //   .less('18 years'),
+   birthday: Joi.date()
+    .max('now')
+    .iso()
+    .required()
+    .less('18 years'),
 
   // birthday: Joi.string().pattern(dateRegexp).required(),
     blood: Joi.number().valid(...bloodList).required(),
