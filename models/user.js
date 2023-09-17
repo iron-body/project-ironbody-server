@@ -103,12 +103,6 @@ const userDataSchema = Joi.object({
     currentWeight: Joi.number().min(30).required(),
     desiredWeight: Joi.number().min(30).required(),
 
-   birthday: Joi.date()
-    .max('now')
-    .iso()
-    .required()
-    .less('18 years'),
-
   // birthday: Joi.string().pattern(dateRegexp).required(),
     blood: Joi.number().valid(...bloodList).required(),
     sex: Joi.string().valid(...sexList).required(),
