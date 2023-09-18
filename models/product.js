@@ -6,7 +6,7 @@ const productSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     amount: {
@@ -49,7 +49,7 @@ const productSchema = new Schema(
   }
 );
 
-const Product = model("product", productSchema);
+const Product = model("Product", productSchema);
 productSchema.post("save", handleMongooseError);
 
 const addProductSchema = Joi.object({
