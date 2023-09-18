@@ -1,72 +1,71 @@
-const { Schema, model } = require('mongoose');
-const { handleMongooseError } = require('../helpers');
-const Joi = require('joi');
-
+const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
+const Joi = require("joi");
 
 const exerciseSchema = new Schema(
-    {
-// {
-
-//     "equipment": "body weight",
-//     "gifUrl": "https://res.cloudinary.com/ditdqzoio/image/upload/v1687127066/exercises/0001.gif",
-//     "name": "3/4 sit-up",
-//     "target": "abs",
-//     "burnedCalories": 220,
-//     "time": 3
-//   },
-name: {
-      type: String,
-      required: [true, 'Set name of exercise'],
-        },
-    bodypart: {
-      type: String,
-      required: [true, 'Set bodypart'],
-        },
-        equipment:{
-      type: String,
-      required: [true, 'Set category of equipment'],
-        },
-        // ? що це
-        target: {
-            type: String
-        },
-
-        burnedCalories: {
-            type: Number,
-      required: [true, 'Set amount of burnedCalories'],
-        },
-        time: {
-            type: Number,
-      required: [true, 'Set time in min'],
-        },
-
-        // ???
-   
+  {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "user",
+      required: true,
+    },
+    time: {
+      type: Number,
+      required: true,
+      default: 1,
+      validate: {
+        validate(value) {
+          return value >= 1;
+        },
+      },
+    },
+    calories: {
+      type: Number,
+      required: true,
+      default: 1,
+      validate: {
+        validate(value) {
+          return value >= 1;
+        },
+      },
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    done: {
+      type: Boolean,
       required: true,
     },
   },
-  { versionKey: false, timestamps: true },
+  {
+    collection: "exercise",
+    versionKey: false,
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
+  }
 );
 
-const Exercise = model('exercise', exerciseSchema);
-exerciseSchema.post('save', handleMongooseError);
+const Exercise = model("exercise", exerciseSchema);
+exerciseSchema.post("save", handleMongooseError);
 
+const addExerciseSchema = Joi.object({
+  owner: Joi.string().required(),
+  time: Joi.number().min(1).required(),
+  calories: Joi.number().min(1).required(),
+  date: Joi.string()
+    .regex(/^(\d{2})-(\d{2})-(\d{4})$/)
+    .required(),
+  name: Joi.string().required(),
+  done: Joi.boolean().required(),
+});
 
-const addExerciseSchema = Joi.obj({
-    name: Joi.string().min(3).required(),
-    
-    bodypart: Joi.string().required(),
-    equipment: Joi.string().required(),
-
-        // ? що таке таргет
-        target: Joi.string().required(),
-
-        burnedCalories: Joi.number().required(),
-        time: Joi.number().required(),
-})
+const updateExerciseSchema = Joi.object({
+  done: Joi.boolean().required(),
+});
 
 // const addSchema = Joi.object({
 //   name: Joi.string().min(2).required(),
@@ -80,6 +79,6 @@ const addExerciseSchema = Joi.obj({
 
 const schemas = {
   addExerciseSchema,
-//   updateFavoriteSchema,
+  updateExerciseSchema,
 };
 module.exports = { Exercise, schemas };
