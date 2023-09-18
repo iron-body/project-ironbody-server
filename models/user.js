@@ -23,7 +23,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      match: passwordRegex,
+      // match: passwordRegex,
       minlength: 6,
       required: true,
     },
@@ -35,51 +35,51 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
-    avatarUrl: {
-      type: String,
-      required: true,
-    },
-    height: {
-      type: Number,
-      min: 150,
-      required: true,
-    },
-    currentWeight: {
-      type: Number,
-      min: 35,
-      required: true,
-    },
-    desiredWeight: {
-      type: Number,
-      min: 35,
-      required: true,
-    },
-    birthday: {
-      type: Date,
-      required: true,
-      validate: {
-        validator: function (value) {
-          const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
-          return age >= 18;
-        },
-        message: "You must be at least 18 years old.",
-      },
-    },
-    blood: {
-      type: Number,
-      enum: bloodList,
-      required: true,
-    },
-    sex: {
-      type: String,
-      enum: sexList,
-      required: true,
-    },
-    levelActivity: {
-      type: Number,
-      enum: levelActivityList,
-      required: true,
-    },
+    // avatarUrl: {
+    //   type: String,
+    //   required: true,
+    // },
+    // height: {
+    //   type: Number,
+    //   min: 150,
+    //   required: true,
+    // },
+    // currentWeight: {
+    //   type: Number,
+    //   min: 35,
+    //   required: true,
+    // },
+    // desiredWeight: {
+    //   type: Number,
+    //   min: 35,
+    //   required: true,
+    // },
+    // birthday: {
+    //   type: Date,
+    //   required: true,
+    //   validate: {
+    //     validator: function (value) {
+    //       const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
+    //       return age >= 18;
+    //     },
+    //     message: "You must be at least 18 years old.",
+    //   },
+    // },
+    // blood: {
+    //   type: Number,
+    //   enum: bloodList,
+    //   required: true,
+    // },
+    // sex: {
+    //   type: String,
+    //   enum: sexList,
+    //   required: true,
+    // },
+    // levelActivity: {
+    //   type: Number,
+    //   enum: levelActivityList,
+    //   required: true,
+    // },
   },
   { versionKey: false, timestamps: true }
 );
@@ -90,7 +90,10 @@ const User = model("user", userSchema);
 const registerSchema = Joi.object({
   name: Joi.string().min(2).required(),
   email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string().pattern(passwordRegex).required(),
+  password: Joi.string()
+    .min(6)
+    // .pattern(passwordRegex)
+    .required(),
 });
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
@@ -102,6 +105,11 @@ const userDataSchema = Joi.object({
   
     currentWeight: Joi.number().min(30).required(),
     desiredWeight: Joi.number().min(30).required(),
+
+   birthday: Joi.date()
+    .max(new Date(Date.now() - (18 * 365 * 24 * 60 * 60 * 1000))) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
+    .iso()
+    .required(),
 
   // birthday: Joi.string().pattern(dateRegexp).required(),
     blood: Joi.number().valid(...bloodList).required(),
