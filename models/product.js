@@ -1,33 +1,33 @@
-const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../helpers");
-const Joi = require("joi");
+const { Schema, model } = require('mongoose');
+const { handleMongooseError } = require('../helpers');
+const Joi = require('joi');
 
 const productSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     amount: {
       type: Number,
       required: true,
       default: 1,
-      validate: {
-        validate(value) {
-          return value >= 1;
-        },
-      },
+      // validate: {
+      //   validate(value) {
+      //     return value >= 1;
+      //   },
+      // },
     },
     calories: {
       type: Number,
       required: true,
       default: 1,
-      validate: {
-        validate(value) {
-          return value >= 1;
-        },
-      },
+      // validate: {
+      //   validate(value) {
+      //     return value >= 1;
+      //   },
+      // },
     },
     date: {
       type: Date,
@@ -43,14 +43,14 @@ const productSchema = new Schema(
     },
   },
   {
-    collection: "product",
+    collection: 'product',
     versionKey: false,
-    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
-  }
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+  },
 );
 
-const Product = model("Product", productSchema);
-productSchema.post("save", handleMongooseError);
+const Product = model('Product', productSchema);
+productSchema.post('save', handleMongooseError);
 
 const addProductSchema = Joi.object({
   owner: Joi.string().required(),
