@@ -10,29 +10,76 @@ const categoriesProducts = async (req, res) => {
   //     skip,
   //     limit,
   //   }).populate('owner', 'name');
-  const result = await Product.find({}, { category: 1 });
-
-  res.json(result);
+  // const result = await Product.find({}, { category: 1 });
+  // res.json(result);
 };
 
 const productsFilter = async (req, res, next) => {
   let result;
 
-  const { title, category, bloodType } = req.query;
-  if (title && !category && bloodType) {
-    console.log(title);
-    result = await Product.find({ title: { $regex: `${title}` } });
-  } else if (category && !title && !bloodType) {
-    console.log(category);
+  const { title, category, bloodType, recommended } = req.query;
+
+  // Блок з умовою 1+
+  if (title && !category && !bloodType) {
+    result = await Product.find({
+      title: { $regex: `${title}` },
+    });
+  } else if (!title && category && !bloodType) {
     result = await Product.find({ category: { $regex: `${category}` } });
-  } else if (category && title && bloodType) {
-    console.log('2 categorys search', typeof bloodType, bloodType);
+  } else if ((!title && !category && bloodType && recommended) || !recommended) {
+    if (bloodType === '1') {
+      console.log(Boolean(recommended));
+      result = await Product.find({
+        'groupBloodNotAllowed.1': Boolean(recommended),
+      });
+    }
+    if (bloodType === '2') {
+      result = await Product.find({
+        groupBloodNotAllowed: { bloodType },
+      });
+    }
+    if (bloodType === '3') {
+      result = await Product.find({
+        groupBloodNotAllowed: { bloodType },
+      });
+    }
+    if (bloodType === '4') {
+      result = await Product.find({
+        // groupBloodNotAllowed: { [bloodType]: Boolean(recommended) }, // по документації мало б працювати - брати значення bloodType, в даному випадку це 4, і приводити recommended до булевого значення. По факту - пустий масив, результатів не витягує
+        'groupBloodNotAllowed.4': Boolean(recommended),
+      });
+    }
+  }
+  // Блок з умов 2+
+  if (title && category && !bloodType) {
     result = await Product.find({
       title: { $regex: `${title}` },
       category: { $regex: `${category}` },
-      'groupBloodNotAllowed.1': bloodType,
     });
-    console.log(result);
+  } else if (!title && category && !bloodType) {
+    result = await Product.find({ category: { $regex: `${category}` } });
+  } else if (!title && !category && bloodType && recommended) {
+    if (bloodType === '1') {
+      result = await Product.find({
+        'groupBloodNotAllowed.1': Boolean(recommended),
+      });
+    }
+    if (bloodType === '2') {
+      result = await Product.find({
+        groupBloodNotAllowed: { bloodType },
+      });
+    }
+    if (bloodType === '3') {
+      result = await Product.find({
+        groupBloodNotAllowed: { bloodType },
+      });
+    }
+    if (bloodType === '4') {
+      result = await Product.find({
+        // groupBloodNotAllowed: { [bloodType]: Boolean(recommended) }, // по документації мало б працювати - брати значення bloodType, в даному випадку це 4, і приводити recommended до булевого значення. По факту - пустий масив, результатів не витягує
+        'groupBloodNotAllowed.4': Boolean(recommended),
+      });
+    }
   } else {
     result = await Product.find();
   }
@@ -96,7 +143,7 @@ const productsFilter = async (req, res, next) => {
 // };
 
 module.exports = {
-  categoriesProducts: ctrlWrapper(categoriesProducts),
+  productsFilter: ctrlWrapper(productsFilter),
   //   getContactById: ctrlWrapper(getContactById),
   //   addContact: ctrlWrapper(addContact),
   //   removeContact: ctrlWrapper(removeContact),
