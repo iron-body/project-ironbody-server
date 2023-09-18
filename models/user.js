@@ -8,14 +8,12 @@ const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ['male', 'female'];
 const levelActivityList = [1, 2, 3, 4, 5];
-const sexList = ['male', 'female'];
-const levelActivityList = [1, 2, 3, 4, 5];
 
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'John Doe'],
+      required: [true, 'Name is required'],
     },
     email: {
       type: String,
@@ -103,7 +101,7 @@ const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
   currentWeight: Joi.number().min(35).required(),
   desiredWeight: Joi.number().min(35).required(),
-  birthday: Joi.date().max('18 years').iso().required(),
+  // birthday: Joi.date().max('18 years').iso().required(),
   blood: Joi.number()
     .valid(...bloodList)
     .required(),

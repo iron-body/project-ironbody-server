@@ -10,12 +10,32 @@ const categoriesProducts = async (req, res) => {
   //     skip,
   //     limit,
   //   }).populate('owner', 'name');
-  const { query } = req;
-  if (query) {
-    console.log(query);
-  }
+  const result = await Product.find({}, { category: 1 });
 
-  const result = await Product.find(query);
+  res.json(result);
+};
+
+const productsFilter = async (req, res, next) => {
+  let result;
+
+  const { title, category, bloodType } = req.query;
+  if (title && !category && bloodType) {
+    console.log(title);
+    result = await Product.find({ title: { $regex: `${title}` } });
+  } else if (category && !title && !bloodType) {
+    console.log(category);
+    result = await Product.find({ category: { $regex: `${category}` } });
+  } else if (category && title && bloodType) {
+    console.log('2 categorys search', typeof bloodType, bloodType);
+    result = await Product.find({
+      title: { $regex: `${title}` },
+      category: { $regex: `${category}` },
+      'groupBloodNotAllowed.1': bloodType,
+    });
+    console.log(result);
+  } else {
+    result = await Product.find();
+  }
 
   if (!result.length) {
     return res.status(404).json({ message: 'Not found - please change your query' });
