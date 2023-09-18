@@ -162,27 +162,48 @@
     },
 
 
-    "/auth/logout": {
+    "/auth/refresh": {
       "post": {
         "tags": ["Auth"],
-        "summary": "User's logout",
+        "summary": "Get new pair og tokens",
         "parameters": [],
         "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
         
         "responses": {
           "204": {
             "description": "User signed out",
              "content": {}
           },
+          "400": {
+            "description": "No token providet",
+             "content": {}
+          },
+          
           "401": {
             "description": "Bearer auth failed, user unauthorized",
             "content": {}
+          },
+          "404": {
+            "description": "Invalid User",
+             "content": {}
           }
         
         }
       }
       
     }
+
 
   },
 
