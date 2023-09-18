@@ -41,15 +41,11 @@ const loginCtrl = async (req, res) => {
     throw HttpError(401, "Email or password is not valid");
   }
   const payload = { id: user._id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
-  await User.findByIdAndUpdate(user._id, { accessToken: token });
-  res.status(200).json({
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+  const refreshToken = jwt.sign({}, SECRET_KEY, { expiresIn: "7d" });
+  await User.findByIdAndUpdate(user._id, { accessToken: token, refreshToken });
+    res.status(200).json({
     token,
-    // user: {
-    //   email: user.email,
-    //   id: user._id,
-    //   // subscription: user.subscription
-    // },
   });
 };
 
@@ -66,7 +62,7 @@ const refreshCtrl = async (req, res) => {
       throw HttpError(401, "Invalid refresh token");
     }
     const payload = { id: user._id };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
     await User.findByIdAndUpdate(user._id, { token });
     res.status(200).json({
       token,
