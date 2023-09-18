@@ -9,51 +9,61 @@ const bloodList = [1, 2, 3, 4];
 const sexList = ["male", "female"];
 const levelActivityList = [1, 2, 3, 4, 5];
 
-const userSchema = new Schema(
+const dataUsersSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: [true, "Name is required"],
-    },
-    email: {
-      type: String,
-      match: emailRegex,
-      unique: true,
+    
+    // avatarUrl: {
+    //   type: String,
+    //   required: true,
+    // },
+    height: {
+      type: Number,
+      min: 150,
       required: true,
     },
-    password: {
-      type: String,
-      // match: passwordRegex,
-      minlength: 6,
+    currentWeight: {
+      type: Number,
+      min: 35,
       required: true,
     },
-    accessToken: {
-      type: String,
-      default: null,
+    desiredWeight: {
+      type: Number,
+      min: 35,
+      required: true,
     },
-    refreshToken: {
+    birthday: {
+      type: Date,
+      required: true,
+      validate: {
+        validator: function (value) {
+          const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
+          return age >= 18;
+        },
+        message: "You must be at least 18 years old.",
+      },
+    },
+    blood: {
+      type: Number,
+      enum: bloodList,
+      required: true,
+    },
+    sex: {
       type: String,
-      default: null,
+      enum: sexList,
+      required: true,
+    },
+    levelActivity: {
+      type: Number,
+      enum: levelActivityList,
+      required: true,
     },
   },
   { versionKey: false, timestamps: true }
 );
 
 userSchema.post("save", handleMongooseError);
-const User = model("user", userSchema);
+const User_data = model("user_data", dataUsersSchema);
 
-const registerSchema = Joi.object({
-  name: Joi.string().min(2).required(),
-  email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string()
-    .min(6)
-    // .pattern(passwordRegex)
-    .required(),
-});
-const loginSchema = Joi.object({
-  email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string().pattern(passwordRegex).required(),
-});
 
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
@@ -73,9 +83,8 @@ const userDataSchema = Joi.object({
   
 })
 const schemas = {
-  registerSchema,
-  loginSchema,
+
   userDataSchema,
 };
 
-module.exports = { User, schemas };
+module.exports = { User_data, schemas };
