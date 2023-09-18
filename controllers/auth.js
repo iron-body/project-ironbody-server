@@ -25,7 +25,7 @@ const registerCtrl = async (req, res) => {
     avatarUrl,
   });
   res.status(201).json({
-    user: { email: newUser.email, subscription: newUser.subscription },
+    user: { name: newUser.name, email: newUser.email },
   });
 };
 
@@ -42,10 +42,14 @@ const loginCtrl = async (req, res) => {
   }
   const payload = { id: user._id };
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
-  await User.findByIdAndUpdate(user._id, { token });
+  await User.findByIdAndUpdate(user._id, { accessToken: token });
   res.status(200).json({
     token,
-    user: { email: user.email, subscription: user.subscription },
+    // user: {
+    //   email: user.email,
+    //   id: user._id,
+    //   // subscription: user.subscription
+    // },
   });
 };
 
