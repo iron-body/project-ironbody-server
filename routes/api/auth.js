@@ -18,10 +18,6 @@ router.patch(
   validateBody(schemas.updateSubscriptionSchema),
   ctrl.updateSubscriptionCtrl
 );
-
-router.patch('/avatars', auth, upload.single('avatar'), ctrl.updateAvatarCtrl);
-router.post('/refresh', ctrl.refreshCtrl);
-
-
+router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
 
 module.exports = router;

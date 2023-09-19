@@ -100,7 +100,6 @@ const getAllExercises = async (req, res) => {
     totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
   });
 };
-
 module.exports = {
   createExercise: ctrlWrapper(createExercise),
   updateExercise: ctrlWrapper(updateExercise),

@@ -1,33 +1,35 @@
-const { Schema, model } = require('mongoose');
-const { handleMongooseError } = require('../helpers');
-const Joi = require('joi');
+const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
+const Joi = require("joi");
 
 const productSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "user",
       required: true,
     },
     amount: {
       type: Number,
       required: true,
       default: 1,
-      // validate: {
-      //   validate(value) {
-      //     return value >= 1;
-      //   },
-      // },
+      validate: {
+        validator: function (value) {
+          return value >= 1;
+        },
+        message: "Amount must be greater than or equal to 1",
+      },
     },
     calories: {
       type: Number,
       required: true,
       default: 1,
-      // validate: {
-      //   validate(value) {
-      //     return value >= 1;
-      //   },
-      // },
+      validate: {
+        validator: function (value) {
+          return value >= 1;
+        },
+        message: "Calories must be greater than or equal to 1",
+      },
     },
     date: {
       type: Date,
@@ -43,24 +45,24 @@ const productSchema = new Schema(
     },
   },
   {
-    collection: 'product',
+    collection: "product",
     versionKey: false,
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
-  },
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
+  }
 );
 
-const Product = model('Product', productSchema);
-productSchema.post('save', handleMongooseError);
+const Product = model("product", productSchema);
+productSchema.post("save", handleMongooseError);
 
 const addProductSchema = Joi.object({
-  owner: Joi.string().required(),
+  owner: Joi.object().required(),
   amount: Joi.number().min(1).required(),
   calories: Joi.number().min(1).required(),
-  date: Joi.string()
-    .regex(/^(\d{2})-(\d{2})-(\d{4})$/)
-    .required(),
+  date: Joi.date().required(),
+  done: Joi.boolean().required(),
   name: Joi.string().required(),
 });
+
 const updateProductSchema = Joi.object({
   done: Joi.boolean().required(),
 });
