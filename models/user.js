@@ -1,8 +1,6 @@
-const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
+const { Schema, model } = require("mongoose");
 const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
-const { isBefore, differenceInYears } = require("date-fns");
 
 const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
@@ -28,6 +26,10 @@ const userSchema = new Schema(
       match: passwordRegex,
       minlength: 6,
       required: true,
+    },
+    avatarURL: {
+      type: String,
+      // required: true,
     },
     accessToken: {
       type: String,
@@ -101,6 +103,13 @@ const loginSchema = Joi.object({
   password: Joi.string().pattern(passwordRegex).required(),
 });
 
+const updateUserSchema = Joi.object({
+  name: Joi.string().min(2),
+  email: Joi.string().pattern(emailRegex),
+  password: Joi.string().min(6),
+  // .pattern(passwordRegex)
+});
+
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
   currentWeight: Joi.number().min(35).required(),
@@ -121,6 +130,7 @@ const schemas = {
   registerSchema,
   loginSchema,
   userDataSchema,
+  updateUserSchema,
 };
 
 module.exports = { User, schemas };

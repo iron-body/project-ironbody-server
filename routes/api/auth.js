@@ -15,8 +15,8 @@ router.post("/logout", auth, ctrl.logoutCtrl);
 router.patch(
   "/",
   auth,
-  validateBody(schemas.updateSubscriptionSchema),
-  ctrl.updateSubscriptionCtrl
+  validateBody(schemas.updateUserSchema),
+  ctrl.updateUserCtrl
 );
 router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
 

@@ -5,11 +5,11 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 require('dotenv').config();
 
-
 // const contactsRouter = require('./routes/api/contacts');
 const authRouter = require('./routes/api/auth');
-const productsRouter = require('./routes/api/products')
-const exercisesRouter = require('./routes/api/exercises')
+const productsRouter = require('./routes/api/productsRoute');
+const productCategoriesRoute = require('./routes/api/productCategoriesRoute');
+const exercisesRouter = require('./routes/api/exercises');
 
 const app = express();
 
@@ -25,6 +25,7 @@ app.use('/api/users', authRouter);
 // app.use('/api/contacts', contactsRouter);
 
 app.use('/api/products', productsRouter);
+app.use('/api/categories', productCategoriesRoute);
 app.use('/api/exercises', exercisesRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use((req, res) => {
