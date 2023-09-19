@@ -1,19 +1,19 @@
-const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../helpers");
-const Joi = require("joi");
+const { Schema, model } = require('mongoose');
+const { handleMongooseError } = require('../helpers');
+const Joi = require('joi');
 
 const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
 const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
-const sexList = ["male", "female"];
+const sexList = ['male', 'female'];
 const levelActivityList = [1, 2, 3, 4, 5];
 
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, 'Name is required'],
     },
     email: {
       type: String,
@@ -43,8 +43,8 @@ const userSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-userSchema.post("save", handleMongooseError);
-const User = model("user", userSchema);
+userSchema.post('save', handleMongooseError);
+const User = model('user', userSchema);
 
 const registerSchema = Joi.object({
   name: Joi.string().min(2).required(),
