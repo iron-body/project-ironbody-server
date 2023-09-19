@@ -1,86 +1,249 @@
 const { HttpError, ctrlWrapper } = require('../helpers');
 const { Product } = require('../models/productModel');
 
-const categoriesProducts = async (req, res) => {
-  //   const { _id: owner } = req.user;
-  //   const { page = 1, limit = 10, favorite = false } = req.query;
-  //   console.log(favorite);
-  //   const skip = (page - 1) * limit;
-  //   const contacts = await Contact.find({ owner, favorite: favorite }, '-createdAt -updatedAt', {
-  //     skip,
-  //     limit,
-  //   }).populate('owner', 'name');
-  // const result = await Product.find({}, { category: 1 });
-  // res.json(result);
-};
-
-const productsFilter = async (req, res, next) => {
+const productsFilter = async (req, res) => {
   let result;
 
-  const { title, category, bloodType, recommended } = req.query;
-
-  // Блок з умовою 1+
-  if (title && !category && !bloodType) {
+  const { title, category, bloodtype, recommended } = req.query;
+  // console.log('main title', title, Boolean(title));
+  // console.log('main category', category, Boolean(category));
+  // console.log('main bloodtype', bloodtype, Boolean(bloodtype));
+  // console.log('main recommended', recommended, typeof recommended);
+  // console.log('main boolean true', Boolean(recommended));
+  // console.log('main boolean false', Boolean(!recommended));
+  // Блок без умов групи крові
+  if (title && !category && !bloodtype && recommended === 'all') {
     result = await Product.find({
       title: { $regex: `${title}` },
     });
-  } else if (!title && category && !bloodType) {
-    result = await Product.find({ category: { $regex: `${category}` } });
-  } else if ((!title && !category && bloodType && recommended) || !recommended) {
-    if (bloodType === '1') {
-      console.log(Boolean(recommended));
+  } else if (!title && category && !bloodtype && recommended === 'all') {
+    result = await Product.find({ category });
+  } else if (title && category && !bloodtype && recommended === 'all') {
+    result = await Product.find({
+      title: { $regex: `${title}` },
+      category: category,
+    });
+  }
+  // ЗАБОРОНЕНА для цього подукту, група крові. Блок без пошукових запитів
+  else if (!title && !category && bloodtype && recommended === 'true') {
+    if (bloodtype === '1') {
       result = await Product.find({
         'groupBloodNotAllowed.1': Boolean(recommended),
       });
     }
-    if (bloodType === '2') {
+    if (bloodtype === '2') {
       result = await Product.find({
-        groupBloodNotAllowed: { bloodType },
+        'groupBloodNotAllowed.2': Boolean(recommended),
       });
     }
-    if (bloodType === '3') {
+    if (bloodtype === '3') {
       result = await Product.find({
-        groupBloodNotAllowed: { bloodType },
+        'groupBloodNotAllowed.3': Boolean(recommended),
       });
     }
-    if (bloodType === '4') {
+    if (bloodtype === '4') {
       result = await Product.find({
-        // groupBloodNotAllowed: { [bloodType]: Boolean(recommended) }, // по документації мало б працювати - брати значення bloodType, в даному випадку це 4, і приводити recommended до булевого значення. По факту - пустий масив, результатів не витягує
+        // groupBloodNotAllowed: { [bloodtype]: Boolean(recommended) }, // по документації мало б працювати - брати значення bloodtype, в даному випадку це 4, і приводити recommended до булевого значення. По факту - пустий масив, результатів не витягує
         'groupBloodNotAllowed.4': Boolean(recommended),
       });
     }
   }
-  // Блок з умов 2+
-  if (title && category && !bloodType) {
-    result = await Product.find({
-      title: { $regex: `${title}` },
-      category: { $regex: `${category}` },
-    });
-  } else if (!title && category && !bloodType) {
-    result = await Product.find({ category: { $regex: `${category}` } });
-  } else if (!title && !category && bloodType && recommended) {
-    if (bloodType === '1') {
+  // ДОЗВОЛЕНА для цього продукту, група крові. Блок без пошукових запитів
+  else if (!title && !category && bloodtype && recommended === 'false') {
+    if (bloodtype === '1') {
       result = await Product.find({
+        'groupBloodNotAllowed.1': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '2') {
+      result = await Product.find({
+        'groupBloodNotAllowed.2': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '3') {
+      result = await Product.find({
+        'groupBloodNotAllowed.3': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '4') {
+      result = await Product.find({
+        'groupBloodNotAllowed.4': Boolean(!recommended),
+      });
+    }
+  }
+  // ЗАБОРОНЕНА для цього подукту, група крові. Блок з пошуком по title
+  else if (title && !category && bloodtype && recommended === 'true') {
+    if (bloodtype === '1') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
         'groupBloodNotAllowed.1': Boolean(recommended),
       });
     }
-    if (bloodType === '2') {
+    if (bloodtype === '2') {
       result = await Product.find({
-        groupBloodNotAllowed: { bloodType },
+        title: { $regex: `${title}` },
+        'groupBloodNotAllowed.2': Boolean(recommended),
       });
     }
-    if (bloodType === '3') {
+    if (bloodtype === '3') {
       result = await Product.find({
-        groupBloodNotAllowed: { bloodType },
+        title: { $regex: `${title}` },
+        'groupBloodNotAllowed.3': Boolean(recommended),
       });
     }
-    if (bloodType === '4') {
+    if (bloodtype === '4') {
       result = await Product.find({
-        // groupBloodNotAllowed: { [bloodType]: Boolean(recommended) }, // по документації мало б працювати - брати значення bloodType, в даному випадку це 4, і приводити recommended до булевого значення. По факту - пустий масив, результатів не витягує
+        title: { $regex: `${title}` },
         'groupBloodNotAllowed.4': Boolean(recommended),
       });
     }
-  } else {
+  }
+  // ДОЗВОЛЕНА для цього продукту, група крові. Блок з пошуком по title
+  else if (title && !category && bloodtype && recommended === 'false') {
+    if (bloodtype === '1') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        'groupBloodNotAllowed.1': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '2') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        'groupBloodNotAllowed.2': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '3') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        'groupBloodNotAllowed.3': { $eq: Boolean(!recommended) },
+      });
+    }
+    if (bloodtype === '4') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        'groupBloodNotAllowed.4': Boolean(!recommended),
+      });
+    }
+  }
+  // ЗАБОРОНЕНА для цього подукту, група крові. Блок з пошуком по category
+  else if (!title && category && bloodtype && recommended === 'true') {
+    if (bloodtype === '1') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.1': Boolean(recommended),
+      });
+    }
+    if (bloodtype === '2') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.2': Boolean(recommended),
+      });
+    }
+    if (bloodtype === '3') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.3': Boolean(recommended),
+      });
+    }
+    if (bloodtype === '4') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.4': Boolean(recommended),
+      });
+    }
+  }
+  // ДОЗВОЛЕНА для цього продукту, група крові. Блок з пошуком по category
+  else if (!title && category && bloodtype && recommended === 'false') {
+    if (bloodtype === '1') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.1': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '2') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.2': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '3') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.3': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '4') {
+      result = await Product.find({
+        category: category,
+        'groupBloodNotAllowed.4': Boolean(!recommended),
+      });
+    }
+  }
+  // ЗАБОРОНЕНА для цього подукту, група крові. Блок з пошуком по category & title
+  else if (title && category && bloodtype && recommended === 'true') {
+    if (bloodtype === '1') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.1': Boolean(recommended),
+      });
+    }
+    if (bloodtype === '2') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.2': Boolean(recommended),
+      });
+    }
+    if (bloodtype === '3') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.3': Boolean(recommended),
+      });
+    }
+    if (bloodtype === '4') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.4': Boolean(recommended),
+      });
+    }
+  }
+  // ДОЗВОЛЕНА для цього продукту, група крові. Блок з пошуком по category & title
+  else if (title && category && bloodtype && recommended === 'false') {
+    if (bloodtype === '1') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.1': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '2') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.2': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '3') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.3': Boolean(!recommended),
+      });
+    }
+    if (bloodtype === '4') {
+      result = await Product.find({
+        title: { $regex: `${title}` },
+        category: category,
+        'groupBloodNotAllowed.4': Boolean(!recommended),
+      });
+    }
+  }
+  // А тут віддається все що є в базі - дефолтний запит
+  else {
+    console.log('all');
     result = await Product.find();
   }
 
@@ -90,63 +253,7 @@ const productsFilter = async (req, res, next) => {
 
   res.json(result);
 };
-// const getContactById = async (req, res) => {
-//   const { _id: owner } = req.user;
-//   const response = await Contact.findById({ owner }, req.params.contactId, '-createdAt -updatedAt');
-//   if (!response) {
-//     throw HttpError(404, 'Not Found');
-//   }
-//   res.status(200).json(response);
-// };
-// const addContact = async (req, res) => {
-//   const { email, phone } = req.body;
-//   const contactEmail = await Contact.findOne({ email });
-//   const contactPhone = await Contact.findOne({ phone });
-//   if (contactEmail) {
-//     throw HttpError(409, `Contact with email ${email} already exists`);
-//   }
-//   if (contactPhone) {
-//     throw HttpError(409, `Contact with phone ${phone} already exist`);
-//   }
-//   const { _id: owner } = req.user;
-//   const newContact = await Contact.create({ ...req.body, owner });
-//   if (!newContact) {
-//     throw HttpError(404, 'Unable to add contact');
-//   }
-//   res.status(201).json(newContact);
-// };
-
-// const removeContact = async (req, res) => {
-//   const response = await Contact.findByIdAndRemove(req.params.contactId);
-//   if (!response) {
-//     throw HttpError(404, 'Not Found');
-//   }
-//   res.status(200).json({ message: 'contact deleted' });
-// };
-// const updateContact = async (req, res) => {
-//   const updatedContact = await Contact.findByIdAndUpdate(req.params.contactId, req.body, {
-//     new: true,
-//   });
-//   if (!updatedContact) {
-//     throw HttpError(404, 'Not Found');
-//   }
-//   res.status(200).json(updatedContact);
-// };
-// const updateFavorite = async (req, res) => {
-//   const updateFavorite = await Contact.findByIdAndUpdate(req.params.contactId, req.body, {
-//     new: true,
-//   });
-//   if (!updateFavorite) {
-//     throw HttpError(404, 'Not Found');
-//   }
-//   res.status(200).json(updateFavorite);
-// };
 
 module.exports = {
   productsFilter: ctrlWrapper(productsFilter),
-  //   getContactById: ctrlWrapper(getContactById),
-  //   addContact: ctrlWrapper(addContact),
-  //   removeContact: ctrlWrapper(removeContact),
-  //   updateContact: ctrlWrapper(updateContact),
-  //   updateFavorite: ctrlWrapper(updateFavorite),
 };
