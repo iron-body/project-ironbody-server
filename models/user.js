@@ -27,6 +27,10 @@ const userSchema = new Schema(
       minlength: 6,
       required: true,
     },
+     avatarURL: {
+      type: String,
+      // required: true,
+    },
     accessToken: {
       type: String,
       default: null,
@@ -55,6 +59,15 @@ const loginSchema = Joi.object({
   password: Joi.string().pattern(passwordRegex).required(),
 });
 
+const updateUserSchema = Joi.object({
+  name: Joi.string().min(2),
+  email: Joi.string().pattern(emailRegex),
+  password: Joi.string()
+    .min(6)
+    // .pattern(passwordRegex)
+   
+});
+
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
 
@@ -81,6 +94,7 @@ const schemas = {
   registerSchema,
   loginSchema,
   userDataSchema,
+  updateUserSchema
 };
 
 module.exports = { User, schemas };
