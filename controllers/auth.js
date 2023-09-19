@@ -41,37 +41,57 @@ const loginCtrl = async (req, res) => {
     throw HttpError(401, "Email or password is not valid");
   }
   const payload = { id: user._id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
-  const refreshToken = jwt.sign({}, SECRET_KEY, { expiresIn: "7d" });
-  await User.findByIdAndUpdate(user._id, { accessToken: token, refreshToken });
-    res.status(200).json({
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "24h" });
+  // const refreshToken = jwt.sign({}, SECRET_KEY, { expiresIn: "7d" });
+  // console.log(refreshToken)
+  await User.findByIdAndUpdate(user._id, { accessToken: token });
+  console.log(token);
+  // refreshToken });
+  res.status(200).json({
     token,
+    // refreshToken,
   });
 };
 
-// Створюємо маршрут для refresh token
-const refreshCtrl = async (req, res) => {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    throw HttpError(401, "Refresh token is required");
-  }
-  try {
-    const decoded = jwt.verify(refreshToken, SECRET_KEY);
-    const user = await User.findById(decoded.id);
-    if (!user || !user.token || refreshToken !== user.token.refreshToken) {
-      throw HttpError(401, "Invalid refresh token");
-    }
-    const payload = { id: user._id };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
-    await User.findByIdAndUpdate(user._id, { token });
-    res.status(200).json({
-      token,
-      user: { email: user.email, subscription: user.subscription },
-    });
-  } catch (error) {
-    throw HttpError(401, "Invalid refresh token");
-  }
-};
+// // Створюємо маршрут для refresh token
+// const refreshCtrl = async (req, res) => {
+//   const { refreshToken } = req.body;
+//   if (!refreshToken) {
+//     throw HttpError(401, "Refresh token is required");
+//   }
+//   console.log("SECRET_KEY:", SECRET_KEY);
+
+//   try {
+//     console.log("SECRET_KEY:", SECRET_KEY);
+
+//     const decoded = jwt.verify(refreshToken, SECRET_KEY);
+//     console.log("decoded._id:", decoded.id); // Вивести decoded._id до консолі
+// console.log("_id користувача в базі даних:", user._id); // Вивести _id користувача до консолі
+
+//     console.log("decoded:", decoded); // Вивести decoded до консолі
+//     const user = await User.findById(decoded._id);
+//     console.log("decoded._id:", decoded.id); // Вивести decoded._id до консолі
+// console.log("_id користувача в базі даних:", user._id); // Вивести _id користувача до консолі
+
+//     console.log("user:", user); // Вивести user до консолі
+//     if (!user || !user.token || refreshToken !== user.refreshToken) {
+//       throw HttpError(401, "Invalid refresh token");
+//     }
+//     const payload = { id: user._id };
+//     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+//     console.log("old accessToken:", user.accessToken); // Вивести старий accessToken до консолі
+//     await User.findByIdAndUpdate(user._id, { token });
+//     console.log("new accessToken:", token); // Вивести новий accessToken до консолі
+//     res.status(200).json({
+//       token,
+//       user: { email: user.email, subscription: user.subscription },
+//     });
+//   } catch (error) {
+//     console.error("Error in refreshCtrl:", error); // Вивести помилку до консолі
+//     throw HttpError(401, "Invalid refresh token");
+//   }
+
+// };
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: null });
@@ -121,5 +141,5 @@ module.exports = {
   getCurrentCtrl: ctrlWrapper(getCurrentCtrl),
   updateSubscriptionCtrl: ctrlWrapper(updateSubscriptionCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
-  refreshCtrl: ctrlWrapper(refreshCtrl),
+  // refreshCtrl: ctrlWrapper(refreshCtrl),
 };

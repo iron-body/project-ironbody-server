@@ -31,10 +31,10 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
-    refreshToken: {
-      type: String,
-      default: null,
-    },
+    // refreshToken: {
+    //   type: String,
+    //   default: null,
+    // },
   },
   { versionKey: false, timestamps: true }
 );
@@ -52,7 +52,9 @@ const registerSchema = Joi.object({
 });
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string().pattern(passwordRegex).required(),
+  // password: Joi.string().pattern(passwordRegex).required(),
+  password: Joi.string().min(6).required(),
+
 });
 
 const userDataSchema = Joi.object({
@@ -72,10 +74,24 @@ const userDataSchema = Joi.object({
     levelActivity: Joi.number().valid(...levelActivityList).required(),
   
 })
+
+const calculateSchema = Joi.object({
+  height: Joi.number().min(150).required(),
+  currentWeight: Joi.number().min(35).required(),
+  desiredWeight: Joi.number().min(35).required(),
+  birthday: Joi.date()
+    .max(new Date(Date.now() - (18 * 365 * 24 * 60 * 60 * 1000)))
+    .iso()
+    .required(),
+  blood: Joi.number().valid(1, 2, 3, 4).required(),
+  sex: Joi.string().valid('male', 'female').required(),
+  levelActivity: Joi.number().valid(1, 2, 3, 4, 5).required(),
+});
 const schemas = {
   registerSchema,
   loginSchema,
   userDataSchema,
+  calculateSchema,
 };
 
 module.exports = { User, schemas };

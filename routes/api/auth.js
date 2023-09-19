@@ -20,7 +20,7 @@ router.patch(
 );
 
 router.patch('/avatars', auth, upload.single('avatar'), ctrl.updateAvatarCtrl);
-router.post('/refresh', ctrl.refreshCtrl);
+// router.post('/refresh', ctrl.refreshCtrl);
 
 
 
