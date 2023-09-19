@@ -4,7 +4,6 @@ const Joi = require("joi");
 
 const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
-const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ["male", "female"];
 const levelActivityList = [1, 2, 3, 4, 5];
@@ -38,54 +37,8 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
       default: null,
-    },
-    avatarUrl: {
-      type: String,
-      required: true,
-    },
-    height: {
-      type: Number,
-      min: 150,
-      required: true,
-    },
-    currentWeight: {
-      type: Number,
-      min: 35,
-      required: true,
-    },
-    desiredWeight: {
-      type: Number,
-      min: 35,
-      required: true,
-    },
-    birthday: {
-      type: Date,
-      required: true,
-      validate: {
-        validator: function (value) {
-          return (
-            isBefore(value, new Date()) &&
-            differenceInYears(new Date(), value) >= 18
-          );
-        },
-        message: "You must be at least 18 years old.",
-      },
-    },
-    blood: {
-      type: Number,
-      enum: bloodList,
-      required: true,
-    },
-    sex: {
-      type: String,
-      enum: sexList,
-      required: true,
-    },
-    levelActivity: {
-      type: Number,
-      enum: levelActivityList,
-      required: true,
-    },
+    }
+ 
   },
   { versionKey: false, timestamps: true }
 );
