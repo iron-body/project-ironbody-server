@@ -22,7 +22,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      match: passwordRegex,
+      // match: passwordRegex,
       minlength: 6,
       required: true,
     },
@@ -48,7 +48,8 @@ const User = model("user", userSchema);
 const registerSchema = Joi.object({
   name: Joi.string().min(2).required(),
   email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string().pattern(passwordRegex).required(),
+  password: Joi.string().required().min(6),
+  // password: Joi.string().pattern(passwordRegex).required(),
 });
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
@@ -62,7 +63,11 @@ const updateUserSchema = Joi.object({
   password: Joi.string().min(6),
   // .pattern(passwordRegex)
 });
-
+// --------------------------пункт 18-------------------
+// const updateNameAvatarSchema = Joi.object({
+//   name: Joi.string().min(2),
+//   avatarUrl: Joi.string().uri(),
+// });
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
   currentWeight: Joi.number().min(35).required(),
@@ -79,24 +84,13 @@ const userDataSchema = Joi.object({
     .required(),
 });
 
-const calculateSchema = Joi.object({
-  height: Joi.number().min(150).required(),
-  currentWeight: Joi.number().min(35).required(),
-  desiredWeight: Joi.number().min(35).required(),
-  birthday: Joi.date()
-    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
-    .iso()
-    .required(),
-  blood: Joi.number().valid(1, 2, 3, 4).required(),
-  sex: Joi.string().valid("male", "female").required(),
-  levelActivity: Joi.number().valid(1, 2, 3, 4, 5).required(),
-});
 const schemas = {
   registerSchema,
   loginSchema,
   userDataSchema,
-  calculateSchema,
+  // calculateSchema,
   updateUserSchema,
+  // updateNameAvatarSchema,
 };
 
 module.exports = { User, schemas };

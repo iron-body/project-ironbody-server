@@ -2,7 +2,6 @@ const { Schema, model } = require("mongoose");
 const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
 
-
 // const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ["male", "female"];
@@ -10,7 +9,6 @@ const levelActivityList = [1, 2, 3, 4, 5];
 
 const dataUsersSchema = new Schema(
   {
-    
     // avatarUrl: {
     //   type: String,
     //   required: true,
@@ -60,30 +58,47 @@ const dataUsersSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-userSchema.post("save", handleMongooseError);
-const User_data = model("user_data", dataUsersSchema);
-
+dataUsersSchema.post("save", handleMongooseError);
+const UserData = model("userData", dataUsersSchema);
 
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
-  
-    currentWeight: Joi.number().min(30).required(),
-    desiredWeight: Joi.number().min(30).required(),
 
-   birthday: Joi.date()
-    .max(new Date(Date.now() - (18 * 365 * 24 * 60 * 60 * 1000))) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
+  currentWeight: Joi.number().min(30).required(),
+  desiredWeight: Joi.number().min(30).required(),
+
+  birthday: Joi.date()
+    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000)) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
     .iso()
     .required(),
 
   // birthday: Joi.string().pattern(dateRegexp).required(),
-    blood: Joi.number().valid(...bloodList).required(),
-    sex: Joi.string().valid(...sexList).required(),
-    levelActivity: Joi.number().valid(...levelActivityList).required(),
-  
-})
-const schemas = {
+  blood: Joi.number()
+    .valid(...bloodList)
+    .required(),
+  sex: Joi.string()
+    .valid(...sexList)
+    .required(),
+  levelActivity: Joi.number()
+    .valid(...levelActivityList)
+    .required(),
+});
+const calculateSchema = Joi.object({
+  height: Joi.number().min(150).required(),
+  currentWeight: Joi.number().min(35).required(),
+  desiredWeight: Joi.number().min(35).required(),
+  birthday: Joi.date()
+    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
+    .iso()
+    .required(),
+  blood: Joi.number().valid(1, 2, 3, 4).required(),
+  sex: Joi.string().valid("male", "female").required(),
+  levelActivity: Joi.number().valid(1, 2, 3, 4, 5).required(),
+});
 
+const schemas = {
   userDataSchema,
+  calculateSchema,
 };
 
-module.exports = { User_data, schemas };
+module.exports = { UserData, schemas };

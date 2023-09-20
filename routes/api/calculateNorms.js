@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { HttpError } = require("../../helpers/index");
-const { schemas } = require("../../models/user");
+const { schemas, UserData } = require("../../models/user_data");
 const { validateBody, auth } = require("../../middlewares/index");
 
 // Функція для обчислення норм
@@ -43,13 +43,22 @@ const calculateNorms = async (req, res) => {
   } else {
     throw HttpError(400, "Недопустима стать");
   }
+  const normsData = new UserData({
+    height,
+    currentWeight,
+    desiredWeight,
+    birthday,
+    blood,
+    sex,
+    levelActivity,
+  });
+  // Запсуємо обэкт в БД
 
+  await normsData.save();
   // Денна норма калорій
   const calorieNorm = bmr;
-
   // Денна норма часу, присвяченого спорту
   const sportTimeNorm = 110; // 110 хвилин на добу
-
   res.status(200).json({ calorieNorm, sportTimeNorm });
 };
 
