@@ -22,7 +22,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      match: passwordRegex,
+      // match: passwordRegex,
       minlength: 6,
       required: true,
     },
@@ -37,8 +37,7 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
       default: null,
-    }
- 
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -49,11 +48,13 @@ const User = model("user", userSchema);
 const registerSchema = Joi.object({
   name: Joi.string().min(2).required(),
   email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string().pattern(passwordRegex).required(),
+  password: Joi.string().required().min(6),
+  // password: Joi.string().pattern(passwordRegex).required(),
 });
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
-  password: Joi.string().pattern(passwordRegex).required(),
+  // password: Joi.string().pattern(passwordRegex).required(),
+  password: Joi.string().min(6).required(),
 });
 
 const updateUserSchema = Joi.object({
@@ -62,7 +63,11 @@ const updateUserSchema = Joi.object({
   password: Joi.string().min(6),
   // .pattern(passwordRegex)
 });
-
+// --------------------------пункт 18-------------------
+// const updateNameAvatarSchema = Joi.object({
+//   name: Joi.string().min(2),
+//   avatarUrl: Joi.string().uri(),
+// });
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
   currentWeight: Joi.number().min(35).required(),
@@ -83,7 +88,9 @@ const schemas = {
   registerSchema,
   loginSchema,
   userDataSchema,
+  // calculateSchema,
   updateUserSchema,
+  // updateNameAvatarSchema,
 };
 
 module.exports = { User, schemas };
