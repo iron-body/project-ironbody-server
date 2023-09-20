@@ -18,6 +18,12 @@ router.patch(
   validateBody(schemas.updateUserSchema),
   ctrl.updateUserCtrl
 );
+router.patch(
+  "/",
+  auth,
+  validateBody(schemas.updateUserSchema),
+  ctrl.updateUserCtrl
+);
 router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
 
 module.exports = router;
