@@ -41,15 +41,18 @@ const loginCtrl = async (req, res) => {
     throw HttpError(401, "Email or password is not valid");
   }
   const payload = { id: user._id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "24h" });
-  // const refreshToken = jwt.sign({}, SECRET_KEY, { expiresIn: "7d" });
-  // console.log(refreshToken)
-  await User.findByIdAndUpdate(user._id, { accessToken: token });
-  console.log(token);
-  // refreshToken });
+
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
+  await User.findByIdAndUpdate(user._id, {
+    accessToken,
+  });
   res.status(200).json({
-    token,
-    // refreshToken,
+    accessToken,
+    // user: {
+    //   email: user.email,
+    //   id: user._id,
+    //   // subscription: user.subscription
+    // },
   });
 };
 
@@ -94,31 +97,34 @@ const loginCtrl = async (req, res) => {
 // };
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
-  await User.findByIdAndUpdate(_id, { token: null });
-  res.status(204).json({ message: "Logout success" });
+  await User.findByIdAndUpdate(_id, { accessToken: null });
+  res.json({ message: "Logout success" });
 };
 const getCurrentCtrl = (req, res) => {
-  const { email, subscription } = req.user;
-  res.json({ email, subscription });
+  const { name, email } = req.user;
+  res.json({ name, email });
 };
-const updateSubscriptionCtrl = async (req, res) => {
-  const { _id, subscription } = req.user;
-  const newSubscription = req.body.subscription;
-  if (newSubscription === subscription) {
-    throw HttpError(409, "Invalid subscription"); // Помилка 409 - Конфлікт
-  }
-  const updatedSubscription = await User.findByIdAndUpdate(
-    _id,
-    { $set: { subscription: newSubscription } },
-    { new: true }
-  );
-  if (!updatedSubscription) {
-    throw HttpError(409, "Not Found"); // Помилка 409 - Конфлікт
-  }
-  res.status(200).json({
-    message: `new subscription is ${updatedSubscription.subscription}`,
-  });
-};
+
+const updateUserCtrl = async (req, res) => {};
+
+// const updateSubscriptionCtrl = async (req, res) => {
+//   const { _id, subscription } = req.user;
+//   const newSubscription = req.body.subscription;
+//   if (newSubscription === subscription) {
+//     throw HttpError(409, "Invalid subscription"); // Помилка 409 - Конфлікт
+//   }
+//   const updatedSubscription = await User.findByIdAndUpdate(
+//     _id,
+//     { $set: { subscription: newSubscription } },
+//     { new: true }
+//   );
+//   if (!updatedSubscription) {
+//     throw HttpError(409, "Not Found"); // Помилка 409 - Конфлікт
+//   }
+//   res.status(200).json({
+//     message: `new subscription is ${updatedSubscription.subscription}`,
+//   });
+// };
 const updateAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
   const { path: tempUpload, originalname } = req.file;
@@ -139,7 +145,7 @@ module.exports = {
   loginCtrl: ctrlWrapper(loginCtrl),
   logoutCtrl: ctrlWrapper(logoutCtrl),
   getCurrentCtrl: ctrlWrapper(getCurrentCtrl),
-  updateSubscriptionCtrl: ctrlWrapper(updateSubscriptionCtrl),
+  updateUserCtrl: ctrlWrapper(updateUserCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
   // refreshCtrl: ctrlWrapper(refreshCtrl),
 };
