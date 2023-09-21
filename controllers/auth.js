@@ -18,7 +18,6 @@ const registerCtrl = async (req, res) => {
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, 'Email in use'); // Помилка 409 - Конфлікт
-    // tests
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
