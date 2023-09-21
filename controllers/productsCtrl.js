@@ -27,13 +27,9 @@ const productsFilter = async (req, res) => {
   // ЗАБОРОНЕНА для цього подукту, група крові. Блок без пошукових запитів
   else if (!title && !category && bloodtype && recommended === 'true') {
     if (bloodtype === '1') {
-      console.log('im here', bloodtype, typeof bloodtype);
-      const secBloodtype = Number(bloodtype);
-      console.log(Number(bloodtype));
-      console.log('bloodtype', typeof secBloodtype);
-      result = await Product.find({
-        // 'groupBloodNotAllowed.1': Boolean(recommended),
-        groupBloodNotAllowed: { 1: Boolean(recommended) },
+            result = await Product.find({
+        'groupBloodNotAllowed.1': Boolean(recommended),
+      
       });
     }
     if (bloodtype === '2') {
