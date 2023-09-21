@@ -1,8 +1,14 @@
 const express = require("express");
+const moment = require("moment");
+
 const router = express.Router();
 const { HttpError } = require("../../helpers/index");
 const { schemas, UserData } = require("../../models/user_data");
 const { validateBody, auth } = require("../../middlewares/index");
+
+const formatDate = (date) => {
+  return moment(date).format("DD/MM/YYYY");
+};
 
 // Функція для обчислення норм
 const calculateNorms = async (req, res) => {
@@ -16,10 +22,16 @@ const calculateNorms = async (req, res) => {
     levelActivity,
   } = req.body;
 
+  const { error } = schemas.userDataSchema.validate(req.body);
+  if (error) {
+    throw HttpError(400, error.details[0].message);
+  }
+
+  const formattedBirthday = formatDate(birthday);
+
   // Перевірка чи є користувач повнолітнім
   const today = new Date();
-  const birthDate = new Date(birthday);
-  // const age = today.getFullYear() - birthDate.getFullYear();
+  const birthDate = new Date(formattedBirthday);
   let age;
   if (
     today <
@@ -41,19 +53,27 @@ const calculateNorms = async (req, res) => {
   } else if (sex === "female") {
     bmr = (10 * desiredWeight + 6.25 * height - 5 * age - 161) * levelActivity;
   } else {
-    throw HttpError(400, "Недопустима стать");
+    throw HttpError(400, "Invalid data");
   }
+  // const normsData = new UserData({
+  //   height,
+  //   currentWeight,
+  //   desiredWeight,
+  //   birthday,
+  //   blood,
+  //   sex,
+  //   levelActivity,
+  // });
   const normsData = new UserData({
     height,
     currentWeight,
     desiredWeight,
-    birthday,
+    birthday: formattedBirthday, // Используем отформатированную дату
     blood,
     sex,
     levelActivity,
   });
   // Запсуємо обэкт в БД
-
   await normsData.save();
   // Денна норма калорій
   const calorieNorm = bmr;

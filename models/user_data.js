@@ -1,11 +1,20 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../helpers");
+const { handleMongooseError, HttpError } = require("../helpers");
 const Joi = require("joi");
-
+const { format } = require("date-fns");
 // const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ["male", "female"];
 const levelActivityList = [1, 2, 3, 4, 5];
+
+const formatDate = (value, helpers) => {
+  if (!value || !(value instanceof Date)) {
+    throw HttpError(400, "invalid date");
+  }
+
+  const formattedDate = `${value.getDate()}/${value.getMonth() + 1}/${value.getFullYear()}`;
+  return formattedDate;
+};
 
 const dataUsersSchema = new Schema(
   {
@@ -29,7 +38,7 @@ const dataUsersSchema = new Schema(
       required: true,
     },
     birthday: {
-      type: Date,
+      type: String,
       required: true,
       validate: {
         validator: function (value) {
@@ -38,6 +47,15 @@ const dataUsersSchema = new Schema(
         },
         message: "You must be at least 18 years old.",
       },
+      // validate: {
+      //   validator: function (value) {
+      //     const formattedDate = format(value, "dd/MM/yyyy");
+      //     console.log(`Formatted Date: ${formattedDate}`);
+      //     const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
+      //     return age >= 18;
+      //   },
+      //   message: "You must be at least 18 years old.",
+      // },
     },
     blood: {
       type: Number,
@@ -68,6 +86,16 @@ const userDataSchema = Joi.object({
   desiredWeight: Joi.number().min(30).required(),
 
   birthday: Joi.date()
+  // .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
+  //   .custom((value, helpers) => {
+  //     const formattedDate = formatDate(value, HttpError);
+  //     const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
+  //     if (age < 18) {
+  //       throw HttpError(400, "You must be at least 18 years old.");
+  //     }
+  //     return formattedDate;
+  //   })
+  //   .required(),
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000)) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
     .iso()
     .required(),
