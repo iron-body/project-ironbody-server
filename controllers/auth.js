@@ -1,13 +1,15 @@
 const { ctrlWrapper, HttpError } = require('../helpers');
 const { User } = require('../models/user');
 // const { UserData } = require("../models/user_data");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const gravatar = require('gravatar');
-const Jimp = require('jimp');
-const path = require('path');
-const fs = require('fs/promises');
-const { updateNameAvatarSchema } = require('../models/user');
+
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const Jimp = require("jimp");
+const path = require("path");
+const fs = require("fs/promises");
+// const { updateNameAvatarSchema } = require("../models/user");
+
 
 const { SECRET_KEY } = process.env;
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
@@ -17,7 +19,9 @@ const registerCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    throw HttpError(409, 'Email in use'); // Помилка 409 - Конфлікт
+
+    throw HttpError(409, "Email in use");
+
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
@@ -107,16 +111,15 @@ const loginCtrl = async (req, res) => {
 //   }
 
 // };
+const getCurrentCtrl = (req, res) => {
+  const { name, email } = req.user;
+  res.json({ name, email });
+};
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { accessToken: null });
   res.json({ message: 'Logout success' });
 };
-const getCurrentCtrl = (req, res) => {
-  const { name, email } = req.user;
-  res.json({ name, email });
-};
-
 const updateUserCtrl = async (req, res) => {
   const { _id } = req.user;
   const { name, avatarUrl } = req.body;
@@ -157,7 +160,31 @@ const updateAvatarCtrl = async (req, res) => {
   console.log(avatarUrl);
   res.json({ avatarUrl });
 };
-
+const updateNameAvatarCtrl = async (req, res) => {
+  const { _id } = req.user;
+  const { name, avatarUrl } = req.body;
+  if (name || avatarUrl) {
+    const updatedData = {};
+    if (name) {
+      updatedData.name = name;
+    }
+    if (avatarUrl) {
+      updatedData.avatarUrl = avatarUrl;
+    }
+    const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+      new: true,
+    });
+    if (!updatedUser) {
+      throw HttpError(404, "User not found");
+    }
+    res.status(200).json({
+      name: updatedUser.name,
+      avatarUrl: updatedUser.avatarUrl,
+    });
+  } else {
+    throw HttpError(400, "No changes provided");
+  }
+};
 module.exports = {
   registerCtrl: ctrlWrapper(registerCtrl),
   loginCtrl: ctrlWrapper(loginCtrl),
@@ -166,4 +193,5 @@ module.exports = {
   updateUserCtrl: ctrlWrapper(updateUserCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
   // refreshCtrl: ctrlWrapper(refreshCtrl),
+  updateNameAvatarCtrl,
 };
