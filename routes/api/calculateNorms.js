@@ -41,7 +41,7 @@ const calculateNorms = async (req, res) => {
   } else if (sex === "female") {
     bmr = (10 * desiredWeight + 6.25 * height - 5 * age - 161) * levelActivity;
   } else {
-    throw HttpError(400, "Недопустима стать");
+    throw HttpError(400, "Invalid data");
   }
   const normsData = new UserData({
     height,
