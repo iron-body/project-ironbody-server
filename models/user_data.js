@@ -75,6 +75,11 @@ const dataUsersSchema = new Schema(
       enum: levelActivityList,
       required: true,
     },
+    owner: {
+      type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
+      ref: "user", // ? ref - це назва колекції з якої це id
+      requered: true,
+    },
   },
   { versionKey: false, timestamps: true },
 );
@@ -113,6 +118,11 @@ const userDataSchema = Joi.object({
   levelActivity: Joi.number()
     .valid(...levelActivityList)
     .required(),
+  owner: {
+      type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
+      ref: "user", // ? ref - це назва колекції з якої це id
+      requered: true,
+    },
 });
 const calculateSchema = Joi.object({
   height: Joi.number().min(150).required(),

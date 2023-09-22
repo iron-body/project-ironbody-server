@@ -12,7 +12,7 @@ const calculateNormsRouter = require("./routes/api/calculateNorms");
 const productsRouter = require("./routes/api/productsRoute");
 const productCategoriesRoute = require("./routes/api/productCategoriesRoute");
 const exercisesRouter = require("./routes/api/exercises");
-
+const userDataRouter = require("./routes/api/userData");
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
@@ -23,7 +23,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use("/api/auth", authRouter);
+app.use("/api/userData", userDataRouter);
 app.use("/api/users", authRouter);
+
+
 // app.use('/api/contacts', contactsRouter);
 app.use("/api/calculateNorms", calculateNormsRouter);
 
