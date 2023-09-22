@@ -14,21 +14,29 @@
  
   "consumes": ["application/json", "multipart/form-data"],
   "produces": ["application/json", "multipart/form-data"],
-  "servers": [{ "url": "http://localhost:3000" }],
+  "servers": [{ "url": "http://localhost:3000/api" }],
   "tags": [
     {
       "name": "Auth",
       "description": "Authorization endpoints"
     },
     {
-      "name": "Project",
-      "description": "Project endpoints"
+      "name": "User",
+      "description": "User endpoints"
+    },
+    {
+      "name": "Products",
+      "description": "Products endpoints"
+    },
+    {
+      "name": "Categories",
+      "description": "Products endpoints"
     }
 
   ],
   
   "paths": {
-    "/api/auth/register": {
+    "/auth/register": {
       "post": {
         "tags": ["Auth"],
         "summary": "User registration",
@@ -69,8 +77,7 @@
       
     },
 
-
-    "/api/auth/login": {
+    "/auth/login": {
       "post": {
         "tags": ["Auth"],
         "summary": "User authentification",
@@ -106,7 +113,7 @@
      
     },
    
-    "/api/auth/current": {
+    "/auth/current": {
       "get": {
         "tags": ["Auth"],
         "summary": "User's information",
@@ -130,7 +137,7 @@
         }
       }
     },
-     "/api/auth/refresh": {
+     "/auth/refresh": {
       "post": {
         "tags": ["Auth"],
         "summary": "Update user's name or & user's avatar",
@@ -177,7 +184,7 @@
       }
       
     },
-    "/api/auth/logout": {
+    "/auth/logout": {
       
       "post": {
         "tags": ["Auth"],
@@ -198,9 +205,9 @@
       }
     },
 
-    "/api/calculateNorms/calculate":{
+    "/calculateNorms/calculate":{
       "post":{
-        "tags": ["Project"],
+        "tags": ["User"],
         "summary": "User's data",
         "security": [{ "Bearer": [] }],
         "parameters": [],
@@ -211,7 +218,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserDataRequest"
+                "$ref": "#/components/schemas/UserAddDataRequest"
               }
             }
           }
@@ -222,7 +229,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDataResponse"
+                  "$ref": "#/components/schemas/UserAddDataResponse"
                 }
               }
             }
@@ -235,9 +242,37 @@
         }
       }
     },
-    "/api/categories": {
+      "/userData": {
       "get": {
-        "tags": ["Project"],
+        "tags": ["User"],
+        "summary": "User info",
+        "security": [{ "Bearer": [] }],
+        
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDataResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "'Unauthorized'",
+            "content": {}
+          }
+        }
+      }
+    },
+
+
+
+
+    "/categories": {
+      "get": {
+        "tags": ["Categories"],
         "summary": "AllCategories list",
         "security": [{ "Bearer": [] }],
         
@@ -259,9 +294,9 @@
         }
       }
     },
-    "/api/products": {
+    "/products": {
       "get": {
-        "tags": ["Project"],
+        "tags": ["Products"],
         "summary": "Products list",
         "security": [{ "Bearer": [] }],
         
@@ -284,11 +319,11 @@
       }
     },
  
-  "/api/products?category=query&recommended=all": {
+  "/products?category=query&recommended=all": {
       "get": {
         "summary": "Get list of products filtered by categories",
         "security": [{ "Bearer": [] }],
-        "tags": ["Project"],
+        "tags": ["Products"],
         "parameters": [
           {
             "name": "category",
@@ -333,11 +368,11 @@
       
     
   },
-    "/api/products?title=query&recommended=all": {
+    "/products?title=query&recommended=all": {
       "get": {
         "summary": "Get list of products filtered  by title",
         "security": [{ "Bearer": [] }],
-        "tags": ["Project"],
+        "tags": ["Products"],
         "parameters": [
           {
             "name": "title",
@@ -382,10 +417,10 @@
       
     
   },
-  "/api/products?bloodtype=1&recommended=true&category=query": {
+  "/products?bloodtype=1&recommended=true&category=query": {
       "get": {
         "summary": "Get list of all products with prohibited blood type",
-        "tags": ["Project"],
+        "tags": ["Products"],
         "parameters": [
           {
             "name": "bloodtype",
@@ -588,7 +623,7 @@
           "avatarUrl": "https://bipbap.ru/wp-content/uploads/2022/11/1652235714_41-kartinkin-net-p-prikolnie-kartinki-dlya-stima-44.jpg"
          }
       },
- "UserDataRequest": {
+ "UserAddDataRequest": {
         "type": "object",
         "required": ["height",
     "currentWeight",
@@ -637,7 +672,7 @@
           }
         }
       },
-      "UserDataResponse": {
+      "UserAddDataResponse": {
         
           "type": "object",
           "properties": {
@@ -655,6 +690,60 @@
           { "height": 180, "currentWeight": 100, "desiredWeight": 90,
            "birthday": "23/12/1989", "blood": 1, "sex": "male", "levelActivity": 2 }
       },
+      "UserDataResponse":{
+       
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "number",
+              "description": "data id",
+              "example": "32143232436545474"
+            },
+             "height": {
+              "type": "integer",
+              "description": "user's height"
+              
+            },
+             "currentWeight": {
+              "type": "integer",
+              "description": "user's currentWeight"
+              
+            },
+            "desireWeight": {
+              "type": "integer",
+              "description": "user's desireWeight"
+            },
+            " birthday": {
+            "type": "string",
+            "description": "User's birthday",
+            "format": "data"
+          
+          },
+          "blood": {
+            "type": "integer",
+            "description": "User's blood group"
+         
+          },
+          "sex": {
+            "type": "string",
+            "description": "User's sex"
+          },
+          "levelActivity": {
+            "type": "number",
+            "description": "User's levelActivity",
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "owner": {
+              "type": "object",
+              "description": "ownerData"
+           
+            }
+          }
+        }
+      },
+
       "AllCategoriesResponse":{
         "type": "array",
         "items": {
