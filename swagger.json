@@ -417,6 +417,55 @@
       
     
   },
+   "/products?category=query&title=query&recommended=all": {
+      "get": {
+        "summary": "Get list of products filtered  by title",
+        "security": [{ "Bearer": [] }],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Filter by title",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=all",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["all"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredByTilteProductsResponse"
+                }
+             
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+      
+    
+  },
   "/products?bloodtype=1&recommended=true&category=query": {
       "get": {
         "summary": "Get list of all products with prohibited blood type",
@@ -688,7 +737,7 @@
         },
         "example": 
           { "height": 180, "currentWeight": 100, "desiredWeight": 90,
-           "birthday": "23/12/1989", "blood": 1, "sex": "male", "levelActivity": 2 }
+           "birthday": "23-12-1989", "blood": 1, "sex": "male", "levelActivity": 2 }
       },
       "UserDataResponse":{
        
