@@ -14,7 +14,7 @@
  
   "consumes": ["application/json", "multipart/form-data"],
   "produces": ["application/json", "multipart/form-data"],
-  "servers": [{ "url": "http://localhost:3000/api" }],
+  "servers": [{ "url": "https://iron-body-project-backend.onrender.com/api" }],
   "tags": [
     {
       "name": "Auth",
