@@ -11,6 +11,6 @@ userDataProductsRouter.get('/allUsers', getAllusers);
 
 userDataProductsRouter.get('/', userDataProductsList);
 
-userDataProductsRouter.get('/:productId', userDataProductsAdd);
+userDataProductsRouter.post('/:productId', userDataProductsAdd);
 
 module.exports = userDataProductsRouter;

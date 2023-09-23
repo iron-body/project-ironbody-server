@@ -73,10 +73,11 @@ const dataUsersSchema = new Schema(
       required: true,
     },
     diary: [
+    formatDate(new Date()): 
       {
         date: { type: String, required: [true, 'Date is required! This is diary!'] },
-        productsDairy: [{}],
-        excersizeDairy: [{}],
+        productsDairy: [],
+        excersizeDairy: [],
       },
     ],
   },
