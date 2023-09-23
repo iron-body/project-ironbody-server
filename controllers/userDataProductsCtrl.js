@@ -1,5 +1,6 @@
 const { UserData } = require('../models/user_data');
 const { User } = require('../models/user');
+const HttpError = require('../helpers/HttpError');
 
 const getAllusers = async (req, res) => {
   const result = await User.find();
@@ -26,28 +27,54 @@ const userDataProductsList = async (req, res) => {
 };
 
 const userDataProductsAdd = async (req, res) => {
-  const { body: newProductItem } = req;
+  const { date, productItem } = req.body;
   const { productId: userId } = req.params;
-  //   const resultItem = await UserData.updateOne(
-  //     { 'diary.date': { $eq: newProductItem.date } },
-  //     { _id: productId, ...newProductItem },
-  //     { upsert: true }
-  //   );
-  // const userToCheckBloodType = await UserData.find({});
-  console.log(newProductItem);
-  console.log('productId', userId);
-  // const resultItem = await UserData.find({ _id: productId });
-  const resultItem = await UserData.findOneAndUpdate(
-    { _id: '650d574db7e48aed743ff56f' },
 
-    { 'diary.date': '22/09/2023', $push: { 'diary.productsDairy': { ...newProductItem } } },
+  if (!productItem) {
+    HttpError(400).json({ message: 'Something wrong with product Object!' });
+  }
+
+  if (!date) {
+    HttpError(400).json({ message: 'You need to send a date!' });
+  }
+
+  if (!userId) {
+    HttpError(400).json({ message: 'You need to send a userId!' });
+  }
+
+  const resultItem = await UserData.findOneAndUpdate(
+    { owner: userId },
+    {
+      'diary.date': date,
+      $push: { 'diary.productsDiary': { ...productItem } },
+    },
     { new: true }
   );
-  // console.log('resultItem.diary', resultItem.diary);
-  //
+
   res.json(resultItem);
 };
 
-module.exports = { userDataProductsList, userDataProductsAdd, getAllusers };
+const userDataProductRemove = async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.body;
 
-// test id - 650d574db7e48aed743ff56f
+  const userData = await UserData.findOneAndUpdate(
+    { owner: userId },
+    { $pull: { 'diary.productsDiary': { _id: productId } } },
+    { new: true }
+  );
+
+  if (!userData.owner) {
+    HttpError(404, 'Not found');
+  }
+
+  console.log(userData);
+  console.log(productId);
+  console.log(userId);
+  res.json({ userData });
+};
+
+module.exports = { userDataProductsList, userDataProductsAdd, getAllusers, userDataProductRemove };
+
+// test product id - 650d574db7e48aed743ff56f
+// test user id - 650c10739f87cb37cd74e5f5

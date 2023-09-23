@@ -18,6 +18,11 @@ const formatDate = (value, helpers) => {
 
 const dataUsersSchema = new Schema(
   {
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
     // avatarUrl: {
     //   type: String,
     //   required: true,
@@ -73,11 +78,10 @@ const dataUsersSchema = new Schema(
       required: true,
     },
     diary: [
-    formatDate(new Date()): 
       {
         date: { type: String, required: [true, 'Date is required! This is diary!'] },
-        productsDairy: [],
-        excersizeDairy: [],
+        productsDiary: [],
+        excersizeDiary: [],
       },
     ],
   },
