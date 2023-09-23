@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose');
 const { handleMongooseError, HttpError } = require('../helpers');
 const Joi = require('joi');
 const { format } = require('date-fns');
+const moment = require('moment');
 // const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ['male', 'female'];
@@ -18,11 +19,6 @@ const formatDate = (value, helpers) => {
 
 const dataUsersSchema = new Schema(
   {
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: 'user',
-      required: true,
-    },
     // avatarUrl: {
     //   type: String,
     //   required: true,
@@ -47,7 +43,9 @@ const dataUsersSchema = new Schema(
       required: true,
       validate: {
         validator: function (value) {
-          const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
+          const valueDate = moment(value).utc();
+          const currentDate = new Date();
+          const age = (currentDate - valueDate) / (1000 * 60 * 60 * 24 * 365);
           return age >= 18;
         },
         message: 'You must be at least 18 years old.',
@@ -76,6 +74,11 @@ const dataUsersSchema = new Schema(
       type: Number,
       enum: levelActivityList,
       required: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
+      ref: 'user', // ? ref - це назва колекції з якої це id
+      requered: true,
     },
     diary: [
       {
@@ -122,6 +125,11 @@ const userDataSchema = Joi.object({
   levelActivity: Joi.number()
     .valid(...levelActivityList)
     .required(),
+  owner: {
+    type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
+    ref: 'user', // ? ref - це назва колекції з якої це id
+    requered: true,
+  },
 });
 const calculateSchema = Joi.object({
   height: Joi.number().min(150).required(),

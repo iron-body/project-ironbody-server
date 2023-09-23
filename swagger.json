@@ -14,21 +14,33 @@
  
   "consumes": ["application/json", "multipart/form-data"],
   "produces": ["application/json", "multipart/form-data"],
-  "servers": [{ "url": "http://localhost:3000" }],
+  "servers": [{ "url": "https://iron-body-project-backend.onrender.com/api" }],
   "tags": [
     {
       "name": "Auth",
       "description": "Authorization endpoints"
     },
     {
-      "name": "Project",
-      "description": "Project endpoints"
+      "name": "User",
+      "description": "User endpoints"
+    },
+    {
+      "name": "Products",
+      "description": "Products endpoints"
+    },
+    {
+      "name": "Categories",
+      "description": "Products endpoints"
+    },
+    {
+      "name": "Exercises",
+      "description": "User's exercises"
     }
 
   ],
   
   "paths": {
-    "/api/auth/register": {
+    "/auth/register": {
       "post": {
         "tags": ["Auth"],
         "summary": "User registration",
@@ -69,8 +81,7 @@
       
     },
 
-
-    "/api/auth/login": {
+    "/auth/login": {
       "post": {
         "tags": ["Auth"],
         "summary": "User authentification",
@@ -106,7 +117,7 @@
      
     },
    
-    "/api/auth/current": {
+    "/auth/current": {
       "get": {
         "tags": ["Auth"],
         "summary": "User's information",
@@ -130,7 +141,7 @@
         }
       }
     },
-     "/api/auth/refresh": {
+     "/auth/refresh": {
       "post": {
         "tags": ["Auth"],
         "summary": "Update user's name or & user's avatar",
@@ -177,7 +188,7 @@
       }
       
     },
-    "/api/auth/logout": {
+    "/auth/logout": {
       
       "post": {
         "tags": ["Auth"],
@@ -198,9 +209,9 @@
       }
     },
 
-    "/api/calculateNorms/calculate":{
+    "/calculateNorms/calculate":{
       "post":{
-        "tags": ["Project"],
+        "tags": ["User"],
         "summary": "User's data",
         "security": [{ "Bearer": [] }],
         "parameters": [],
@@ -211,7 +222,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserDataRequest"
+                "$ref": "#/components/schemas/UserAddDataRequest"
               }
             }
           }
@@ -222,7 +233,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDataResponse"
+                  "$ref": "#/components/schemas/UserAddDataResponse"
                 }
               }
             }
@@ -235,9 +246,37 @@
         }
       }
     },
-    "/api/categories": {
+      "/userData": {
       "get": {
-        "tags": ["Project"],
+        "tags": ["User"],
+        "summary": "User info",
+        "security": [{ "Bearer": [] }],
+        
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDataResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "'Unauthorized'",
+            "content": {}
+          }
+        }
+      }
+    },
+
+
+
+
+    "/categories": {
+      "get": {
+        "tags": ["Categories"],
         "summary": "AllCategories list",
         "security": [{ "Bearer": [] }],
         
@@ -259,9 +298,9 @@
         }
       }
     },
-    "/api/products": {
+    "/products": {
       "get": {
-        "tags": ["Project"],
+        "tags": ["Products"],
         "summary": "Products list",
         "security": [{ "Bearer": [] }],
         
@@ -284,11 +323,11 @@
       }
     },
  
-  "/api/products?category=query&recommended=all": {
+  "/products?category=query&recommended=all": {
       "get": {
         "summary": "Get list of products filtered by categories",
         "security": [{ "Bearer": [] }],
-        "tags": ["Project"],
+        "tags": ["Products"],
         "parameters": [
           {
             "name": "category",
@@ -333,11 +372,11 @@
       
     
   },
-    "/api/products?title=query&recommended=all": {
+    "/products?title=query&recommended=all": {
       "get": {
         "summary": "Get list of products filtered  by title",
         "security": [{ "Bearer": [] }],
-        "tags": ["Project"],
+        "tags": ["Products"],
         "parameters": [
           {
             "name": "title",
@@ -382,10 +421,66 @@
       
     
   },
-  "/api/products?bloodtype=1&recommended=true&category=query": {
+   "/products?category=query&title=query&recommended=all": {
+      "get": {
+        "summary": "Get list of products filtered  by title(partially) and by category (fixed)",
+        "security": [{ "Bearer": [] }],
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "Filter by title (partially)",
+           
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "description": "Filter by category (fixed)",
+           
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=all",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["all"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredByTilteByCategoryProductsResponse"
+                }
+             
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+  },
+  "/products?bloodtype=1&recommended=true": {
       "get": {
         "summary": "Get list of all products with prohibited blood type",
-        "tags": ["Project"],
+        "tags": ["Products"],
         "parameters": [
           {
             "name": "bloodtype",
@@ -401,6 +496,325 @@
             "name": "recommended",
             "in": "query",
             "description": "Required: recommended=true for alowed products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/BloodProhibitedProductsResponse"
+                }
+                
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/products?bloodtype=1&recommended=true&title=query": {
+      "get": {
+        "summary": "Get list of all products with prohibited blood type, added filter by title",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=true for prohibited products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "title filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/FilteredByTitleBloodProhibitedProductsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/products?bloodtype=1&recommended=true&category=query": {
+      "get": {
+        "summary": "Get list of all products with prohibited blood type, filtered by category",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=true for prohibited products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "category filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/FilteredByCategoryBloodProhibitedProductsResponse"
+                }
+                
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/products?bloodtype=1&recommended=true&category=query&title=query": {
+      "get": {
+        "summary": "Get list of all products with prohibited blood type, filtered by category & title",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=true for prohibited products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "category filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "title filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/FilteredByCategoryByTitleBloodProhibitedProductsResponse"
+                }
+                
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/products?bloodtype=1&recommended=false": {
+      "get": {
+        "summary": "Get list of all products with alowed blood type",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=false for alowed products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/BloodAlowedProductsResponse"
+                }
+                
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+ "/products?bloodtype=1&recommended=false&title=query": {
+      "get": {
+        "summary": "Get list of all products with alowed blood type, added filter by title",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=false for alowed products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "title filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/FilteredByTitleBloodAlowedProductsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/products?bloodtype=1&recommended=false&category=query": {
+      "get": {
+        "summary": "Get list of all products with alowed blood type, filtered by category",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=false for alowed products",
             "required": true,
             "schema": {
               "type": "boolean"
@@ -436,11 +850,112 @@
           }
         }
       }
+    },
+    "/products?bloodtype=1&recommended=false&category=query&title=query": {
+      "get": {
+        "summary": "Get list of all products with alowed blood type, filtered by category & title",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "bloodtype",
+            "in": "query",
+            "description": "Bloog type number",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4] 
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "description": "Required: recommended=false for alowed products",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "category filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "title filter",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success operation",
+            "content": {
+              "application/json": {
+                 "schema": {
+                  "$ref": "#/components/schemas/FilteredByCategoryByTitleBloodAlowedProductsResponse"
+                }
+                
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+     "/exercises?query=01/09/2023": {
+      "get": {
+        "tags": ["Exercises"],
+        "summary": "Exercises list",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "exercise's date",
+            "required": true,
+            "schema": {
+              "type": "string"
+           
+            }
+          }
+         
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllExercisesByDateResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "'Unauthorized'",
+            "content": {}
+          }
+        }
+      }
     }
-  
-
+    
   },
-
+  
+  
+  
   "components": {
 
     "schemas": {
@@ -588,7 +1103,7 @@
           "avatarUrl": "https://bipbap.ru/wp-content/uploads/2022/11/1652235714_41-kartinkin-net-p-prikolnie-kartinki-dlya-stima-44.jpg"
          }
       },
- "UserDataRequest": {
+ "UserAddDataRequest": {
         "type": "object",
         "required": ["height",
     "currentWeight",
@@ -637,7 +1152,7 @@
           }
         }
       },
-      "UserDataResponse": {
+      "UserAddDataResponse": {
         
           "type": "object",
           "properties": {
@@ -653,8 +1168,62 @@
         },
         "example": 
           { "height": 180, "currentWeight": 100, "desiredWeight": 90,
-           "birthday": "23/12/1989", "blood": 1, "sex": "male", "levelActivity": 2 }
+           "birthday": "23-12-1989", "blood": 1, "sex": "male", "levelActivity": 2 }
       },
+      "UserDataResponse":{
+       
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "number",
+              "description": "data id",
+              "example": "32143232436545474"
+            },
+             "height": {
+              "type": "integer",
+              "description": "user's height"
+              
+            },
+             "currentWeight": {
+              "type": "integer",
+              "description": "user's currentWeight"
+              
+            },
+            "desireWeight": {
+              "type": "integer",
+              "description": "user's desireWeight"
+            },
+            " birthday": {
+            "type": "string",
+            "description": "User's birthday",
+            "format": "data"
+          
+          },
+          "blood": {
+            "type": "integer",
+            "description": "User's blood group"
+         
+          },
+          "sex": {
+            "type": "string",
+            "description": "User's sex"
+          },
+          "levelActivity": {
+            "type": "number",
+            "description": "User's levelActivity",
+            "enum": [1, 2, 3, 4, 5]
+          },
+          "owner": {
+              "type": "object",
+              "description": "ownerData"
+           
+            }
+          }
+        }
+      },
+
       "AllCategoriesResponse":{
         "type": "array",
         "items": {
@@ -783,6 +1352,39 @@
               "type": "string",
               "description": "title of product"
       
+            } 
+          }
+        }
+      },
+      "FilteredByTilteByCategoryProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+      
             }
             
           }
@@ -790,7 +1392,44 @@
         
         
       },
-      "FilteredByCategoryBloodAlowedProductsResponse":{
+      "BloodProhibitedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+      
+            }
+            
+          }
+        }   
+      },
+      "FilteredByTitleBloodProhibitedProductsResponse":{
         "type": "array",
         "items": {
           "type": "object",
@@ -831,6 +1470,234 @@
         
         
       },
+      "FilteredByCategoryBloodProhibitedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+
+            }
+          }
+        }
+      },
+         "FilteredByCategoryByTitleBloodProhibitedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+
+            }
+          }
+        }
+      },
+      "BloodAlowedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+
+            }
+          }
+        }
+      },
+         "FilteredByTitleBloodAlowedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+      
+            }
+            
+          }
+        }
+        
+        
+      },
+      "FilteredByCategoryBloodAlowedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+
+            }
+          }
+        }
+      },
+         "FilteredByCategoryByTitleBloodAlowedProductsResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "groupBloodNotAllowed": {
+              "type": "object",
+              "description": "object of alowed types"
+          
+        },
+            "userId": {
+              "type": "number",
+              "description": "products id",
+              "example": "32143232436545474"
+            },
+             "weight": {
+              "type": "number",
+              "description": "weight of product was eaten by user"
+              
+            },
+             "calories": {
+              "type": "number",
+              "description": "categories amount in product"
+            
+            },
+             "category": {
+              "type": "string",
+              "description": "name of category"
+            },
+            "title": {
+              "type": "string",
+              "description": "title of product"
+
+            }
+          }
+        }
+      },
+
+      "AllExercisesByDateResponse":{},
 
       "Request": {
         "type": "object",
@@ -869,16 +1736,11 @@
               "description": "User's id",
               "example": "32143232436545474"
             }
-
-            
           }
         },
         "example": 
           { "name": "VictorD", "email": "1@gmail.com", "userId": "1" }
       }
-      
-
-      
     },
     
     "securitySchemes": {
