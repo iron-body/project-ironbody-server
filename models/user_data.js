@@ -1,19 +1,21 @@
-const { Schema, model } = require('mongoose');
-const { handleMongooseError, HttpError } = require('../helpers');
-const Joi = require('joi');
-const { format } = require('date-fns');
-const moment = require('moment');
+const { Schema, model } = require("mongoose");
+const { handleMongooseError, HttpError } = require("../helpers");
+const Joi = require("joi");
+const { format } = require("date-fns");
+const moment = require("moment");
 // const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
-const sexList = ['male', 'female'];
+const sexList = ["male", "female"];
 const levelActivityList = [1, 2, 3, 4, 5];
 
 const formatDate = (value, helpers) => {
   if (!value || !(value instanceof Date)) {
-    throw HttpError(400, 'invalid date');
+    throw HttpError(400, "invalid date");
   }
 
-  const formattedDate = `${value.getDate()}/${value.getMonth() + 1}/${value.getFullYear()}`;
+  const formattedDate = `${value.getDate()}/${
+    value.getMonth() + 1
+  }/${value.getFullYear()}`;
   return formattedDate;
 };
 
@@ -48,7 +50,7 @@ const dataUsersSchema = new Schema(
           const age = (currentDate - valueDate) / (1000 * 60 * 60 * 24 * 365);
           return age >= 18;
         },
-        message: 'You must be at least 18 years old.',
+        message: "You must be at least 18 years old.",
       },
       // validate: {
       //   validator: function (value) {
@@ -77,7 +79,7 @@ const dataUsersSchema = new Schema(
     },
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
-      ref: 'user', // ? ref - це назва колекції з якої це id
+      ref: "user", // ? ref - це назва колекції з якої це id
       requered: true,
     },
     // diary: [
@@ -91,8 +93,8 @@ const dataUsersSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-dataUsersSchema.post('save', handleMongooseError);
-const UserData = model('userData', dataUsersSchema);
+dataUsersSchema.post("save", handleMongooseError);
+const UserData = model("userData", dataUsersSchema);
 
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
@@ -127,7 +129,7 @@ const userDataSchema = Joi.object({
     .required(),
   owner: {
     type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
-    ref: 'user', // ? ref - це назва колекції з якої це id
+    ref: "user", // ? ref - це назва колекції з якої це id
     requered: true,
   },
 });
@@ -140,13 +142,26 @@ const calculateSchema = Joi.object({
     .iso()
     .required(),
   blood: Joi.number().valid(1, 2, 3, 4).required(),
-  sex: Joi.string().valid('male', 'female').required(),
+  sex: Joi.string().valid("male", "female").required(),
   levelActivity: Joi.number().valid(1, 2, 3, 4, 5).required(),
+});
+// оновлення даних користувача
+const updateParamsUserSchema = Joi.object({
+  height: Joi.number().min(150),
+  currentWeight: Joi.number().min(35),
+  desiredWeight: Joi.number().min(35),
+  birthday: Joi.date()
+    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
+    .iso(),
+  blood: Joi.number().valid(1, 2, 3, 4),
+  sex: Joi.string().valid("male", "female"),
+  levelActivity: Joi.number().valid(1, 2, 3, 4, 5),
 });
 
 const schemas = {
   userDataSchema,
   calculateSchema,
+  updateParamsUserSchema,
 };
 
 module.exports = { UserData, schemas };
