@@ -1,12 +1,12 @@
-const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../helpers");
-const Joi = require("joi");
+const { Schema, model } = require('mongoose');
+const { handleMongooseError } = require('../helpers');
+const Joi = require('joi');
 
-const productSchema = new Schema(
+const userProductsSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: 'user',
       required: true,
     },
     amount: {
@@ -17,7 +17,7 @@ const productSchema = new Schema(
         validator: function (value) {
           return value >= 1;
         },
-        message: "Amount must be greater than or equal to 1",
+        message: 'Amount must be greater than or equal to 1',
       },
     },
     calories: {
@@ -28,7 +28,7 @@ const productSchema = new Schema(
         validator: function (value) {
           return value >= 1;
         },
-        message: "Calories must be greater than or equal to 1",
+        message: 'Calories must be greater than or equal to 1',
       },
     },
     date: {
@@ -45,16 +45,16 @@ const productSchema = new Schema(
     },
   },
   {
-    collection: "product",
+    collection: 'userProduct',
     versionKey: false,
-    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
   }
 );
 
-const Product = model("product", productSchema);
-productSchema.post("save", handleMongooseError);
+const UserProduct = model('userProduct', userProductsSchema);
+userProductsSchema.post('save', handleMongooseError);
 
-const addProductSchema = Joi.object({
+const addUserProductsSchema = Joi.object({
   owner: Joi.object().required(),
   amount: Joi.number().min(1).required(),
   calories: Joi.number().min(1).required(),
@@ -63,12 +63,12 @@ const addProductSchema = Joi.object({
   name: Joi.string().required(),
 });
 
-const updateProductSchema = Joi.object({
+const updateUserProductsSchema = Joi.object({
   done: Joi.boolean().required(),
 });
 
-const schemas = {
-  addProductSchema,
-  updateProductSchema,
+const userProductsSchemas = {
+  addUserProductsSchema,
+  updateUserProductsSchema,
 };
-module.exports = { Product, schemas };
+module.exports = { UserProduct, userProductsSchemas };
