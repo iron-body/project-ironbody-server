@@ -1,12 +1,12 @@
-const { Schema, model } = require('mongoose');
-const { handleMongooseError } = require('../helpers');
-const Joi = require('joi');
+const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
+const Joi = require("joi");
 
 const userProductsSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "user",
       required: true,
     },
     amount: {
@@ -17,7 +17,7 @@ const userProductsSchema = new Schema(
         validator: function (value) {
           return value >= 1;
         },
-        message: 'Amount must be greater than or equal to 1',
+        message: "Amount must be greater than or equal to 1",
       },
     },
     calories: {
@@ -28,7 +28,7 @@ const userProductsSchema = new Schema(
         validator: function (value) {
           return value >= 1;
         },
-        message: 'Calories must be greater than or equal to 1',
+        message: "Calories must be greater than or equal to 1",
       },
     },
     date: {
@@ -45,16 +45,17 @@ const userProductsSchema = new Schema(
     },
   },
   {
-    collection: 'userProduct',
+    collection: "userProduct",
     versionKey: false,
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
   }
 );
 
-const UserProduct = model('userProduct', userProductsSchema);
-userProductsSchema.post('save', handleMongooseError);
+const UserProduct = model("userProduct", userProductsSchema);
+userProductsSchema.post("save", handleMongooseError);
 
-const addUserProductsSchema = Joi.object({
+const addProductSchema = Joi.object({
+  owner: Joi.object().required(),
   amount: Joi.number().min(1).required(),
   calories: Joi.number().min(1).required(),
   date: Joi.date().required(),

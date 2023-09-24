@@ -1,7 +1,6 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Exercise } = require("../models/exercise");
 const moment = require("moment");
-
 const createExercise = async (req, res) => {
   const newExercise = new Exercise({
     ...req.body,
