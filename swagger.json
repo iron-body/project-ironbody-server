@@ -1115,7 +1115,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AllDiaruproductsResponse"
+                  "$ref": "#/components/schemas/AllDiaryProductsResponse"
                 }
               }
             }
