@@ -45,8 +45,9 @@ const userDataProductsAdd = async (req, res) => {
   const resultItem = await UserData.findOneAndUpdate(
     { owner: userId },
     {
-      diary: { date: date },
-      'diary.date': { $push: { productsDiary: { ...productItem } } },
+      $push: { diary: { date } },
+      // $push: { 'diary.date.productsDiary': { ...productItem } },
+      // 'diary.date': { $push: { productsDiary: { ...productItem } } },
       // diary: { date: date },
     },
     { new: true }
