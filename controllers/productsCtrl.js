@@ -16,7 +16,7 @@ const productsFilter = async (req, res) => {
   if (title && !category && !bloodtype && recommended === 'all') {
     result = await Product.find(
       {
-        title: { $regex: `${title}` },
+        title: { $regex: `${title}`, $options: 'i' },
       },
       {},
       { skip, limit }
@@ -26,7 +26,7 @@ const productsFilter = async (req, res) => {
   } else if (title && category && !bloodtype && recommended === 'all') {
     result = await Product.find(
       {
-        title: { $regex: `${title}` },
+        title: { $regex: `${title}`, $options: 'i' },
         category: category,
       },
       {},
@@ -109,7 +109,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '1') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.1': Boolean(recommended),
         },
         {},
@@ -119,7 +119,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '2') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.2': Boolean(recommended),
         },
         {},
@@ -129,7 +129,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '3') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.3': Boolean(recommended),
         },
         {},
@@ -139,7 +139,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '4') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.4': Boolean(recommended),
         },
         {},
@@ -152,7 +152,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '1') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.1': Boolean(!recommended),
         },
         {},
@@ -162,7 +162,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '2') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.2': Boolean(!recommended),
         },
         {},
@@ -172,7 +172,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '3') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.3': { $eq: Boolean(!recommended) },
         },
         {},
@@ -182,7 +182,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '4') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           'groupBloodNotAllowed.4': Boolean(!recommended),
         },
         {},
@@ -281,7 +281,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '1') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.1': Boolean(recommended),
         },
@@ -292,7 +292,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '2') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.2': Boolean(recommended),
         },
@@ -303,7 +303,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '3') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.3': Boolean(recommended),
         },
@@ -314,7 +314,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '4') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.4': Boolean(recommended),
         },
@@ -328,7 +328,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '1') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.1': Boolean(!recommended),
         },
@@ -339,7 +339,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '2') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.2': Boolean(!recommended),
         },
@@ -350,7 +350,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '3') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.3': Boolean(!recommended),
         },
@@ -361,7 +361,7 @@ const productsFilter = async (req, res) => {
     if (bloodtype === '4') {
       result = await Product.find(
         {
-          title: { $regex: `${title}` },
+          title: { $regex: `${title}`, $options: 'i' },
           category: category,
           'groupBloodNotAllowed.4': Boolean(!recommended),
         },
@@ -372,7 +372,7 @@ const productsFilter = async (req, res) => {
   }
   // А тут віддається все що є в базі - дефолтний запит
   else {
-    console.log('all');
+    // console.log('all');
     result = await Product.find({}, {}, { skip, limit });
   }
 
