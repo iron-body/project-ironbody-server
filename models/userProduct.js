@@ -9,11 +9,17 @@ const userProductsSchema = new Schema(
       ref: 'user',
       required: true,
     },
-    title: {
-      type: String,
+    amount: {
+      type: Number,
       required: true,
+      default: 1,
+      validate: {
+        validator: function (value) {
+          return value >= 1;
+        },
+        message: 'Amount must be greater than or equal to 1',
+      },
     },
-    category: { type: String, required: [true, 'You forget to add category'] },
     calories: {
       type: Number,
       required: true,
@@ -25,20 +31,17 @@ const userProductsSchema = new Schema(
         message: 'Calories must be greater than or equal to 1',
       },
     },
-    amount: {
-      type: Number,
-      required: [true, 'Enter amount of products in gramm'],
-      min: 1,
-      default: 100,
-    },
     date: {
       type: Date,
       required: true,
-      default: Date.now,
     },
-    recommended: {
+    done: {
       type: Boolean,
-      default: false,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
     },
   },
   {
@@ -48,17 +51,15 @@ const userProductsSchema = new Schema(
   }
 );
 
-userProductsSchema.post('save', handleMongooseError);
 const UserProduct = model('userProduct', userProductsSchema);
+userProductsSchema.post('save', handleMongooseError);
 
 const addUserProductsSchema = Joi.object({
-  title: Joi.string().required(),
-  category: Joi.string().required(),
-  calories: Joi.number().min(1).required(),
   amount: Joi.number().min(1).required(),
+  calories: Joi.number().min(1).required(),
   date: Joi.date().required(),
-  _id: Joi.allow(),
-  recommended: Joi.boolean(),
+  done: Joi.boolean().required(),
+  name: Joi.string().required(),
 });
 
 const updateUserProductsSchema = Joi.object({
