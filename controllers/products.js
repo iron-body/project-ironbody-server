@@ -1,6 +1,7 @@
-const { HttpError, ctrlWrapper } = require("../helpers");
-const { Product } = require("../models/product");
-const moment = require("moment");
+const { HttpError, ctrlWrapper } = require('../helpers');
+const { Product } = require('../models/userProduct');
+const moment = require('moment');
+
 const createProduct = async (req, res) => {
   const newProduct = new Product({
     ...req.body,
@@ -12,13 +13,14 @@ const createProduct = async (req, res) => {
     id: _id,
   });
 };
+
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { done = false } = req.body;
   // Check if exist
   const getProduct = await Product.findOne({
     _id: id,
-  }).select("_id");
+  }).select('_id');
   if (!getProduct) {
     throw HttpError(404, `The product with id "${id}" not found`);
   }
@@ -35,23 +37,25 @@ const updateProduct = async (req, res) => {
     ok: `The product with id "${id}" was successfully updated`,
   });
 };
+
 const getProduct = async (req, res) => {
   const { id } = req.params;
   // Check if exist
   const getProduct = await Product.findOne({
     _id: id,
-  }).select("_id");
+  }).select('_id');
   if (!getProduct) {
     throw HttpError(404, `The product with id "${id}" not found`);
   }
   res.status(200).json(getProduct);
 };
+
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
   // Check if exist
   const getProduct = await Product.findOne({
     _id: id,
-  }).select("_id");
+  }).select('_id');
   if (!getProduct) {
     throw HttpError(404, `The product with id "${id}" not found`);
   }
@@ -71,22 +75,22 @@ const getAllProducts = async (req, res) => {
   const totalItems = await Product.countDocuments({
     ...(date && {
       date: {
-        $lte: moment(date, "DD.MM.YYYY").endOf("day").toDate(),
-        $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
+        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
+        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
       },
     }),
-    ...(typeof done !== "undefined" && {
+    ...(typeof done !== 'undefined' && {
       done,
     }),
   });
   const dataList = await Product.find({
     ...(date && {
       date: {
-        $lte: moment(date, "DD.MM.YYYY").endOf("day").toDate(),
-        $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
+        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
+        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
       },
     }),
-    ...(typeof done !== "undefined" && {
+    ...(typeof done !== 'undefined' && {
       done,
     }),
   })
@@ -100,6 +104,7 @@ const getAllProducts = async (req, res) => {
     totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
   });
 };
+
 module.exports = {
   createProduct: ctrlWrapper(createProduct),
   updateProduct: ctrlWrapper(updateProduct),
