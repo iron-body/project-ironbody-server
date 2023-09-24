@@ -61,7 +61,6 @@ const Exercise = model("Exercise", exerciseSchema);
 exerciseSchema.post("save", handleMongooseError);
 
 const addExerciseSchema = Joi.object({
-  owner: Joi.object().required(),
   time: Joi.number().min(1).required(),
   calories: Joi.number().min(1).required(),
   date: Joi.date().iso().required(),

@@ -71,8 +71,8 @@ const productSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-const Product = model('product', productSchema);
 productSchema.post('save', handleMongooseError);
+const Product = model('product', productSchema);
 
 const addProductSchema = Joi.object({
   title: Joi.string().required(),

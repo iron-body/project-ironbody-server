@@ -7,10 +7,14 @@ require('dotenv').config();
 
 // const contactsRouter = require('./routes/api/contacts');
 const authRouter = require('./routes/api/auth');
+
+const userProductsRouter = require('./routes/api/userProducts');
+const userDataProductsRouter = require('./routes/api/userDataProductsRoute');
+const calculateNormsRouter = require('./routes/api/calculateNorms');
 const productsRouter = require('./routes/api/productsRoute');
 const productCategoriesRoute = require('./routes/api/productCategoriesRoute');
 const exercisesRouter = require('./routes/api/exercises');
-
+const userDataRouter = require('./routes/api/userData');
 const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
@@ -21,10 +25,15 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.use('/api/auth', authRouter);
+app.use('/api/userData', userDataRouter);
 app.use('/api/users', authRouter);
+app.use('/api/userDataProducts', userDataProductsRouter);
+
 // app.use('/api/contacts', contactsRouter);
+app.use('/api/calculateNorms', calculateNormsRouter);
 
 app.use('/api/products', productsRouter);
+app.use('/api/userproducts', userProductsRouter);
 app.use('/api/categories', productCategoriesRoute);
 app.use('/api/exercises', exercisesRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
