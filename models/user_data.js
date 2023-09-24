@@ -80,13 +80,13 @@ const dataUsersSchema = new Schema(
       ref: 'user', // ? ref - це назва колекції з якої це id
       requered: true,
     },
-    diary: [
-      // {
-      //   date: { type: String, required: [true, 'Date is required! This is diary!'] },
-      //   productsDiary: [],
-      //   excersizeDiary: [],
-      // },
-    ],
+    // diary: [
+    //   {
+    //     date: { type: String, required: [true, 'Date is required! This is diary!'] },
+    //     productsDiary: [],
+    //     excersizeDiary: [],
+    //   },
+    // ],
   },
   { versionKey: false, timestamps: true }
 );
