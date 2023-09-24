@@ -3,13 +3,9 @@ const { Product } = require('../models/productModel');
 
 const productsFilter = async (req, res) => {
   let result;
-  const { page = 1, limit = 6 } = req.query;
+
+  const { title, category, bloodtype, recommended, page = 0, limit = 0 } = req.query;
   const skip = (page - 1) * limit;
-  // const contactsArray = await Contact.find({ owner }, '-createdAt -updatedAt', {
-  //   skip,
-  //   limit,
-  // });
-  const { title, category, bloodtype, recommended } = req.query;
   // console.log('main title', title, Boolean(title));
   // console.log('main category', category, Boolean(category));
   // console.log('main bloodtype', bloodtype, Boolean(bloodtype));

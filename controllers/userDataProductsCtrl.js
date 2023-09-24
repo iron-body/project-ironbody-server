@@ -1,6 +1,6 @@
 const { UserData } = require('../models/user_data');
 const { User } = require('../models/user');
-const HttpError = require('../helpers/HttpError');
+const { HttpError, ctrlWrapper } = require('../helpers');
 
 const getAllusers = async (req, res) => {
   const result = await User.find();
@@ -45,10 +45,15 @@ const userDataProductsAdd = async (req, res) => {
   const resultItem = await UserData.findOneAndUpdate(
     { owner: userId },
     {
-      'diary.date': date,
-      $push: { 'diary.productsDiary': { ...productItem } },
+      diary: { date: date },
+      'diary.date': { $push: { productsDiary: { ...productItem } } },
+      // diary: { date: date },
     },
     { new: true }
+    // {
+    //   'diary.date': date,
+    //   $push: { 'diary.productsDiary': { ...productItem } },
+    // },
   );
 
   res.json(resultItem);
@@ -74,7 +79,12 @@ const userDataProductRemove = async (req, res) => {
   res.json({ userData });
 };
 
-module.exports = { userDataProductsList, userDataProductsAdd, getAllusers, userDataProductRemove };
+module.exports = {
+  userDataProductsList: ctrlWrapper(userDataProductsList),
+  userDataProductsAdd: ctrlWrapper(userDataProductsAdd),
+  getAllusers: ctrlWrapper(getAllusers),
+  userDataProductRemove: ctrlWrapper(userDataProductRemove),
+};
 
 // test product id - 650d574db7e48aed743ff56f
 // test user id - 650c10739f87cb37cd74e5f5

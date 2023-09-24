@@ -81,11 +81,11 @@ const dataUsersSchema = new Schema(
       requered: true,
     },
     diary: [
-      {
-        date: { type: String, required: [true, 'Date is required! This is diary!'] },
-        productsDiary: [],
-        excersizeDiary: [],
-      },
+      // {
+      //   date: { type: String, required: [true, 'Date is required! This is diary!'] },
+      //   productsDiary: [],
+      //   excersizeDiary: [],
+      // },
     ],
   },
   { versionKey: false, timestamps: true }

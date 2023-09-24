@@ -5,6 +5,7 @@ const {
   getAllusers,
   userDataProductRemove,
 } = require('../../controllers/userDataProductsCtrl');
+const auth = require('../../middlewares/auth');
 
 const userDataProductsRouter = express.Router();
 
