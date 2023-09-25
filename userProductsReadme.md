@@ -16,7 +16,7 @@
 
 # Endpoint - /api/userproducts Post-запит, в тіло запиту передаємо об'єкт продукту, з наступними полями:
 
-{ calories: number, weight: number, date: "24-09-2023", done: boolean, title: string } Дата - у
+{ calories: number, amount: number, date: "24-09-2023", done: boolean, title: string } Дата - у
 форматі ДД-ММ-РРРР. Всі інші дані - з об'єкту продукта, який приходить в масиві, з бази продуктів,
 тобто поля збігаються.
 
