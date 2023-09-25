@@ -1,7 +1,7 @@
-const { ctrlWrapper, HttpError } = require('../helpers');
-const { User } = require('../models/user');
-// const { UserData } = require("../models/user_data");
-
+const { ctrlWrapper, HttpError } = require("../helpers");
+const { User } = require("../models/user");
+const { UserData } = require("../models/user_data");
+// const { schemas } = require("../models/user_data");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
@@ -10,18 +10,15 @@ const path = require("path");
 const fs = require("fs/promises");
 // const { updateNameAvatarSchema } = require("../models/user");
 
-
 const { SECRET_KEY } = process.env;
-const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 // Функція для реєстрації нового користувача
 const registerCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-
     throw HttpError(409, "Email in use");
-
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
@@ -34,7 +31,7 @@ const registerCtrl = async (req, res) => {
   const newUserDBData = User.findOne({ email });
   const payload = { id: newUserDBData._id };
 
-  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '12h' });
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
   await User.findByIdAndUpdate(newUserDBData._id, {
     accessToken,
   });
@@ -50,15 +47,15 @@ const loginCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    throw HttpError(401, 'Email or password is not valid'); // Помилка 401 - Не авторизовано
+    throw HttpError(401, "Email or password is not valid"); // Помилка 401 - Не авторизовано
   }
   const comparePassword = await bcrypt.compare(password, user.password);
   if (!comparePassword) {
-    throw HttpError(401, 'Email or password is not valid');
+    throw HttpError(401, "Email or password is not valid");
   }
   const payload = { id: user._id };
 
-  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '12h' });
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
   await User.findByIdAndUpdate(user._id, {
     accessToken,
   });
@@ -118,7 +115,7 @@ const getCurrentCtrl = (req, res) => {
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { accessToken: null });
-  res.json({ message: 'Logout success' });
+  res.json({ message: "Logout success" });
 };
 const updateUserCtrl = async (req, res) => {
   const { _id } = req.user;
@@ -135,14 +132,14 @@ const updateUserCtrl = async (req, res) => {
       new: true,
     });
     if (!updatedUser) {
-      throw HttpError(404, 'User not found');
+      throw HttpError(404, "User not found");
     }
     res.status(200).json({
       name: updatedUser.name,
       avatarUrl: updatedUser.avatarUrl,
     });
   } else {
-    throw HttpError(400, 'No changes provided');
+    throw HttpError(400, "No changes provided");
   }
 };
 
@@ -154,7 +151,7 @@ const updateAvatarCtrl = async (req, res) => {
   await fs.rename(tempUpload, resultUpload);
   const image = await Jimp.read(resultUpload);
   await image.resize(250, 250).write(resultUpload);
-  const avatarUrl = path.join('avatars', filename);
+  const avatarUrl = path.join("avatars", filename);
   await User.findByIdAndUpdate(_id, { avatarUrl });
 
   console.log(avatarUrl);
@@ -186,10 +183,62 @@ const updateNameAvatarCtrl = async (req, res) => {
   }
 };
 
-const downloadCloudinary = async (req, res) => {
-  
-}
+// оновлення даних користувача
+const updateParamsUserCtrl = async (req, res) => {
+  console.log("Received updateParamsUser request", req.body);
+  const { _id: owner } = req.user;
+  // const { _id } = req.user;
 
+  console.log(owner);
+  const {
+    height,
+    currentWeight,
+    desiredWeight,
+    birthday,
+    blood,
+    sex,
+    levelActivity,
+  } = req.body;
+
+  const updatedData = {};
+
+  if (height) {
+    updatedData.height = height;
+  }
+  if (currentWeight) {
+    updatedData.currentWeight = currentWeight;
+  }
+  if (desiredWeight) {
+    updatedData.desiredWeight = desiredWeight;
+  }
+  if (birthday) {
+    updatedData.birthday = birthday;
+  }
+  if (blood) {
+    updatedData.blood = blood;
+  }
+  if (sex) {
+    updatedData.sex = sex;
+  }
+  if (levelActivity) {
+    updatedData.levelActivity = levelActivity;
+  }
+  console.log(owner);
+
+  const updatedUser = await UserData.findByIdAndUpdate(owner, updatedData, {
+    new: true,
+  });
+
+  if (!updatedUser) {
+    throw HttpError(404, "User not found");
+  }
+
+  console.log("Updated user:", updatedUser);
+
+  res.status(200).json(updatedUser);
+  console.log("Updated user:", updatedUser);
+};
+const downloadCloudinary = async (req, res) => {};
 
 module.exports = {
   registerCtrl: ctrlWrapper(registerCtrl),
@@ -200,5 +249,6 @@ module.exports = {
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
   // refreshCtrl: ctrlWrapper(refreshCtrl),
   updateNameAvatarCtrl,
-  downloadCloudinary: ctrlWrapper(downloadCloudinary)
+  updateParamsUserCtrl: ctrlWrapper(updateParamsUserCtrl),
+  downloadCloudinary: ctrlWrapper(downloadCloudinary),
 };
