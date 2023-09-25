@@ -1,7 +1,7 @@
 const { ctrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/user");
-// const { UserData } = require("../models/user_data");
-
+const { UserData } = require("../models/user_data");
+// const { schemas } = require("../models/user_data");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
@@ -185,7 +185,11 @@ const updateNameAvatarCtrl = async (req, res) => {
 
 // оновлення даних користувача
 const updateParamsUserCtrl = async (req, res) => {
-  const { _id } = req.user;
+  console.log("Received updateParamsUser request", req.body);
+  const { _id: owner } = req.user;
+  // const { _id } = req.user;
+
+  console.log(owner);
   const {
     height,
     currentWeight,
@@ -219,8 +223,9 @@ const updateParamsUserCtrl = async (req, res) => {
   if (levelActivity) {
     updatedData.levelActivity = levelActivity;
   }
+  console.log(owner);
 
-  const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+  const updatedUser = await UserData.findByIdAndUpdate(owner, updatedData, {
     new: true,
   });
 
@@ -228,7 +233,10 @@ const updateParamsUserCtrl = async (req, res) => {
     throw HttpError(404, "User not found");
   }
 
+  console.log("Updated user:", updatedUser);
+
   res.status(200).json(updatedUser);
+  console.log("Updated user:", updatedUser);
 };
 
 module.exports = {

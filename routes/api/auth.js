@@ -4,6 +4,7 @@ const { schemas } = require("../../models/user");
 // const { updateNameAvatarSchema } = require("../../models/user");
 const { validateBody, auth, upload } = require("../../middlewares");
 const ctrl = require("../../controllers/auth");
+const { userDataSchemas } = require("../../models/user_data");
 
 router.post(
   "/register",
@@ -16,7 +17,7 @@ router.post("/logout", auth, ctrl.logoutCtrl);
 router.patch(
   "/",
   auth,
-  validateBody(schemas.updateUserSchema),
+  validateBody(userDataSchemas.updateUserSchema),
   ctrl.updateUserCtrl
 );
 // Оновлення імені і/або аватара користувача
@@ -32,7 +33,7 @@ router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
 router.patch(
   "/updateParamsUser",
   auth,
-  validateBody(schemas.updateParamsUserSchema),
+  validateBody(userDataSchemas.updateParamsUserSchema),
   ctrl.updateParamsUserCtrl
 );
 

@@ -94,7 +94,6 @@ const dataUsersSchema = new Schema(
 );
 
 dataUsersSchema.post("save", handleMongooseError);
-const UserData = model("userData", dataUsersSchema);
 
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
@@ -158,10 +157,12 @@ const updateParamsUserSchema = Joi.object({
   levelActivity: Joi.number().valid(1, 2, 3, 4, 5),
 });
 
-const schemas = {
+const UserData = model("userData", dataUsersSchema);
+
+const userDataSchemas = {
   userDataSchema,
   calculateSchema,
   updateParamsUserSchema,
 };
 
-module.exports = { UserData, schemas };
+module.exports = { UserData, userDataSchemas };
