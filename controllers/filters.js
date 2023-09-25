@@ -15,12 +15,13 @@ const getAllFilters = async (req, res) => {
 
 const getFilters = async (req, res) => {
     const { filter } = req.query;
-    const result = await Filter.find({ filter: filter }, " -_id -filter -imgURL");
+    
+    const result = await Filter.find({ filter: filter }, "-filter");
     if (!result) {
         throw HttpError(404, `The filter with value "${filter}" not found`);
     }
-    const namesArr = result.map(el => el.name)
-        res.status(200).json(namesArr);    
+    // const namesArr = result.map(el => el.name)
+        res.status(200).json(result);    
 };
 
 
