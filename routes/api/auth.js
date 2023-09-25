@@ -37,4 +37,8 @@ router.patch(
   ctrl.updateParamsUserCtrl
 );
 
+// завантаж клоудінарі
+router.get('/cloudinary', ctrl.downloadCloudinary);
+
+
 module.exports = router;

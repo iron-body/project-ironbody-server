@@ -238,6 +238,7 @@ const updateParamsUserCtrl = async (req, res) => {
   res.status(200).json(updatedUser);
   console.log("Updated user:", updatedUser);
 };
+const downloadCloudinary = async (req, res) => {};
 
 module.exports = {
   registerCtrl: ctrlWrapper(registerCtrl),
@@ -249,4 +250,5 @@ module.exports = {
   // refreshCtrl: ctrlWrapper(refreshCtrl),
   updateNameAvatarCtrl,
   updateParamsUserCtrl: ctrlWrapper(updateParamsUserCtrl),
+  downloadCloudinary: ctrlWrapper(downloadCloudinary),
 };
