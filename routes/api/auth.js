@@ -19,4 +19,8 @@ router.patch(
 );
 router.patch('/avatars', auth, upload.single('avatar'), ctrl.updateAvatarCtrl);
 
+// завантаж клоудінарі
+router.get('/cloudinary', ctrl.downloadCloudinary);
+
+
 module.exports = router;

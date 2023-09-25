@@ -185,6 +185,12 @@ const updateNameAvatarCtrl = async (req, res) => {
     throw HttpError(400, "No changes provided");
   }
 };
+
+const downloadCloudinary = async (req, res) => {
+  
+}
+
+
 module.exports = {
   registerCtrl: ctrlWrapper(registerCtrl),
   loginCtrl: ctrlWrapper(loginCtrl),
@@ -194,4 +200,5 @@ module.exports = {
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
   // refreshCtrl: ctrlWrapper(refreshCtrl),
   updateNameAvatarCtrl,
+  downloadCloudinary: ctrlWrapper(downloadCloudinary)
 };
