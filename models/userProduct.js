@@ -70,7 +70,7 @@ const addUserProductsSchema = Joi.object({
   title: Joi.string().required(),
   category: Joi.string().required(),
   calories: Joi.number().min(1).required(),
-  weight: Joi.number().min(100).required(),
+  amount: Joi.number().min(100).required(),
   date: Joi.date().required(),
   // done: Joi.boolean().required(),
   _id: Joi.allow(),

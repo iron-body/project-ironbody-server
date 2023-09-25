@@ -55,26 +55,39 @@ const getAllUserProducts = async (req, res) => {
     .limit(+limit)
     .skip(startFrom);
 
+  const summCalories = dataList.reduce((acuum, product) => {
+    return product.calories + acuum;
+  }, 0);
+
   res.status(200).json({
-    dataList,
+    arrayWithCountedCalories,
     limit,
     page,
     totalItems,
     totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
+    summCalories,
   });
 };
 
 const createUserProduct = async (req, res) => {
-  const newProduct = new UserProduct({
+  const newProduct = await UserProduct.create({
     ...req.body,
     owner: req.user._id,
-  }).save();
-
+  });
+  const updatedProduct = await UserProduct.findOneAndUpdate(
+    { _id: req.body._id, owner: req.user._id, date: req.body.date },
+    {
+      $mul: { calories: req.body.amount / 100 },
+    },
+    { new: true }
+  );
   // const { _id } = await newProduct.save();
 
   res.status(200).json({
-    ...req.body,
+    // ...req.body,
     // id: _id,
+    updatedProduct,
+    newProduct,
   });
 };
 
