@@ -78,6 +78,34 @@ const createUserProduct = async (req, res) => {
   });
 };
 
+const deleteUserProduct = async (req, res) => {
+  const { userProductId } = req.params;
+  const { date } = req.query;
+  const { _id: userId } = req.user;
+  if (!userProductId || !date) {
+    throw HttpError(400, 'For deleting a product you need to send date and product ID');
+  }
+  // Check if exist
+  const getProduct = await UserProduct.findOne({
+    _id: userProductId,
+    owner: userId,
+    date: moment(date, 'DD.MM.YYYY'),
+  });
+  // console.log('date', date);
+  console.log('moment', moment(date, 'DD.MM.YYYY Z'));
+  console.log('getProduct', getProduct);
+  if (!getProduct) {
+    throw HttpError(404, `The product with id "${userProductId}" not found`);
+  }
+  // Delete product
+  // await UserProduct.deleteOne({
+  //   _id: id,
+  // });
+  res.status(200).json({
+    ok: `The product with id "${userProductId}" was successfully deleted`,
+  });
+};
+
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { done = false } = req.body;
@@ -102,28 +130,10 @@ const updateProduct = async (req, res) => {
   });
 };
 
-const deleteProduct = async (req, res) => {
-  const { id } = req.params;
-  // Check if exist
-  const getProduct = await UserProduct.findOne({
-    _id: id,
-  }).select('_id');
-  if (!getProduct) {
-    throw HttpError(404, `The product with id "${id}" not found`);
-  }
-  // Delete product
-  await Product.deleteOne({
-    _id: id,
-  });
-  res.status(200).json({
-    ok: `The product with id "${id}" was successfully deleted`,
-  });
-};
-
 module.exports = {
   createUserProduct: ctrlWrapper(createUserProduct),
   updateUserProduct: ctrlWrapper(updateProduct),
-  deleteUserProduct: ctrlWrapper(deleteProduct),
+  deleteUserProduct: ctrlWrapper(deleteUserProduct),
   getAllUserProducts: ctrlWrapper(getAllUserProducts),
   getUserProduct: ctrlWrapper(getUserProduct),
 };

@@ -36,9 +36,9 @@ const userProductsSchema = new Schema(
         message: 'Calories must be greater than or equal to 1',
       },
     },
-    weight: {
+    amount: {
       type: Number,
-      required: [true, 'Enter weight'],
+      required: [true, 'Enter amount of products in gramm'],
       default: 100,
     },
     date: {

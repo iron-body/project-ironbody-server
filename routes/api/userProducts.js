@@ -5,7 +5,7 @@ const { validateBody, auth } = require('../../middlewares');
 const userProductsCtrl = require('../../controllers/userProducts');
 userProductsRouter.get('/', auth, userProductsCtrl.getAllUserProducts);
 userProductsRouter.get('/:userProductId', auth, userProductsCtrl.getUserProduct);
-userProductsRouter.delete('/:id', auth, userProductsCtrl.deleteUserProduct);
+userProductsRouter.delete('/:userProductId', auth, userProductsCtrl.deleteUserProduct);
 userProductsRouter.post(
   '/',
   auth,
