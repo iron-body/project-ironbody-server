@@ -39,6 +39,7 @@ const userProductsSchema = new Schema(
     amount: {
       type: Number,
       required: [true, 'Enter amount of products in gramm'],
+      min: 1,
       default: 100,
     },
     date: {
@@ -70,7 +71,7 @@ const addUserProductsSchema = Joi.object({
   title: Joi.string().required(),
   category: Joi.string().required(),
   calories: Joi.number().min(1).required(),
-  amount: Joi.number().min(100).required(),
+  amount: Joi.number().min(1).required(),
   date: Joi.date().required(),
   // done: Joi.boolean().required(),
   _id: Joi.allow(),
