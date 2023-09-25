@@ -16,7 +16,7 @@ const getAllFilters = async (req, res) => {
 const getFilters = async (req, res) => {
     const { filter } = req.query;
     
-    const result = await Filter.find({ filter: filter }, "-filter");
+    const result = await Filter.find({ filter: filter }, "-_id");
     if (!result) {
         throw HttpError(404, `The filter with value "${filter}" not found`);
     }
