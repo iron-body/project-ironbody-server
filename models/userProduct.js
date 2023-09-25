@@ -9,17 +9,22 @@ const userProductsSchema = new Schema(
       ref: 'user',
       required: true,
     },
-    amount: {
-      type: Number,
+    title: {
+      type: String,
       required: true,
-      default: 1,
-      validate: {
-        validator: function (value) {
-          return value >= 1;
-        },
-        message: 'Amount must be greater than or equal to 1',
-      },
     },
+    category: { type: String, required: [true, 'You forget to add category'] },
+    // amount: {
+    //   type: Number,
+    //   required: true,
+    //   default: 1,
+    //   validate: {
+    //     validator: function (value) {
+    //       return value >= 1;
+    //     },
+    //     message: 'Amount must be greater than or equal to 1',
+    //   },
+    // },
     calories: {
       type: Number,
       required: true,
@@ -31,17 +36,24 @@ const userProductsSchema = new Schema(
         message: 'Calories must be greater than or equal to 1',
       },
     },
+    weight: {
+      type: Number,
+      required: [true, 'Enter weight'],
+      default: 100,
+    },
     date: {
       type: Date,
       required: true,
+      default: Date.now,
     },
     done: {
       type: Boolean,
       required: true,
+      default: false,
     },
-    name: {
-      type: String,
-      required: true,
+    recommended: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -51,16 +63,18 @@ const userProductsSchema = new Schema(
   }
 );
 
-const UserProduct = model('userProduct', userProductsSchema);
 userProductsSchema.post('save', handleMongooseError);
+const UserProduct = model('userProduct', userProductsSchema);
 
 const addUserProductsSchema = Joi.object({
-  owner: Joi.object().required(),
-  amount: Joi.number().min(1).required(),
+  title: Joi.string().required(),
+  category: Joi.string().required(),
   calories: Joi.number().min(1).required(),
+  weight: Joi.number().min(100).required(),
   date: Joi.date().required(),
-  done: Joi.boolean().required(),
-  name: Joi.string().required(),
+  // done: Joi.boolean().required(),
+  _id: Joi.allow(),
+  recommended: Joi.boolean(),
 });
 
 const updateUserProductsSchema = Joi.object({
