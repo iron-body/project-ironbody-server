@@ -34,14 +34,7 @@ const uploadFileToCloudinary = async (filePath, file) => {
 
 const onceUploadFilesAndChangeUrl = async (req, res) => {
 
-// всі файли з твоєї локальної папки витягуються і відправляються на завантаження в клаудинарій
-//   const files = fs.readdirSync(folderPath);
-//   for (const file of files) {
-//     const fullFilePath = path.join(folderPath, file);
-//     if (fs.statSync(fullFilePath).isFile()) {
-//       await uploadFileToCloudinary(fullFilePath, file);
-//     }
-//   }
+
 
 };
 

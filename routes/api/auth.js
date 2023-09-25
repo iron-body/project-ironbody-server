@@ -5,8 +5,8 @@ const { schemas } = require("../../models/user");
 const { validateBody, auth, upload } = require("../../middlewares");
 const ctrl = require("../../controllers/auth");
 const cloudCtrl = require('../../controllers/cloudinary')
-// const bdCtrl = require('../../controllers/exercises')
-const bdCtrl = require('../../controllers/filters')
+const bdExCtrl = require('../../controllers/exercises')
+// const bdCtrl = require('../../controllers/filters')
 
 
 
@@ -46,7 +46,9 @@ router.patch(
 // завантаж клоудінарі
 router.post('/cloudinary', cloudCtrl.onceUploadFilesAndChangeUrl);
 // оновл в базі
-router.patch("/updateURL",  bdCtrl.updateURL);
+
+router.patch("/updateURL",  bdExCtrl.updateURL);
+// router.patch("/updateURL",  bdCtrl.updateURL);
 
 
 module.exports = router;
