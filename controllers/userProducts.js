@@ -81,13 +81,9 @@ const createUserProduct = async (req, res) => {
     },
     { new: true }
   );
-  // const { _id } = await newProduct.save();
 
   res.status(200).json({
-    // ...req.body,
-    // id: _id,
     updatedProduct,
-    newProduct,
   });
 };
 
