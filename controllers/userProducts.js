@@ -55,12 +55,21 @@ const getAllUserProducts = async (req, res) => {
     .limit(+limit)
     .skip(startFrom);
 
+  const summCalories = dataList.reduce((acuum, product) => {
+    return product.calories + acuum;
+  }, 0);
+
+  const arrayWithCountedCalories = dataList.map(
+    product => product.calories * (product.amount / 100)
+  );
+
   res.status(200).json({
-    dataList,
+    arrayWithCountedCalories,
     limit,
     page,
     totalItems,
     totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
+    summCalories,
   });
 };
 
@@ -73,8 +82,9 @@ const createUserProduct = async (req, res) => {
   // const { _id } = await newProduct.save();
 
   res.status(200).json({
-    ...req.body,
+    // ...req.body,
     // id: _id,
+    newProduct,
   });
 };
 
