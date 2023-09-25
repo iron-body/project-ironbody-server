@@ -1,6 +1,29 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const { Filter } = require("../models/filter");
 
+
+const updateURL = async (req,res)=>{
+
+const updateResult = await Filter.updateMany(
+    { },
+    [
+      {
+        $set: {
+          gifUrl: {
+                $concat: [
+                "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695674383/filters",
+
+              { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] }
+            ]
+          }
+        }
+      }
+    ]
+)
+  res.status(201).json(updateResult)
+}
+
+
 const getAllFilters = async (req, res) => {
     const { limit = 10, page = 1 } = req.query;
     const skip = (page - 1) * limit;
@@ -26,6 +49,7 @@ const getFilters = async (req, res) => {
 
 
 module.exports = {
+     updateURL: ctrlWrapper(updateURL),
     getFilters: ctrlWrapper(getFilters),
     getAllFilters: ctrlWrapper(getAllFilters)
 };

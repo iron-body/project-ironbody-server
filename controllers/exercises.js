@@ -3,6 +3,27 @@ const { Exercise, UserExercise } = require("../models/exercise");
 const moment = require("moment");
 
 
+const updateURL = async (req,res)=>{
+
+const updateResult = await Exercise.updateMany(
+    { },
+    [
+      {
+        $set: {
+          gifUrl: {
+            $concat: [
+              "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659848/exercises",//посілання з cloudinary
+
+              { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] }
+            ]
+          }
+        }
+      }
+    ]
+)
+  res.status(201).json(updateResult)
+}
+
 const getAllExercises = async (req, res) => {
   const { limit = 25, page = 1, date, done } = req.query;
   const startFrom = (+page - 1) * +limit;
@@ -189,6 +210,7 @@ const getExercise = async (req, res) => {
 
 // 
 module.exports = {
+  updateURL: ctrlWrapper(updateURL),
   createExercise: ctrlWrapper(createExercise),
   getExercisesByDate: ctrlWrapper(getExercisesByDate),
   updateExercise: ctrlWrapper(updateExercise),
