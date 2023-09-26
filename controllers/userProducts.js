@@ -98,10 +98,10 @@ const deleteUserProduct = async (req, res) => {
   const getProduct = await UserProduct.findOne({
     _id: userProductId,
     owner: userId,
-    date: moment(date, 'DD.MM.YYYY'),
+    date: moment(`${date} +0000`, 'DD.MM.YYYY Z'),
   });
-  // console.log('date', date);
-  console.log('moment', moment(date, 'DD.MM.YYYY Z'));
+  console.log('date', date);
+  console.log('moment', moment(`25-09-2023T00:00:00+00:00`, 'DD.MM.YYYYTHH:mm:ssZZ'));
   console.log('getProduct', getProduct);
   if (!getProduct) {
     throw HttpError(404, `The product with id "${userProductId}" not found`);

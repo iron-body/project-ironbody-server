@@ -370,9 +370,52 @@ const productsFilter = async (req, res) => {
       );
     }
   }
+  // Блок із пошуком по категоріям та тайтлу, тип крові - для всіх
+  else if (title && category && bloodtype && recommended === 'all') {
+    if (bloodtype === '1') {
+      result = await Product.find(
+        {
+          title: { $regex: `${title}`, $options: 'i' },
+          category: category,
+        },
+        {},
+        { skip, limit }
+      );
+    }
+    if (bloodtype === '2') {
+      result = await Product.find(
+        {
+          title: { $regex: `${title}`, $options: 'i' },
+          category: category,
+        },
+        {},
+        { skip, limit }
+      );
+    }
+    if (bloodtype === '3') {
+      result = await Product.find(
+        {
+          title: { $regex: `${title}`, $options: 'i' },
+          category: category,
+        },
+        {},
+        { skip, limit }
+      );
+    }
+    if (bloodtype === '4') {
+      result = await Product.find(
+        {
+          title: { $regex: `${title}`, $options: 'i' },
+          category: category,
+        },
+        {},
+        { skip, limit }
+      );
+    }
+  }
   // А тут віддається все що є в базі - дефолтний запит
   else {
-    // console.log('all');
+    console.log('all');
     result = await Product.find({}, {}, { skip, limit });
   }
 
