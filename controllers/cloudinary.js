@@ -34,8 +34,6 @@ const uploadFileToCloudinary = async (filePath, file) => {
 
 const onceUploadFilesAndChangeUrl = async (req, res) => {
 
-
-
 };
 
 module.exports = {onceUploadFilesAndChangeUrl};

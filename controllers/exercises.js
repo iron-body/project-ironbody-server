@@ -12,17 +12,18 @@ const updateResult = await Exercise.updateMany(
         $set: {
           gifUrl: {
             $concat: [
-              "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659848/exercises",//посілання з cloudinary
-
+              "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/", //ваша частина url
               { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] }
             ]
           }
         }
       }
     ]
-)
+  );
   res.status(201).json(updateResult)
 }
+
+
 
 const getAllExercises = async (req, res) => {
   const {
