@@ -1,11 +1,5 @@
-const { ctrlWrapper, HttpError } = require("../helpers");
+const { ctrlWrapper } = require("../helpers");
 const { UserData } = require("../models/user_data");
-
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
-const fs = require("fs/promises");
-const { SECRET_KEY } = process.env;
 
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;

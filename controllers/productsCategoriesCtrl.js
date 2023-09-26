@@ -1,4 +1,3 @@
-const { HttpError, ctrlWrapper } = require("../helpers");
 const { ProductCategories } = require("../models/productCategories");
 
 const productCategoriesList = async (req, res) => {
