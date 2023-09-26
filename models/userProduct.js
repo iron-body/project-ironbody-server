@@ -68,7 +68,7 @@ const updateUserProductsSchema = Joi.object({
 });
 
 const userProductsSchemas = {
-  addUserProductsSchema,
+  userProductsSchema,
   updateUserProductsSchema,
 };
 module.exports = { UserProduct, userProductsSchemas };

@@ -1,5 +1,5 @@
-const { HttpError, ctrlWrapper } = require('../helpers');
-const { ProductCategories } = require('../models/productCategories');
+const { HttpError, ctrlWrapper } = require("../helpers");
+const { ProductCategories } = require("../models/productCategories");
 
 const productCategoriesList = async (req, res) => {
   const result = await ProductCategories.find();

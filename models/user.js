@@ -28,7 +28,6 @@ const userSchema = new Schema(
     },
     avatarURL: {
       type: String,
-      // required: true,
     },
     accessToken: {
       type: String,
@@ -49,11 +48,9 @@ const registerSchema = Joi.object({
   name: Joi.string().min(2).required(),
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().required().min(6),
-  // password: Joi.string().pattern(passwordRegex).required(),
 });
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
-  // password: Joi.string().pattern(passwordRegex).required(),
   password: Joi.string().min(6).required(),
 });
 
@@ -61,9 +58,7 @@ const updateUserSchema = Joi.object({
   name: Joi.string().min(2),
   email: Joi.string().pattern(emailRegex),
   password: Joi.string().min(6),
-  // .pattern(passwordRegex)
 });
-// --------------------------пункт 18-------------------
 const updateNameAvatarSchema = Joi.object({
   name: Joi.string().min(2),
   avatarUrl: Joi.string().uri(),
@@ -88,7 +83,6 @@ const schemas = {
   registerSchema,
   loginSchema,
   userDataSchema,
-  // calculateSchema,
   updateUserSchema,
   updateNameAvatarSchema,
 };

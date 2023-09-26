@@ -15,14 +15,12 @@ const createExercise = async (req, res) => {
 const updateExercise = async (req, res) => {
   const { id } = req.params;
   const { done = false } = req.body;
-  // Check if exist
   const getExercise = await Exercise.findOne({
     _id: id,
   }).select("_id");
   if (!getExercise) {
     throw HttpError(404, `The exercise with id "${id}" not found`);
   }
-  // Update exercise
   await Exercise.updateOne(
     {
       _id: id,
@@ -48,14 +46,12 @@ const getExercise = async (req, res) => {
 };
 const deleteExercise = async (req, res) => {
   const { id } = req.params;
-  // Check if exist
   const getExercise = await Exercise.findOne({
     _id: id,
   }).select("_id");
   if (!getExercise) {
     throw HttpError(404, `The exercise with id "${id}" not found`);
   }
-  // Delete Exercise
   await Exercise.deleteOne({
     _id: id,
   });
@@ -67,7 +63,6 @@ const deleteExercise = async (req, res) => {
 const getAllExercises = async (req, res) => {
   const { limit = 25, page = 1, date, done } = req.query;
   const startFrom = (+page - 1) * +limit;
-  // Get total items
   const totalItems = await Exercise.countDocuments({
     ...(date && {
       date: {
