@@ -54,15 +54,6 @@ const userProductsSchema = new Schema(
 const UserProduct = model("userProduct", userProductsSchema);
 userProductsSchema.post("save", handleMongooseError);
 
-const addProductSchema = Joi.object({
-  owner: Joi.object().required(),
-  amount: Joi.number().min(1).required(),
-  calories: Joi.number().min(1).required(),
-  date: Joi.date().required(),
-  done: Joi.boolean().required(),
-  name: Joi.string().required(),
-});
-
 const updateUserProductsSchema = Joi.object({
   done: Joi.boolean().required(),
 });
