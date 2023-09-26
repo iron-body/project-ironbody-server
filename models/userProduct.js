@@ -14,17 +14,6 @@ const userProductsSchema = new Schema(
       required: true,
     },
     category: { type: String, required: [true, 'You forget to add category'] },
-    // amount: {
-    //   type: Number,
-    //   required: true,
-    //   default: 1,
-    //   validate: {
-    //     validator: function (value) {
-    //       return value >= 1;
-    //     },
-    //     message: 'Amount must be greater than or equal to 1',
-    //   },
-    // },
     calories: {
       type: Number,
       required: true,
@@ -47,11 +36,6 @@ const userProductsSchema = new Schema(
       required: true,
       default: Date.now,
     },
-    done: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
     recommended: {
       type: Boolean,
       default: false,
@@ -73,7 +57,6 @@ const addUserProductsSchema = Joi.object({
   calories: Joi.number().min(1).required(),
   amount: Joi.number().min(1).required(),
   date: Joi.date().required(),
-  // done: Joi.boolean().required(),
   _id: Joi.allow(),
   recommended: Joi.boolean(),
 });

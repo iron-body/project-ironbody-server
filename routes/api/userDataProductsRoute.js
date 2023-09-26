@@ -1,3 +1,4 @@
+// Буде видалено, поки хай ще полежить тут
 const express = require('express');
 const {
   userDataProductsList,
