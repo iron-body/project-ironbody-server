@@ -35,7 +35,6 @@ const updateExercise = async (req, res) => {
 };
 const getExercise = async (req, res) => {
   const { id } = req.params;
-  // Check if exist
   const getExercise = await Exercise.findOne({
     _id: id,
   }).select("_id");

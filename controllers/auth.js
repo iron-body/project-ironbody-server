@@ -1,6 +1,5 @@
 const { ctrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/user");
-// const { UserData } = require("../models/user_data");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,7 +7,6 @@ const gravatar = require("gravatar");
 const Jimp = require("jimp");
 const path = require("path");
 const fs = require("fs/promises");
-// const { updateNameAvatarSchema } = require("../models/user");
 
 const { SECRET_KEY } = process.env;
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
@@ -45,7 +43,7 @@ const loginCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    throw HttpError(401, "Email or password is not valid"); // Помилка 401 - Не авторизовано
+    throw HttpError(401, "Email or password is not valid");
   }
   const comparePassword = await bcrypt.compare(password, user.password);
   if (!comparePassword) {
@@ -143,6 +141,5 @@ module.exports = {
   getCurrentCtrl: ctrlWrapper(getCurrentCtrl),
   updateUserCtrl: ctrlWrapper(updateUserCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
-  // refreshCtrl: ctrlWrapper(refreshCtrl),
   updateNameAvatarCtrl,
 };

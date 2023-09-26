@@ -37,7 +37,6 @@ const productsFilter = async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    // Обработка ошибок, если таковые возникнут при выполнении запроса к базе данных
     res
       .status(500)
       .json({ error: "Произошла ошибка при фильтрации продуктов" });
