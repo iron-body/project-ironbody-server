@@ -25,8 +25,11 @@ const updateResult = await Exercise.updateMany(
 }
 
 const getAllExercises = async (req, res) => {
-  const { limit = 25, page = 1, date, done } = req.query;
-  const startFrom = (+page - 1) * +limit;
+  const {
+    // limit = 25, page = 1,
+    date, done
+  } = req.query;
+  // const startFrom = (+page - 1) * +limit;
   // Get total items
   const totalItems = await Exercise.countDocuments({
     ...(date && {
@@ -50,14 +53,14 @@ const getAllExercises = async (req, res) => {
       done,
     }),
   })
-    .limit(+limit)
-    .skip(startFrom);
+    // .limit(+limit)
+    // .skip(startFrom);
   res.status(200).json({
     dataList,
-    limit,
-    page,
-    totalItems,
-    totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
+    // limit,
+    // page,
+    // totalItems,
+    // totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
   });
 };
 const createExercise = async (req, res) => {
