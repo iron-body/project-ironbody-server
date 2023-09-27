@@ -48,9 +48,9 @@ const getAllUserProducts = async (req, res) => {
         $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
       },
     }),
-    ...(typeof done !== 'undefined' && {
-      done,
-    }),
+    // ...(typeof done !== 'undefined' && {
+    //   done,
+    // }),
   })
     .limit(+limit)
     .skip(startFrom);
