@@ -24,7 +24,7 @@ const userSchema = new Schema(
     },
     avatarURL: {
       type: String,
-      // required: true,
+      required: true,
     },
     accessToken: {
       type: String,
@@ -44,7 +44,6 @@ const User = model("user", userSchema);
 const registerSchema = Joi.object({
   name: Joi.string().min(2).required(),
   email: Joi.string().pattern(emailRegex).required(),
-  // password: Joi.string().required().min(6),
   password: Joi.string().pattern(passwordRegex).required().messages({
     "string.pattern.base":
       "Пароль повинен мати як мінімум 6 символів і включати букви та цифри",
@@ -58,7 +57,6 @@ const loginSchema = Joi.object({
       "Пароль повинен мати як мінімум 6 символів і включати букви та цифри",
     "any.required": "Пароль обов'язковий для заповнення",
   }),
-  // password: Joi.string().min(6).required(),
 });
 
 const updateUserSchema = Joi.object({

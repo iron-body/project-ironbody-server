@@ -137,7 +137,11 @@ const calculateNormsCtrl = async (req, res, next) => {
     throw HttpError(400, error.details[0].message);
   }
 
-  const formattedBirthday = formatDate(birthday);
+  // const formattedBirthday = formatDate(birthday);
+  const formattedBirthday = new Date(birthday).toISOString();
+
+  // const formattedBirthday = birthday;
+  // const formattedDate = new Date("2003-09-29T22:00:00.000Z").toISOString();- для отправки у клиента
 
   // Перевірка чи є користувач повнолітнім
   const today = new Date();
