@@ -18,11 +18,11 @@ const formatDate = (date) => {
   return moment(date).utc();
 };
 // Функція для реєстрації нового користувача
-const registerCtrl = async (req, res) => {
+const registerCtrl = async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    throw HttpError(409, "Email in use");
+    next(HttpError(409, "Email in use"));
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
@@ -32,7 +32,7 @@ const registerCtrl = async (req, res) => {
     avatarUrl,
   });
 
-  const newUserDBData = User.findOne({ email });
+  const newUserDBData = await User.findOne({ email });
   const payload = { id: newUserDBData._id };
 
   const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
@@ -60,9 +60,7 @@ const loginCtrl = async (req, res) => {
   const payload = { id: user._id };
 
   const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
-  await User.findByIdAndUpdate(user._id, {
-    accessToken,
-  });
+  await User.findByIdAndUpdate(user._id, { accessToken });
   res.status(200).json({
     accessToken,
     // user: {

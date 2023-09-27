@@ -97,26 +97,12 @@ dataUsersSchema.post("save", handleMongooseError);
 
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
-
-  currentWeight: Joi.number().min(30).required(),
-  desiredWeight: Joi.number().min(30).required(),
-
+  currentWeight: Joi.number().min(35).required(),
+  desiredWeight: Joi.number().min(35).required(),
   birthday: Joi.date()
-    // .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
-    //   .custom((value, helpers) => {
-    //     const formattedDate = formatDate(value, HttpError);
-    //     const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
-    //     if (age < 18) {
-    //       throw HttpError(400, "You must be at least 18 years old.");
-    //     }
-    //     return formattedDate;
-    //   })
-    //   .required(),
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000)) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
     .iso()
     .required(),
-
-  // birthday: Joi.string().pattern(dateRegexp).required(),
   blood: Joi.number()
     .valid(...bloodList)
     .required(),
@@ -140,9 +126,15 @@ const calculateSchema = Joi.object({
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
     .iso()
     .required(),
-  blood: Joi.number().valid(1, 2, 3, 4).required(),
-  sex: Joi.string().valid("male", "female").required(),
-  levelActivity: Joi.number().valid(1, 2, 3, 4, 5).required(),
+  blood: Joi.number()
+    .valid(...bloodList)
+    .required(),
+  sex: Joi.string()
+    .valid(...sexList)
+    .required(),
+  levelActivity: Joi.number()
+    .valid(...levelActivityList)
+    .required(),
 });
 // оновлення даних користувача
 const updateParamsUserSchema = Joi.object({
@@ -152,9 +144,9 @@ const updateParamsUserSchema = Joi.object({
   birthday: Joi.date()
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
     .iso(),
-  blood: Joi.number().valid(1, 2, 3, 4),
-  sex: Joi.string().valid("male", "female"),
-  levelActivity: Joi.number().valid(1, 2, 3, 4, 5),
+  blood: Joi.number().valid(...bloodList),
+  sex: Joi.string().valid(...sexList),
+  levelActivity: Joi.number().valid(...levelActivityList),
 });
 
 const UserData = model("userData", dataUsersSchema);

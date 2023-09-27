@@ -60,7 +60,6 @@ const getAllUserProducts = async (req, res) => {
   }, 0);
 
   res.status(200).json({
-    arrayWithCountedCalories,
     limit,
     page,
     totalItems,
@@ -83,6 +82,7 @@ const createUserProduct = async (req, res) => {
   );
 
   res.status(200).json({
+    newProduct,
     updatedProduct,
   });
 };
@@ -91,42 +91,49 @@ const deleteUserProduct = async (req, res) => {
   const { userProductId } = req.params;
   const { date } = req.query;
   const { _id: userId } = req.user;
+
   if (!userProductId || !date) {
-    throw HttpError(400, 'For deleting a product you need to send date and product ID');
+    throw HttpError(400, 'For deleting a product you need to provide date and product ID');
   }
+
   // Check if exist
   const getProduct = await UserProduct.findOne({
     _id: userProductId,
     owner: userId,
-    date: moment(date, 'DD.MM.YYYY'),
+    date: moment(`${date} +0000`, 'DD.MM.YYYY Z'),
   });
-  // console.log('date', date);
-  console.log('moment', moment(date, 'DD.MM.YYYY Z'));
-  console.log('getProduct', getProduct);
+
   if (!getProduct) {
     throw HttpError(404, `The product with id "${userProductId}" not found`);
   }
   // Delete product
-  // await UserProduct.deleteOne({
-  //   _id: id,
-  // });
+  const deletedProduct = await UserProduct.deleteOne({
+    _id: userProductId,
+    owner: userId,
+    date: moment(`${date} +0000`, 'DD.MM.YYYY Z'),
+  });
+
   res.status(200).json({
     ok: `The product with id "${userProductId}" was successfully deleted`,
+    deletedProduct,
   });
 };
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { done = false } = req.body;
+
   // Check if exist
   const getProduct = await UserProduct.findOne({
     _id: id,
   }).select('_id');
+
   if (!getProduct) {
     throw HttpError(404, `The product with id "${id}" not found`);
   }
+
   // Update product
-  await Product.updateOne(
+  await UserProduct.updateOne(
     {
       _id: id,
     },
@@ -134,6 +141,7 @@ const updateProduct = async (req, res) => {
       done,
     }
   );
+
   res.status(200).json({
     ok: `The product with id "${id}" was successfully updated`,
   });

@@ -1,3 +1,4 @@
+// Буде видалено, хай ще тут полежить.
 const { UserData } = require('../models/user_data');
 const { User } = require('../models/user');
 const { HttpError, ctrlWrapper } = require('../helpers');

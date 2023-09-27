@@ -4,11 +4,9 @@ const { schemas } = require("../../models/user");
 // const { updateNameAvatarSchema } = require("../../models/user");
 const { validateBody, auth, upload } = require("../../middlewares");
 const ctrl = require("../../controllers/auth");
-const cloudCtrl = require('../../controllers/cloudinary')
-const bdExCtrl = require('../../controllers/exercises')
+const cloudCtrl = require("../../controllers/cloudinary");
+const bdExCtrl = require("../../controllers/exercises");
 // const bdCtrl = require('../../controllers/filters')
-
-
 
 const { userDataSchemas } = require("../../models/user_data");
 
@@ -34,7 +32,12 @@ router.patch(
   ctrl.updateNameAvatarCtrl
 );
 router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
-
+router.post(
+  "/calculate",
+  auth,
+  validateBody(userDataSchemas.calculateSchema),
+  ctrl.calculateNormsCtrl
+);
 // оновлення даних користувача
 router.patch(
   "/updateParamsUser",
@@ -44,11 +47,10 @@ router.patch(
 );
 
 // завантаж клоудінарі
-router.post('/cloudinary', cloudCtrl.onceUploadFilesAndChangeUrl);
+router.post("/cloudinary", cloudCtrl.onceUploadFilesAndChangeUrl);
 // оновл в базі
 
-router.patch("/updateURL",  bdExCtrl.updateURL);
+router.patch("/updateURL", bdExCtrl.updateURL);
 // router.patch("/updateURL",  bdCtrl.updateURL);
-
 
 module.exports = router;
