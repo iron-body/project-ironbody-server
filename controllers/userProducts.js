@@ -3,13 +3,14 @@ const { UserProduct } = require('../models/userProduct');
 const moment = require('moment');
 
 const getUserProduct = async (req, res) => {
-  const { userProductId } = req.params;
+  const { userProductId, date } = req.params;
   const { _id: userId } = req.user;
   // Check if exist
   const getProduct = await UserProduct.findOne(
     {
       owner: userId,
-      _id: userProductId,
+      productid: userProductId,
+      date: date,
     },
     { createdAt: 0, updatedAt: 0, owner: 0 }
   );
@@ -23,7 +24,7 @@ const getUserProduct = async (req, res) => {
 
 const getAllUserProducts = async (req, res) => {
   const { _id: userId } = req.user;
-  const { limit = 25, page = 1, date, done } = req.query;
+  const { limit = 25, page = 1, date } = req.query;
   const startFrom = (+page - 1) * +limit;
 
   // Get total items
@@ -35,9 +36,6 @@ const getAllUserProducts = async (req, res) => {
         $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
       },
     }),
-    // ...(typeof done !== 'undefined' && {
-    //   done,
-    // }),
   });
 
   const dataList = await UserProduct.find({
@@ -48,9 +46,6 @@ const getAllUserProducts = async (req, res) => {
         $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
       },
     }),
-    // ...(typeof done !== 'undefined' && {
-    //   done,
-    // }),
   })
     .limit(+limit)
     .skip(startFrom);
@@ -60,6 +55,7 @@ const getAllUserProducts = async (req, res) => {
   }, 0);
 
   res.status(200).json({
+    dataList,
     limit,
     page,
     totalItems,
@@ -73,8 +69,9 @@ const createUserProduct = async (req, res) => {
     ...req.body,
     owner: req.user._id,
   });
+
   const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: req.body._id, owner: req.user._id, date: req.body.date },
+    { _id: newProduct._id, owner: req.user._id, date: req.body.date },
     {
       $mul: { calories: req.body.amount / 100 },
     },
@@ -95,23 +92,21 @@ const deleteUserProduct = async (req, res) => {
   if (!userProductId || !date) {
     throw HttpError(400, 'For deleting a product you need to provide date and product ID');
   }
+  const formattedDate = new Date(date).toISOString();
+
+  const query = {};
+  userProductId && (query.productid = userProductId);
+  userId && (query.owner = userId);
+  date && (query.date = formattedDate);
 
   // Check if exist
-  const getProduct = await UserProduct.findOne({
-    _id: userProductId,
-    owner: userId,
-    date: moment(`${date} +0000`, 'DD.MM.YYYY Z'),
-  });
+  const getProduct = await UserProduct.findOne(query);
 
   if (!getProduct) {
     throw HttpError(404, `The product with id "${userProductId}" not found`);
   }
   // Delete product
-  const deletedProduct = await UserProduct.deleteOne({
-    _id: userProductId,
-    owner: userId,
-    date: moment(`${date} +0000`, 'DD.MM.YYYY Z'),
-  });
+  const deletedProduct = await UserProduct.deleteOne(query);
 
   res.status(200).json({
     ok: `The product with id "${userProductId}" was successfully deleted`,
@@ -119,37 +114,8 @@ const deleteUserProduct = async (req, res) => {
   });
 };
 
-const updateProduct = async (req, res) => {
-  const { id } = req.params;
-  const { done = false } = req.body;
-
-  // Check if exist
-  const getProduct = await UserProduct.findOne({
-    _id: id,
-  }).select('_id');
-
-  if (!getProduct) {
-    throw HttpError(404, `The product with id "${id}" not found`);
-  }
-
-  // Update product
-  await UserProduct.updateOne(
-    {
-      _id: id,
-    },
-    {
-      done,
-    }
-  );
-
-  res.status(200).json({
-    ok: `The product with id "${id}" was successfully updated`,
-  });
-};
-
 module.exports = {
   createUserProduct: ctrlWrapper(createUserProduct),
-  updateUserProduct: ctrlWrapper(updateProduct),
   deleteUserProduct: ctrlWrapper(deleteUserProduct),
   getAllUserProducts: ctrlWrapper(getAllUserProducts),
   getUserProduct: ctrlWrapper(getUserProduct),

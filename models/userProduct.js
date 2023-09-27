@@ -6,7 +6,7 @@ const userProductsSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'users',
       required: true,
     },
     title: {
@@ -40,16 +40,20 @@ const userProductsSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    productid: {
+      type: Schema.Types.ObjectId,
+      ref: 'products',
+      required: true,
+    },
   },
   {
-    collection: 'userProduct',
     versionKey: false,
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
   }
 );
 
 userProductsSchema.post('save', handleMongooseError);
-const UserProduct = model('userProduct', userProductsSchema);
+const UserProduct = model('user_product', userProductsSchema);
 
 const addUserProductsSchema = Joi.object({
   title: Joi.string().required(),
@@ -57,8 +61,8 @@ const addUserProductsSchema = Joi.object({
   calories: Joi.number().min(1).required(),
   amount: Joi.number().min(1).required(),
   date: Joi.date().required(),
-  _id: Joi.allow(),
-  recommended: Joi.boolean(),
+  productid: Joi.allow().required(),
+  recommended: Joi.boolean().required(),
 });
 
 const updateUserProductsSchema = Joi.object({
