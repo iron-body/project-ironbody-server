@@ -1,6 +1,6 @@
 const { ctrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/user");
-const { UserData } = require("../models/user_data");
+const { UserData, userDataSchemas } = require("../models/user_data");
 // const { schemas } = require("../models/user_data");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,11 +8,15 @@ const gravatar = require("gravatar");
 const Jimp = require("jimp");
 const path = require("path");
 const fs = require("fs/promises");
+const moment = require("moment");
+
 // const { updateNameAvatarSchema } = require("../models/user");
 
 const { SECRET_KEY } = process.env;
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
-
+const formatDate = (date) => {
+  return moment(date).utc();
+};
 // Функція для реєстрації нового користувача
 const registerCtrl = async (req, res) => {
   const { email, password } = req.body;
@@ -117,6 +121,73 @@ const logoutCtrl = async (req, res) => {
   await User.findByIdAndUpdate(_id, { accessToken: null });
   res.json({ message: "Logout success" });
 };
+
+// Функція для обчислення норм
+const calculateNormsCtrl = async (req, res, next) => {
+  const {
+    height,
+    currentWeight,
+    desiredWeight,
+    birthday,
+    blood,
+    sex,
+    levelActivity,
+  } = req.body;
+  const { _id: owner } = req.user;
+  const { error } = userDataSchemas.userDataSchema.validate(req.body);
+  if (error) {
+    throw HttpError(400, error.details[0].message);
+  }
+
+  const formattedBirthday = formatDate(birthday);
+
+  // Перевірка чи є користувач повнолітнім
+  const today = new Date();
+  const birthDate = new Date(formattedBirthday);
+  let age;
+  if (
+    today <
+    new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())
+  ) {
+    age = today.getFullYear() - birthDate.getFullYear() - 1;
+  } else {
+    age = today.getFullYear() - birthDate.getFullYear();
+  }
+  if (age < 18) {
+    next(HttpError(400, "Користувач повинен бути старше 18 років"));
+    return;
+  }
+  // Обчислення BMR (розрахункова кількість калорій в спокійному стані)
+  let bmr;
+  if (sex === "male") {
+    bmr = (10 * desiredWeight + 6.25 * height - 5 * age + 5) * levelActivity;
+  } else if (sex === "female") {
+    bmr = (10 * desiredWeight + 6.25 * height - 5 * age - 161) * levelActivity;
+  } else {
+    throw HttpError(400, "Invalid data");
+  }
+
+  console.log("birthDate :>> ", birthDate);
+
+  const normsData = new UserData({
+    height,
+    currentWeight,
+    desiredWeight,
+    birthday: birthDate, // Используем отформатированную дату
+    blood,
+    sex,
+    levelActivity,
+    owner,
+  });
+  // Запсуємо обэкт в БД
+  await normsData.save();
+  // Денна норма калорій
+  const calorieNorm = bmr;
+  // Денна норма часу, присвяченого спорту
+  const sportTimeNorm = 110; // 110 хвилин на добу
+  res.status(200).json({ calorieNorm, sportTimeNorm });
+};
+
 const updateUserCtrl = async (req, res) => {
   const { _id } = req.user;
   const { name, avatarUrl } = req.body;
@@ -225,9 +296,13 @@ const updateParamsUserCtrl = async (req, res) => {
   }
   console.log(owner);
 
-  const updatedUser = await UserData.findByIdAndUpdate(owner, updatedData, {
-    new: true,
-  });
+  const updatedUser = await UserData.findOneAndUpdate(
+    { owner: owner },
+    updatedData,
+    {
+      new: true,
+    }
+  );
 
   if (!updatedUser) {
     throw HttpError(404, "User not found");
@@ -247,6 +322,7 @@ module.exports = {
   getCurrentCtrl: ctrlWrapper(getCurrentCtrl),
   updateUserCtrl: ctrlWrapper(updateUserCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
+  calculateNormsCtrl,
   // refreshCtrl: ctrlWrapper(refreshCtrl),
   updateNameAvatarCtrl,
   updateParamsUserCtrl: ctrlWrapper(updateParamsUserCtrl),
