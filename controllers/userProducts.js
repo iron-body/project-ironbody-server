@@ -50,6 +50,10 @@ const getAllUserProducts = async (req, res) => {
     .limit(+limit)
     .skip(startFrom);
 
+  if (!dataList) {
+    throw HttpError(404, 'Not found!');
+  }
+
   const summCalories = dataList.reduce((acuum, product) => {
     return product.calories + acuum;
   }, 0);
