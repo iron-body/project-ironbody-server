@@ -12,7 +12,7 @@ const productsFilter = async (req, res) => {
   const skip = (page - 1) * limit;
 
   if (!userData) {
-    throw HttpError(409, 'User data is absent. Please fill in the registration data');
+    throw HttpError(404, 'User data is absent. Please fill in the registration data');
   }
 
   const query = {};
