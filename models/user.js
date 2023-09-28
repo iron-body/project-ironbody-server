@@ -7,6 +7,9 @@ const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
 
 const userSchema = new Schema(
   {
+    // avatarURL: {
+    //   type: String,
+    //   required: true,
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -22,10 +25,7 @@ const userSchema = new Schema(
       minlength: 6,
       required: true,
     },
-    avatarURL: {
-      type: String,
-      required: true,
-    },
+
     accessToken: {
       type: String,
       default: null,

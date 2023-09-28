@@ -1,22 +1,16 @@
 const { ctrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/user");
 const { UserData, userDataSchemas } = require("../models/user_data");
-// const { schemas } = require("../models/user_data");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const Jimp = require("jimp");
 const path = require("path");
 const fs = require("fs/promises");
-const moment = require("moment");
-
-// const { updateNameAvatarSchema } = require("../models/user");
 
 const { SECRET_KEY } = process.env;
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
-const formatDate = (date) => {
-  return moment(date).utc();
-};
+
 // Функція для реєстрації нового користувача
 const registerCtrl = async (req, res, next) => {
   const { email, password } = req.body;
@@ -63,53 +57,9 @@ const loginCtrl = async (req, res) => {
   await User.findByIdAndUpdate(user._id, { accessToken });
   res.status(200).json({
     accessToken,
-    // user: {
-    //   email: user.email,
-    //   id: user._id,
-    //   // subscription: user.subscription
-    // },
   });
 };
 
-// // Створюємо маршрут для refresh token
-// const refreshCtrl = async (req, res) => {
-//   const { refreshToken } = req.body;
-//   if (!refreshToken) {
-//     throw HttpError(401, "Refresh token is required");
-//   }
-//   console.log("SECRET_KEY:", SECRET_KEY);
-
-//   try {
-//     console.log("SECRET_KEY:", SECRET_KEY);
-
-//     const decoded = jwt.verify(refreshToken, SECRET_KEY);
-//     console.log("decoded._id:", decoded.id); // Вивести decoded._id до консолі
-// console.log("_id користувача в базі даних:", user._id); // Вивести _id користувача до консолі
-
-//     console.log("decoded:", decoded); // Вивести decoded до консолі
-//     const user = await User.findById(decoded._id);
-//     console.log("decoded._id:", decoded.id); // Вивести decoded._id до консолі
-// console.log("_id користувача в базі даних:", user._id); // Вивести _id користувача до консолі
-
-//     console.log("user:", user); // Вивести user до консолі
-//     if (!user || !user.token || refreshToken !== user.refreshToken) {
-//       throw HttpError(401, "Invalid refresh token");
-//     }
-//     const payload = { id: user._id };
-//     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
-//     console.log("old accessToken:", user.accessToken); // Вивести старий accessToken до консолі
-//     await User.findByIdAndUpdate(user._id, { token });
-//     console.log("new accessToken:", token); // Вивести новий accessToken до консолі
-//     res.status(200).json({
-//       token,
-//       user: { email: user.email, subscription: user.subscription },
-//     });
-//   } catch (error) {
-//     console.error("Error in refreshCtrl:", error); // Вивести помилку до консолі
-//     throw HttpError(401, "Invalid refresh token");
-//   }
-
-// };
 const getCurrentCtrl = (req, res) => {
   const { name, email } = req.user;
   res.json({ name, email });
@@ -137,11 +87,7 @@ const calculateNormsCtrl = async (req, res, next) => {
     throw HttpError(400, error.details[0].message);
   }
 
-  // const formattedBirthday = formatDate(birthday);
   const formattedBirthday = new Date(birthday).toISOString();
-
-  // const formattedBirthday = birthday;
-  // const formattedDate = new Date("2003-09-29T22:00:00.000Z").toISOString();- для отправки у клиента
 
   // Перевірка чи є користувач повнолітнім
   const today = new Date();
@@ -170,23 +116,34 @@ const calculateNormsCtrl = async (req, res, next) => {
   }
 
   console.log("birthDate :>> ", birthDate);
-
-  const normsData = new UserData({
-    height,
-    currentWeight,
-    desiredWeight,
-    birthday: birthDate, // Используем отформатированную дату
-    blood,
-    sex,
-    levelActivity,
-    owner,
-  });
-  // Запсуємо обэкт в БД
-  await normsData.save();
   // Денна норма калорій
   const calorieNorm = bmr;
   // Денна норма часу, присвяченого спорту
   const sportTimeNorm = 110; // 110 хвилин на добу
+  // Звіряємо, чи існує вже запис користувача у колекції "userData".
+  const existingUserData = await UserData.findOne({ owner: owner });
+  if (existingUserData) {
+    // Якщо запис існує, то викидаємо помилку, оскільки запис "userData" для даного користувача вже існує.
+    throw HttpError(
+      400,
+      "Для данного пользователя уже существует запись userData"
+    );
+  }
+  const normsData = new UserData({
+    height,
+    currentWeight,
+    desiredWeight,
+    birthday: birthDate, // використовуємо форматовану дату
+    blood,
+    sex,
+    levelActivity,
+    calorieNorm,
+    sportTimeNorm,
+    owner,
+  });
+  // Запсуємо обэкт в БД
+  await normsData.save();
+
   res.status(200).json({ calorieNorm, sportTimeNorm });
 };
 
@@ -260,7 +217,6 @@ const updateNameAvatarCtrl = async (req, res) => {
 const updateParamsUserCtrl = async (req, res) => {
   console.log("Received updateParamsUser request", req.body);
   const { _id: owner } = req.user;
-  // const { _id } = req.user;
 
   console.log(owner);
   const {
@@ -297,7 +253,12 @@ const updateParamsUserCtrl = async (req, res) => {
     updatedData.levelActivity = levelActivity;
   }
   console.log(owner);
-
+  // перевіряємо, чи існує запис  userData для даного користувача
+  const existingUserData = await UserData.findOne({ owner: owner });
+  if (!existingUserData) {
+    // тут кидаємо помилку, так як запису userData для користувача немає
+    throw HttpError(404, "Запись userData для данного пользователя не найдена");
+  }
   const updatedUser = await UserData.findOneAndUpdate(
     { owner: owner },
     updatedData,
@@ -325,7 +286,6 @@ module.exports = {
   updateUserCtrl: ctrlWrapper(updateUserCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
   calculateNormsCtrl,
-  // refreshCtrl: ctrlWrapper(refreshCtrl),
   updateNameAvatarCtrl,
   updateParamsUserCtrl: ctrlWrapper(updateParamsUserCtrl),
   downloadCloudinary: ctrlWrapper(downloadCloudinary),
