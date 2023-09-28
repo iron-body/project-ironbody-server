@@ -18,7 +18,7 @@ const registerCtrl = async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    next(HttpError(409, 'Email in use'));
+    next(HttpError(409, 'User with such email already exists'));
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);

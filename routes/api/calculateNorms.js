@@ -13,6 +13,7 @@ const formatDate = (date) => {
 // Функція для обчислення норм
 const calculateNorms = async (req, res) => {
   const {
+   
     height,
     currentWeight,
     desiredWeight,
@@ -21,7 +22,8 @@ const calculateNorms = async (req, res) => {
     sex,
     levelActivity,
   } = req.body;
-  const { _id: owner } = req.user;
+  const { _id: owner} = req.user;
+
   const { error } = userDataSchemas.userDataSchema.validate(req.body);
   if (error) {
     throw HttpError(400, error.details[0].message);
@@ -68,12 +70,12 @@ const calculateNorms = async (req, res) => {
   console.log("birthDate :>> ", birthDate);
 
 
-
     // Денна норма калорій
   const calorieNorm = bmr;
   // Денна норма часу, присвяченого спорту
   const sportTimeNorm = 110; // 110 хвилин на добу
 // console.log("caloriesNorn",calorieNorm)
+
   const normsData = new UserData({
     height,
     currentWeight,

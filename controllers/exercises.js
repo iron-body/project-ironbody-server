@@ -1,5 +1,6 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
-const { Exercise, UserExercise } = require("../models/exercise");
+const { Exercise } = require("../models/exercise");
+const { UserExercise } = require("../models/userExercise");
 const moment = require("moment");
 
 

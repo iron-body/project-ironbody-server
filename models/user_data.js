@@ -92,6 +92,8 @@ const dataUsersSchema = new Schema(
       ref: "user", // ? ref - це назва колекції з якої це id
       requered: true,
     },
+   
+    
     // diary: [
     //   {
     //     date: { type: String, required: [true, 'Date is required! This is diary!'] },
@@ -136,11 +138,11 @@ const userDataSchema = Joi.object({
   levelActivity: Joi.number()
     .valid(...levelActivityList)
     .required(),
-  owner: {
-    type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
-    ref: "user", // ? ref - це назва колекції з якої це id
-    requered: true,
-  },
+  // owner: {
+  //   type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
+  //   ref: "user", // ? ref - це назва колекції з якої це id
+  //   requered: true,
+  // },
 });
 const calculateSchema = Joi.object({
   height: Joi.number().min(150).required(),
