@@ -77,6 +77,16 @@ const dataUsersSchema = new Schema(
       enum: levelActivityList,
       required: true,
     },
+    calorieNorm: {
+      type: Number,
+   
+      // required: true,
+    },sportTimeNorm: {
+      type: Number,
+   
+      // required: true,
+    },
+
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
       ref: "user", // ? ref - це назва колекції з якої це id

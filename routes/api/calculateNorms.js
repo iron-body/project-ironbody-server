@@ -67,6 +67,13 @@ const calculateNorms = async (req, res) => {
 
   console.log("birthDate :>> ", birthDate);
 
+
+
+    // Денна норма калорій
+  const calorieNorm = bmr;
+  // Денна норма часу, присвяченого спорту
+  const sportTimeNorm = 110; // 110 хвилин на добу
+// console.log("caloriesNorn",calorieNorm)
   const normsData = new UserData({
     height,
     currentWeight,
@@ -75,6 +82,8 @@ const calculateNorms = async (req, res) => {
     blood,
     sex,
     levelActivity,
+    calorieNorm,
+    sportTimeNorm,
     owner,
   });
 
@@ -83,10 +92,7 @@ const calculateNorms = async (req, res) => {
   // console.log('agetest :>> ', agetest);
   // Запсуємо обэкт в БД
   await normsData.save();
-  // Денна норма калорій
-  const calorieNorm = bmr;
-  // Денна норма часу, присвяченого спорту
-  const sportTimeNorm = 110; // 110 хвилин на добу
+
   res.status(200).json({ calorieNorm, sportTimeNorm });
 };
 
