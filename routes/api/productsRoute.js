@@ -18,7 +18,7 @@ router.get('/userproducts', auth, userProductsCtrl.getAllUserProducts);
 router.get('/userproducts/:userProductId', auth, userProductsCtrl.getUserProduct);
 router.delete('/userproducts/:userProductId', auth, userProductsCtrl.deleteUserProduct);
 router.post(
-  '/',
+  '/userproducts',
   auth,
   validateBody(userProductsSchemas.addUserProductsSchema),
   userProductsCtrl.createUserProduct

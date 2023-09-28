@@ -27,13 +27,16 @@ const getAllUserProducts = async (req, res) => {
   const { limit = 25, page = 1, date } = req.query;
   const startFrom = (+page - 1) * +limit;
 
+  console.log(date);
+  const formattedDate = new Date(date).toISOString();
+  console.log(formattedDate);
   // Get total items
   const totalItems = await UserProduct.countDocuments({
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+        $lte: moment(date).endOf('day').toDate(),
+        $gte: moment(date).startOf('day').toDate(),
       },
     }),
   });
@@ -42,8 +45,8 @@ const getAllUserProducts = async (req, res) => {
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+        $lte: moment(date).endOf('day').toDate(),
+        $gte: moment(date).startOf('day').toDate(),
       },
     }),
   })
@@ -69,13 +72,17 @@ const getAllUserProducts = async (req, res) => {
 };
 
 const createUserProduct = async (req, res) => {
+  const { date } = req.body;
+  const formattedDate = moment.utc(date);
+
   const newProduct = await UserProduct.create({
     ...req.body,
+    date: formattedDate,
     owner: req.user._id,
   });
 
   const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: newProduct._id, owner: req.user._id, date: req.body.date },
+    { _id: newProduct._id, owner: req.user._id, date: formattedDate },
     {
       $mul: { calories: req.body.amount / 100 },
     },
@@ -96,7 +103,9 @@ const deleteUserProduct = async (req, res) => {
   if (!userProductId || !date) {
     throw HttpError(400, 'For deleting a product you need to provide date and product ID');
   }
-  const formattedDate = new Date(date).toISOString();
+  // const formattedDate = new Date(date).toISOString();
+  const formattedDate = moment.utc(date);
+  console.log(formattedDate);
 
   const query = {};
   userProductId && (query.productid = userProductId);
