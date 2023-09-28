@@ -16,8 +16,8 @@
   "produces": ["application/json", "multipart/form-data"],
   "servers": 
   [
-  { "url": "https://iron-body-project-backend.onrender.com/api" }, 
-  { "url": "https://localhost:3000/api" }
+{ "url": "http://localhost:3000/api" },
+  { "url": "https://iron-body-project-backend.onrender.com/api" }
 ],
   "tags": [
     {
@@ -149,7 +149,7 @@
         }
       }
     },
-     "/auth/refresh": {
+     "/auth/updateProfile": {
       "post": {
         "tags": ["Auth"],
         "summary": "Update user's name or & user's avatar",
@@ -1178,7 +1178,13 @@
             }
         },
         "example": 
-          { "name": "VictorD", "email": "1@gmail.com", "userId": "1" }
+          { 
+  "user": {
+    "name": "string",
+    "email": "user@example.com"
+  },
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTQ1NzNkNTIwZmY0MWI1NmRiZGJjYiIsImlhdCI6MTY5NTgzMTg2OSwiZXhwIjoxNjk1ODc1MDY5fQ.jM9xj5OtB00vQBelTK-24PJf7ipa44x6BtyBPgKY-60"
+}
       },
       "AuthentificationRequest": {
         "type": "object",
@@ -1213,8 +1219,7 @@
         },
         "example": 
           { 
-          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MDgyMTE0YTRiMzAwNzA1NjcwYTZiYiIsImlhdCI6MTY5NTAzNDU1NiwiZXhwIjoxNjk1MDc3NzU2fQ.3buIYjrp0-laNxssk3cjPqW84LO8lxQeJm4Nr5QNewg", 
-          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MDgyMTE0YTRiMzAwNzA1NjcwYTZiYiIsImlhdCI6MTY5NTAzNDU1NiwiZXhwIjoxNjk1MDc3NzU.3buIYjrp0-laNxssk3cjPqW84LO8lxQeJm4Nr5QNewg"
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MDgyMTE0YTRiMzAwNzA1NjcwYTZiYiIsImlhdCI6MTY5NTAzNDU1NiwiZXhwIjoxNjk1MDc3NzU2fQ.3buIYjrp0-laNxssk3cjPqW84LO8lxQeJm4Nr5QNewg"
          }
       },
       

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { schemas } = require("../../models/exercise");
+const { schemas } = require("../../models/userExercise");
 const { validateBody, auth } = require("../../middlewares");
 const ctrl = require("../../controllers/exercises");
 router.get("/", auth, ctrl.getAllExercises);

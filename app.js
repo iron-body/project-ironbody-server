@@ -29,7 +29,7 @@ app.use(express.static('public'));
 
 app.use('/api/auth', authRouter);
 app.use('/api/userData', userDataRouter);
-app.use('/api/users', authRouter);
+// app.use('/api/users', authRouter);
 app.use('/api/userDataProducts', userDataProductsRouter);
 
 // app.use('/api/contacts', contactsRouter);
