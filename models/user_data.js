@@ -25,6 +25,16 @@ const dataUsersSchema = new Schema(
     //   type: String,
     //   required: true,
     // },
+    name: {
+      type: String,
+      // required: [true, "Name is required"],
+    },
+    email: {
+      type: String,
+      // match: emailRegex,
+      // unique: true,
+      // required: true,
+    },
     height: {
       type: Number,
       min: 150,
@@ -77,18 +87,23 @@ const dataUsersSchema = new Schema(
       enum: levelActivityList,
       required: true,
     },
+    calorieNorm: {
+      type: Number,
+   
+      // required: true,
+    },sportTimeNorm: {
+      type: Number,
+   
+      // required: true,
+    },
+
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
       ref: "user", // ? ref - це назва колекції з якої це id
       requered: true,
     },
-    // diary: [
-    //   {
-    //     date: { type: String, required: [true, 'Date is required! This is diary!'] },
-    //     productsDiary: [],
-    //     excersizeDiary: [],
-    //   },
-    // ],
+   
+
   },
   { versionKey: false, timestamps: true }
 );
@@ -126,11 +141,6 @@ const userDataSchema = Joi.object({
   levelActivity: Joi.number()
     .valid(...levelActivityList)
     .required(),
-  owner: {
-    type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
-    ref: "user", // ? ref - це назва колекції з якої це id
-    requered: true,
-  },
 });
 const calculateSchema = Joi.object({
   height: Joi.number().min(150).required(),
