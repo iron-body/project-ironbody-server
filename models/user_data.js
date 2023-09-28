@@ -7,10 +7,10 @@ const levelActivityList = [1, 2, 3, 4, 5];
 
 const dataUsersSchema = new Schema(
   {
-    // avatarUrl: {
-    //   type: String,
-    //   required: true,
-    // },
+    avatarUrl: {
+      type: String,
+      required: false,
+    },
     name: {
       type: String,
       // required: [true, "Name is required"],
@@ -67,15 +67,12 @@ const dataUsersSchema = new Schema(
     },
     calorieNorm: {
       type: Number,
-
       // required: true,
     },
     sportTimeNorm: {
       type: Number,
-
       // required: true,
     },
-
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
       ref: "user", // ref - це назва колекції з якої це id

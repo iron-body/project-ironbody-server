@@ -37,6 +37,7 @@ const registerCtrl = async (req, res, next) => {
   res.status(201).json({
     user: { name: newUser.name, email: newUser.email },
     accessToken,
+    registrationDate: newUser.registrationDate,
   });
 };
 
@@ -64,6 +65,7 @@ const getCurrentCtrl = (req, res) => {
   const { name, email } = req.user;
   res.json({ name, email });
 };
+
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { accessToken: null });
@@ -144,31 +146,31 @@ const calculateNormsCtrl = async (req, res, next) => {
   res.status(200).json({ calorieNorm, sportTimeNorm });
 };
 
-const updateUserCtrl = async (req, res) => {
-  const { _id } = req.user;
-  const { name, avatarUrl } = req.body;
-  if (name || avatarUrl) {
-    const updatedData = {};
-    if (name) {
-      updatedData.name = name;
-    }
-    if (avatarUrl) {
-      updatedData.avatarUrl = avatarUrl;
-    }
-    const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
-      new: true,
-    });
-    if (!updatedUser) {
-      throw HttpError(404, "User not found");
-    }
-    res.status(200).json({
-      name: updatedUser.name,
-      avatarUrl: updatedUser.avatarUrl,
-    });
-  } else {
-    throw HttpError(400, "No changes provided");
-  }
-};
+// const updateUserCtrl = async (req, res) => {
+//   const { _id } = req.user;
+//   const { name, avatarUrl } = req.body;
+//   if (name || avatarUrl) {
+//     const updatedData = {};
+//     if (name) {
+//       updatedData.name = name;
+//     }
+//     if (avatarUrl) {
+//       updatedData.avatarUrl = avatarUrl;
+//     }
+//     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+//       new: true,
+//     });
+//     if (!updatedUser) {
+//       throw HttpError(404, "User not found");
+//     }
+//     res.status(200).json({
+//       name: updatedUser.name,
+//       avatarUrl: updatedUser.avatarUrl,
+//     });
+//   } else {
+//     throw HttpError(400, "No changes provided");
+//   }
+// };
 
 const updateAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
@@ -280,7 +282,7 @@ module.exports = {
   loginCtrl: ctrlWrapper(loginCtrl),
   logoutCtrl: ctrlWrapper(logoutCtrl),
   getCurrentCtrl: ctrlWrapper(getCurrentCtrl),
-  updateUserCtrl: ctrlWrapper(updateUserCtrl),
+  // updateUserCtrl: ctrlWrapper(updateUserCtrl),
   updateAvatarCtrl: ctrlWrapper(updateAvatarCtrl),
   calculateNormsCtrl,
   updateNameAvatarCtrl,

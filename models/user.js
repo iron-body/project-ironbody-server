@@ -7,6 +7,9 @@ const passwordRegex = /^(?=.*[a-zA-Z]{6})(?=.*\d)[a-zA-Z\d]{7}$/;
 
 const userSchema = new Schema(
   {
+    avatarUrl: {
+      type: String,
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -31,6 +34,10 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
+    registrationDate: {
+      type: Date,
+      default: Date.now(), // значення за замовчуванням на поточну дату та час реєстрації
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -43,7 +50,7 @@ const registerSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().pattern(passwordRegex).required().messages({
     "string.pattern.base":
-      "Пароль повинен мати як мінімум 7символів і включати букви та цифри",
+      "Пароль повинен мати всього 7 символів і включати 6 букв та 1 цифру",
     "any.required": "Пароль обов'язковий для заповнення",
   }),
 });
@@ -51,7 +58,7 @@ const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().pattern(passwordRegex).required().messages({
     "string.pattern.base":
-      "Пароль повинен мати як мінімум 6 символів і включати букви та цифри",
+      "Пароль повинен мати всього 7 символів і включати 6 букв та 1 цифру",
     "any.required": "Пароль обов'язковий для заповнення",
   }),
 });
@@ -61,7 +68,7 @@ const updateUserSchema = Joi.object({
   email: Joi.string().pattern(emailRegex),
   password: Joi.string().pattern(passwordRegex).messages({
     "string.pattern.base":
-      "Пароль повинен мати як мінімум 6 символів і включати букви та цифри",
+      "Пароль повинен мати всього 7 символів і включати 6 букв та 1 цифру",
     "any.required": "Пароль обов'язковий для заповнення",
   }),
 });
