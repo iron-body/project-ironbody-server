@@ -65,12 +65,12 @@ const addUserProductsSchema = Joi.object({
   recommended: Joi.boolean().required(),
 });
 
-const updateUserProductsSchema = Joi.object({
-  done: Joi.boolean().required(),
-});
+// const updateUserProductsSchema = Joi.object({
+//   done: Joi.boolean().required(),
+// });
 
 const userProductsSchemas = {
   addUserProductsSchema,
-  updateUserProductsSchema,
+  // updateUserProductsSchema,
 };
 module.exports = { UserProduct, userProductsSchemas };
