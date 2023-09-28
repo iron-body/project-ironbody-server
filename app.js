@@ -1,16 +1,23 @@
-const express = require("express");
-const logger = require("morgan");
-const cors = require("cors");
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
-require("dotenv").config();
 
-const authRouter = require("./routes/api/users"); // краще назвати usersRouter
+const express = require('express');
+const logger = require('morgan');
+const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+require('dotenv').config();
 
-const userProductsRouter = require("./routes/api/userProducts");
-const productsRouter = require("./routes/api/productsRoute");
-const productCategoriesRoute = require("./routes/api/productCategoriesRoute");
-const exercisesRouter = require("./routes/api/exercises");
+const usersRouter = require('./routes/api/users');
+
+const productsRouter = require('./routes/api/productsRoute');
+// const productCategoriesRoute = require('./routes/api/productCategoriesRoute');
+// const userProductsRouter = require('./routes/api/userProducts');
+
+
+const calculateNormsRouter = require('./routes/api/calculateNorms');
+
+
+const exercisesRouter = require('./routes/api/exercises');
+
 // const userExercisesRouter = require('./routes/api/userExercises');
 // const userDataRouter = require('./routes/api/userData');
 const filtersRouter = require("./routes/api/filters");
@@ -27,12 +34,20 @@ app.use(express.static("public"));
 // app.use('/api/auth', authRouter);
 // app.use('/api/userData', userDataRouter);
 // ! необх перенести
-app.use("/api/users", authRouter);
-app.use("/api/filters", filtersRouter);
-app.use("/api/products", productsRouter);
-app.use("/api/userproducts", userProductsRouter);
-app.use("/api/categories", productCategoriesRoute);
-app.use("/api/exercises", exercisesRouter);
+
+app.use('/api/calculateNorms', calculateNormsRouter);
+
+// new
+app.use('/api/users', usersRouter);
+
+
+app.use('/api/filters', filtersRouter);
+
+app.use('/api/products', productsRouter);
+// app.use('/api/userproducts', userProductsRouter);
+// app.use('/api/categories', productCategoriesRoute);
+app.use('/api/exercises', exercisesRouter);
+
 // app.use('/api/userExercises', userExercisesRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use((req, res) => {
