@@ -8,8 +8,6 @@ require('dotenv').config();
 const usersRouter = require('./routes/api/users');
 
 const productsRouter = require('./routes/api/productsRoute');
-const productCategoriesRoute = require('./routes/api/productCategoriesRoute');
-const userProductsRouter = require('./routes/api/userProducts');
 
 const calculateNormsRouter = require('./routes/api/calculateNorms');
 
@@ -39,8 +37,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/filters', filtersRouter);
 
 app.use('/api/products', productsRouter);
-app.use('/api/products/userproducts', userProductsRouter);
-app.use('/api/products/categories', productCategoriesRoute);
+
 app.use('/api/exercises', exercisesRouter);
 // app.use('/api/userExercises', userExercisesRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
