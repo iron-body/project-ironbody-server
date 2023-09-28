@@ -65,26 +65,26 @@ const updateNameAvatarSchema = Joi.object({
   name: Joi.string().min(2),
   avatarUrl: Joi.string().uri(),
 });
-const userDataSchema = Joi.object({
-  height: Joi.number().min(150).required(),
-  currentWeight: Joi.number().min(35).required(),
-  desiredWeight: Joi.number().min(35).required(),
-  birthday: Joi.date().iso().required(),
-  blood: Joi.number()
-    .valid(...bloodList)
-    .required(),
-  sex: Joi.string()
-    .valid(...sexList)
-    .required(),
-  levelActivity: Joi.number()
-    .valid(...levelActivityList)
-    .required(),
-});
+// const userDataSchema = Joi.object({
+//   height: Joi.number().min(150).required(),
+//   currentWeight: Joi.number().min(35).required(),
+//   desiredWeight: Joi.number().min(35).required(),
+//   birthday: Joi.date().iso().required(),
+//   blood: Joi.number()
+//     .valid(...bloodList)
+//     .required(),
+//   sex: Joi.string()
+//     .valid(...sexList)
+//     .required(),
+//   levelActivity: Joi.number()
+//     .valid(...levelActivityList)
+//     .required(),
+// });
 
 const schemas = {
   registerSchema,
   loginSchema,
-  userDataSchema,
+  // userDataSchema,
   // calculateSchema,
   updateUserSchema,
   updateNameAvatarSchema,

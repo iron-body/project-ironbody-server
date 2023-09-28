@@ -82,7 +82,7 @@ const getExercisesByDate = async (req, res) => {
   const getExercise = await UserExercise.find({
     date,
     owner
-  })
+  }).populate("owner", "name email");
     // .select("date");
   if (!getExercise) {
     throw HttpError(404, `The exercise with "${date}" not found`);

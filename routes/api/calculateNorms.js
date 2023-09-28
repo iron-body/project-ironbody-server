@@ -22,7 +22,7 @@ const calculateNorms = async (req, res) => {
     sex,
     levelActivity,
   } = req.body;
-  const { _id: owner} = req.user;
+  const { _id: owner, name, email } = req.user;
 
   const { error } = userDataSchemas.userDataSchema.validate(req.body);
   if (error) {
@@ -77,6 +77,8 @@ const calculateNorms = async (req, res) => {
 // console.log("caloriesNorn",calorieNorm)
 
   const normsData = new UserData({
+    name,
+    email,
     height,
     currentWeight,
     desiredWeight,
