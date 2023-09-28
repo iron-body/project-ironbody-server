@@ -11,6 +11,16 @@ const dataUsersSchema = new Schema(
     //   type: String,
     //   required: true,
     // },
+    name: {
+      type: String,
+      // required: [true, "Name is required"],
+    },
+    email: {
+      type: String,
+      // match: emailRegex,
+      // unique: true,
+      // required: true,
+    },
     height: {
       type: Number,
       min: 150,
@@ -55,6 +65,17 @@ const dataUsersSchema = new Schema(
       enum: levelActivityList,
       required: true,
     },
+    calorieNorm: {
+      type: Number,
+
+      // required: true,
+    },
+    sportTimeNorm: {
+      type: Number,
+
+      // required: true,
+    },
+
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
       ref: "user", // ref - це назва колекції з якої це id
@@ -124,11 +145,6 @@ const updateParamsUserSchema = Joi.object({
   blood: Joi.number().valid(...bloodList),
   sex: Joi.string().valid(...sexList),
   levelActivity: Joi.number().valid(...levelActivityList),
-  owner: {
-    type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
-    ref: "user", // ? ref - це назва колекції з якої це id
-    required: true,
-  },
 });
 
 const UserData = model("userData", dataUsersSchema);

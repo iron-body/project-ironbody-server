@@ -16,7 +16,7 @@ const registerCtrl = async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    next(HttpError(409, "Email in use"));
+    next(HttpError(409, "User with such email already exists"));
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
@@ -124,10 +124,7 @@ const calculateNormsCtrl = async (req, res, next) => {
   const existingUserData = await UserData.findOne({ owner: owner });
   if (existingUserData) {
     // Якщо запис існує, то викидаємо помилку, оскільки запис "userData" для даного користувача вже існує.
-    throw HttpError(
-      400,
-      "Для данного пользователя уже существует запись userData"
-    );
+    throw HttpError(400, "Для даного користувача вже  існує запис userData");
   }
   const normsData = new UserData({
     height,

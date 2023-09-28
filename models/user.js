@@ -3,13 +3,10 @@ const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
 
 const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
+const passwordRegex = /^(?=.*[a-zA-Z]{6})(?=.*\d)[a-zA-Z\d]{7}$/;
 
 const userSchema = new Schema(
   {
-    // avatarURL: {
-    //   type: String,
-    //   required: true,
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -46,7 +43,7 @@ const registerSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().pattern(passwordRegex).required().messages({
     "string.pattern.base":
-      "Пароль повинен мати як мінімум 6 символів і включати букви та цифри",
+      "Пароль повинен мати як мінімум 7символів і включати букви та цифри",
     "any.required": "Пароль обов'язковий для заповнення",
   }),
 });

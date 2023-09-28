@@ -1,5 +1,6 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
-const { Exercise, UserExercise } = require("../models/exercise");
+const { Exercise } = require("../models/exercise");
+const { UserExercise } = require("../models/userExercise");
 const moment = require("moment");
 
 
@@ -78,13 +79,13 @@ const getExercisesByDate = async (req, res) => {
   console.log("date", date)
   const { _id: owner } = req.user;
   // Check if exist
-  const getExercise = await UserExercise.findOne({
+  const getExercise = await UserExercise.find({
     date,
     owner
-  })
+  }).populate("owner", "name email");
     // .select("date");
   if (!getExercise) {
-    throw HttpError(404, `The exercise with id "${date}" not found`);
+    throw HttpError(404, `The exercise with "${date}" not found`);
   }
   res.status(200).json(getExercise);
 };
