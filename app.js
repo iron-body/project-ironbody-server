@@ -4,7 +4,6 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 require('dotenv').config();
-const moment = require('moment');
 
 const authRouter = require('./routes/api/users');
 

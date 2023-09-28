@@ -69,7 +69,6 @@ const getAllUserProducts = async (req, res) => {
 };
 
 const createUserProduct = async (req, res) => {
-  console.log(req.body);
   const newProduct = await UserProduct.create({
     ...req.body,
     owner: req.user._id,
@@ -87,7 +86,6 @@ const createUserProduct = async (req, res) => {
     newProduct,
     updatedProduct,
   });
-  res.status(200).json({ ...req.body });
 };
 
 const deleteUserProduct = async (req, res) => {
@@ -126,9 +124,3 @@ module.exports = {
   getAllUserProducts: ctrlWrapper(getAllUserProducts),
   getUserProduct: ctrlWrapper(getUserProduct),
 };
-
-//const formattedDate = selectedDate.toLocaleDateString('en-GB', {
-//   day: '2-digit',
-//   month: '2-digit',
-//   year: 'numeric',
-// });
