@@ -5,10 +5,17 @@ const { validateBody, auth } = require("../../middlewares");
 const ctrl = require("../../controllers/exercises");
 router.get("/", auth, ctrl.getAllExercises);
 // router.get("/", auth, ctrl.getUserExercises);
-router.get("/", auth, ctrl.getExercisesByDate);
-router.get("/:id", auth, ctrl.getExercise);
+// router.get("/", auth, ctrl.getExercisesByDate);
+// router.get("/:id", auth, ctrl.getExercise);
+
+
+
 router.delete("/", auth, ctrl.deleteExercise);
 router.post("/", auth, validateBody(schemas.addExerciseSchema), ctrl.createExercise);
 router.patch("/:id", auth, validateBody(schemas.updateExerciseSchema));
+
+// from userExerc
+router.get("/byDate", auth, ctrl.getExercisesByDate);
+
 
 module.exports = router;
