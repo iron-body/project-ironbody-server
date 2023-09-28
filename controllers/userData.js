@@ -19,7 +19,6 @@ const getAll = async (req, res) => {
 //   // ? в find 3-й пар - дод налашт - є вбудовані skip та limit
 //   const skip = (page - 1) * limit;
 
-  // ? додаю id при отриманні контактів щоб видавалися контакти тільки цієї людини
     const data = await UserData.find({ owner }, "-createdAt -updatedAt",
 //         {
 //     skip,
