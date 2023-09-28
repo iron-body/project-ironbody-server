@@ -86,6 +86,7 @@ const dataUsersSchema = new Schema(
    
       // required: true,
     },
+
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
       ref: "user", // ? ref - це назва колекції з якої це id
