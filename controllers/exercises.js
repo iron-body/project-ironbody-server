@@ -4,32 +4,32 @@ const { UserExercise } = require("../models/userExercise");
 const moment = require("moment");
 
 
-const updateURL = async (req,res)=>{
+// const updateURL = async (req,res)=>{
 
-const updateResult = await Exercise.updateMany(
-    { },
-    [
-      {
-        $set: {
-          gifUrl: {
-            $concat: [
-              "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/", //ваша частина url
-              { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] }
-            ]
-          }
-        }
-      }
-    ]
-  );
-  res.status(201).json(updateResult)
-}
+// const updateResult = await Exercise.updateMany(
+//     { },
+//     [
+//       {
+//         $set: {
+//           gifUrl: {
+//             $concat: [
+//               "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/", //ваша частина url
+//               { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] }
+//             ]
+//           }
+//         }
+//       }
+//     ]
+//   );
+//   res.status(201).json(updateResult)
+// }
 
 
 
 const getAllExercises = async (req, res) => {
   const {
     // limit = 25, page = 1,
-    date, done
+    date
   } = req.query;
   // const startFrom = (+page - 1) * +limit;
   // Get total items
@@ -51,10 +51,13 @@ const getAllExercises = async (req, res) => {
         $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
       },
     }),
-    ...(typeof done !== "undefined" && {
-      done,
-    }),
+    // ...(typeof done !== "undefined" && {
+    //   done,
+    // }),
   })
+  if (!dataList) {
+    throw HttpError(404, 'Not found!');
+  }
     // .limit(+limit)
     // .skip(startFrom);
   res.status(200).json({
@@ -215,7 +218,7 @@ const getExercise = async (req, res) => {
 
 // 
 module.exports = {
-  updateURL: ctrlWrapper(updateURL),
+  // updateURL: ctrlWrapper(updateURL),
   createExercise: ctrlWrapper(createExercise),
   getExercisesByDate: ctrlWrapper(getExercisesByDate),
   updateExercise: ctrlWrapper(updateExercise),
