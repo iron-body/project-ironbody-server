@@ -1,23 +1,9 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError, HttpError } = require("../helpers");
+const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
-const { format } = require("date-fns");
-const moment = require("moment");
-// const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
 const bloodList = [1, 2, 3, 4];
 const sexList = ["male", "female"];
 const levelActivityList = [1, 2, 3, 4, 5];
-
-const formatDate = (value, helpers) => {
-  if (!value || !(value instanceof Date)) {
-    throw HttpError(400, "invalid date");
-  }
-
-  const formattedDate = `${value.getDate()}/${
-    value.getMonth() + 1
-  }/${value.getFullYear()}`;
-  return formattedDate;
-};
 
 const dataUsersSchema = new Schema(
   {
@@ -55,22 +41,14 @@ const dataUsersSchema = new Schema(
       required: true,
       validate: {
         validator: function (value) {
-          const valueDate = moment(value).utc();
+          const birthDate = new Date(value);
           const currentDate = new Date();
-          const age = (currentDate - valueDate) / (1000 * 60 * 60 * 24 * 365);
+          const ageMilliseconds = currentDate - birthDate;
+          const age = ageMilliseconds / (365 * 24 * 60 * 60 * 1000);
           return age >= 18;
         },
         message: "You must be at least 18 years old.",
       },
-      // validate: {
-      //   validator: function (value) {
-      //     const formattedDate = format(value, "dd/MM/yyyy");
-      //     console.log(`Formatted Date: ${formattedDate}`);
-      //     const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
-      //     return age >= 18;
-      //   },
-      //   message: "You must be at least 18 years old.",
-      // },
     },
     blood: {
       type: Number,
@@ -89,21 +67,20 @@ const dataUsersSchema = new Schema(
     },
     calorieNorm: {
       type: Number,
-   
+
       // required: true,
-    },sportTimeNorm: {
+    },
+    sportTimeNorm: {
       type: Number,
-   
+
       // required: true,
     },
 
     owner: {
       type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
-      ref: "user", // ? ref - це назва колекції з якої це id
-      requered: true,
+      ref: "user", // ref - це назва колекції з якої це id
+      required: true,
     },
-   
-
   },
   { versionKey: false, timestamps: true }
 );
@@ -112,26 +89,41 @@ dataUsersSchema.post("save", handleMongooseError);
 
 const userDataSchema = Joi.object({
   height: Joi.number().min(150).required(),
-
-  currentWeight: Joi.number().min(30).required(),
-  desiredWeight: Joi.number().min(30).required(),
-
+  currentWeight: Joi.number().min(35).required(),
+  desiredWeight: Joi.number().min(35).required(),
   birthday: Joi.date()
-    // .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
-    //   .custom((value, helpers) => {
-    //     const formattedDate = formatDate(value, HttpError);
-    //     const age = (new Date() - value) / (1000 * 60 * 60 * 24 * 365);
-    //     if (age < 18) {
-    //       throw HttpError(400, "You must be at least 18 years old.");
-    //     }
-    //     return formattedDate;
-    //   })
-    //   .required(),
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000)) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
     .iso()
+    .required()
+    .messages({
+      "date.base":
+        "Дата має бути у форматі ISO (наприклад, '2004-09-30T07:37:36.174Z')",
+      "date.max": "Вам повинно бути не менше 18 років для реєстрації",
+      "any.required": "Дата народження обов'язкова для заповнення",
+    }),
+  blood: Joi.number()
+    .valid(...bloodList)
     .required(),
-
-  // birthday: Joi.string().pattern(dateRegexp).required(),
+  sex: Joi.string()
+    .valid(...sexList)
+    .required(),
+  levelActivity: Joi.number()
+    .valid(...levelActivityList)
+    .required(),
+  owner: {
+    type: Schema.Types.ObjectId, // * це означає що тут буде зберіг id, який генерує mongodb
+    ref: "user", // ? ref - це назва колекції з якої це id
+    required: true,
+  },
+});
+const calculateSchema = Joi.object({
+  height: Joi.number().min(150).required(),
+  currentWeight: Joi.number().min(35).required(),
+  desiredWeight: Joi.number().min(35).required(),
+  birthday: Joi.date()
+    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
+    .iso()
+    .required(),
   blood: Joi.number()
     .valid(...bloodList)
     .required(),
@@ -142,18 +134,6 @@ const userDataSchema = Joi.object({
     .valid(...levelActivityList)
     .required(),
 });
-const calculateSchema = Joi.object({
-  height: Joi.number().min(150).required(),
-  currentWeight: Joi.number().min(35).required(),
-  desiredWeight: Joi.number().min(35).required(),
-  birthday: Joi.date()
-    .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
-    .iso()
-    .required(),
-  blood: Joi.number().valid(1, 2, 3, 4).required(),
-  sex: Joi.string().valid("male", "female").required(),
-  levelActivity: Joi.number().valid(1, 2, 3, 4, 5).required(),
-});
 // оновлення даних користувача
 const updateParamsUserSchema = Joi.object({
   height: Joi.number().min(150),
@@ -162,9 +142,9 @@ const updateParamsUserSchema = Joi.object({
   birthday: Joi.date()
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
     .iso(),
-  blood: Joi.number().valid(1, 2, 3, 4),
-  sex: Joi.string().valid("male", "female"),
-  levelActivity: Joi.number().valid(1, 2, 3, 4, 5),
+  blood: Joi.number().valid(...bloodList),
+  sex: Joi.string().valid(...sexList),
+  levelActivity: Joi.number().valid(...levelActivityList),
 });
 
 const UserData = model("userData", dataUsersSchema);

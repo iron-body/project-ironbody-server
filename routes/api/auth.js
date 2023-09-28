@@ -8,8 +8,6 @@
 // const bdExCtrl = require('../../controllers/exercises')
 // // const bdCtrl = require('../../controllers/filters')
 
-
-
 // const { userDataSchemas } = require("../../models/user_data");
 
 // router.post(
@@ -49,6 +47,5 @@
 
 // router.patch("/updateURL",  bdExCtrl.updateURL);
 // // router.patch("/updateURL",  bdCtrl.updateURL);
-
 
 // module.exports = router;
