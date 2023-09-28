@@ -69,23 +69,25 @@ const getAllUserProducts = async (req, res) => {
 };
 
 const createUserProduct = async (req, res) => {
-  const newProduct = await UserProduct.create({
-    ...req.body,
-    owner: req.user._id,
-  });
+  console.log(req.body);
+  // const newProduct = await UserProduct.create({
+  //   ...req.body,
+  //   owner: req.user._id,
+  // });
 
-  const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: newProduct._id, owner: req.user._id, date: req.body.date },
-    {
-      $mul: { calories: req.body.amount / 100 },
-    },
-    { new: true }
-  );
+  // const updatedProduct = await UserProduct.findOneAndUpdate(
+  //   { _id: newProduct._id, owner: req.user._id, date: req.body.date },
+  //   {
+  //     $mul: { calories: req.body.amount / 100 },
+  //   },
+  //   { new: true }
+  // );
 
-  res.status(200).json({
-    newProduct,
-    updatedProduct,
-  });
+  // res.status(200).json({
+  //   newProduct,
+  //   updatedProduct,
+  // });
+  res.status(200).json({ ...req.body });
 };
 
 const deleteUserProduct = async (req, res) => {
