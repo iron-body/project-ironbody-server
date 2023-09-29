@@ -60,7 +60,8 @@ const addUserProductsSchema = Joi.object({
   category: Joi.string().required(),
   calories: Joi.number().min(1).required(),
   amount: Joi.number().min(1).required(),
-  date: Joi.date().required(),
+  // date: Joi.date().required(),
+  date: Joi.allow().required(),
   productid: Joi.allow().required(),
   recommended: Joi.boolean().required(),
 });
