@@ -11,6 +11,8 @@ const fs = require("fs/promises");
 const { SECRET_KEY } = process.env;
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
+// дата реєстраціі
+
 // Функція для реєстрації нового користувача
 const registerCtrl = async (req, res, next) => {
   const { email, password } = req.body;
@@ -37,6 +39,7 @@ const registerCtrl = async (req, res, next) => {
   res.status(201).json({
     user: { name: newUser.name, email: newUser.email },
     accessToken,
+    registrationDate: newUser.registrationDate,
   });
 };
 
@@ -60,10 +63,11 @@ const loginCtrl = async (req, res) => {
   });
 };
 
-const getCurrentCtrl = (req, res) => {
-  const { name, email } = req.user;
-  res.json({ name, email });
+const getCurrentCtrl = async (req, res) => {
+  const { name, email, avatarUrl } = req.user;
+  res.status(200).json({ name, email, avatarUrl });
 };
+
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { accessToken: null });
@@ -174,44 +178,42 @@ const calculateNormsCtrl = async (req, res, next) => {
 //     throw HttpError(400, "No changes provided");
 //   }
 // };
-
-// const updateAvatarCtrl = async (req, res) => {
-//   const { _id } = req.user;
-//   const { path: tempUpload, originalname } = req.file;
-//   const filename = `${_id}_${originalname}`;
-//   const resultUpload = path.join(avatarsDir, filename);
-//   await fs.rename(tempUpload, resultUpload);
-//   const image = await Jimp.read(resultUpload);
-//   await image.resize(250, 250).write(resultUpload);
-//   const avatarUrl = path.join("avatars", filename);
-//   await User.findByIdAndUpdate(_id, { avatarUrl });
-
-//   console.log(avatarUrl);
-//   res.json({ avatarUrl });
-// };
 const updateNameAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
   const { name, avatarUrl } = req.body;
-  if (name || avatarUrl) {
+  const { path: tempUpload, originalname } = req.file;
+
+  try {
+    const filename = `${_id}_${originalname}`;
+    const resultUpload = path.join(avatarsDir, filename);
+    const resizeImage = await Jimp.read(tempUpload);
+    await resizeImage.resize(250, 250);
+    await resizeImage.writeAsync(tempUpload);
+    await fs.rename(tempUpload, resultUpload);
+
     const updatedData = {};
     if (name) {
       updatedData.name = name;
     }
     if (avatarUrl) {
-      updatedData.avatarUrl = avatarUrl;
+      updatedData.avatarUrl = path.join("public", "avatars", filename);
     }
+
     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
       new: true,
     });
+
     if (!updatedUser) {
       throw HttpError(404, "User not found");
     }
+
     res.status(200).json({
       name: updatedUser.name,
       avatarUrl: updatedUser.avatarUrl,
     });
-  } else {
-    throw HttpError(400, "No changes provided");
+  } catch (error) {
+    await fs.unlink(tempUpload);
+    throw error;
   }
 };
 
@@ -259,7 +261,7 @@ const updateParamsUserCtrl = async (req, res) => {
   const existingUserData = await UserData.findOne({ owner: owner });
   if (!existingUserData) {
     // тут кидаємо помилку, так як запису userData для користувача немає
-    throw HttpError(404, "Запись userData для данного пользователя не найдена");
+    throw HttpError(404, "Запис userData для даного користувача не знайдена");
   }
   const updatedUser = await UserData.findOneAndUpdate(
     { owner: owner },

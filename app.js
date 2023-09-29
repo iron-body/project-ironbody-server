@@ -1,18 +1,17 @@
+const express = require("express");
+const logger = require("morgan");
+const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+require("dotenv").config();
 
-const express = require('express');
-const logger = require('morgan');
-const cors = require('cors');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
-require('dotenv').config();
+const usersRouter = require("./routes/api/users");
 
-const usersRouter = require('./routes/api/users');
-
-const productsRouter = require('./routes/api/productsRoute');
+const productsRouter = require("./routes/api/productsRoute");
 
 // const calculateNormsRouter = require('./routes/api/calculateNorms');
 
-const exercisesRouter = require('./routes/api/exercises');
+const exercisesRouter = require("./routes/api/exercises");
 
 // const userExercisesRouter = require('./routes/api/userExercises');
 // const userDataRouter = require('./routes/api/userData');
@@ -34,13 +33,13 @@ app.use(express.static("public"));
 // app.use('/api/calculateNorms', calculateNormsRouter);
 
 // new
-app.use('/api/users', usersRouter);
+app.use("/api/users", usersRouter);
 
-app.use('/api/filters', filtersRouter);
+app.use("/api/filters", filtersRouter);
 
-app.use('/api/products', productsRouter);
+app.use("/api/products", productsRouter);
 
-app.use('/api/exercises', exercisesRouter);
+app.use("/api/exercises", exercisesRouter);
 
 // app.use('/api/userExercises', userExercisesRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
