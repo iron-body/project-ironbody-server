@@ -5,12 +5,13 @@ const moment = require('moment');
 const getUserProduct = async (req, res) => {
   const { userProductId, date } = req.params;
   const { _id: userId } = req.user;
+  const formattedDate = moment(date, 'DD/MM/YYYY');
   // Check if exist
   const getProduct = await UserProduct.findOne(
     {
       owner: userId,
       productid: userProductId,
-      date: date,
+      date: formattedDate,
     },
     { createdAt: 0, updatedAt: 0, owner: 0 }
   );
@@ -27,13 +28,14 @@ const getAllUserProducts = async (req, res) => {
   const { limit = 25, page = 1, date } = req.query;
   const startFrom = (+page - 1) * +limit;
 
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
   // Get total items
   const totalItems = await UserProduct.countDocuments({
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
       },
     }),
   });
@@ -42,8 +44,8 @@ const getAllUserProducts = async (req, res) => {
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
       },
     }),
   })
@@ -69,13 +71,17 @@ const getAllUserProducts = async (req, res) => {
 };
 
 const createUserProduct = async (req, res) => {
+  const { date } = req.body;
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+
   const newProduct = await UserProduct.create({
     ...req.body,
+    date: formattedDate,
     owner: req.user._id,
   });
 
   const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: newProduct._id, owner: req.user._id, date: req.body.date },
+    { _id: newProduct._id, owner: req.user._id, date: formattedDate },
     {
       $mul: { calories: req.body.amount / 100 },
     },
@@ -96,7 +102,7 @@ const deleteUserProduct = async (req, res) => {
   if (!userProductId || !date) {
     throw HttpError(400, 'For deleting a product you need to provide date and product ID');
   }
-  const formattedDate = new Date(date).toISOString();
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
 
   const query = {};
   userProductId && (query.productid = userProductId);

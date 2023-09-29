@@ -1,8 +1,7 @@
-const { HttpError, ctrlWrapper } = require("../helpers");
-const { Exercise } = require("../models/exercise");
-const { UserExercise } = require("../models/userExercise");
-const moment = require("moment");
-
+const { HttpError, ctrlWrapper } = require('../helpers');
+const { Exercise } = require('../models/exercise');
+const { UserExercise } = require('../models/userExercise');
+const moment = require('moment');
 
 // const updateURL = async (req,res)=>{
 
@@ -24,42 +23,41 @@ const moment = require("moment");
 //   res.status(201).json(updateResult)
 // }
 
-
-
 const getAllExercises = async (req, res) => {
   const {
     // limit = 25, page = 1,
-    date
+    date,
   } = req.query;
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
   // const startFrom = (+page - 1) * +limit;
   // Get total items
   const totalItems = await Exercise.countDocuments({
     ...(date && {
       date: {
-        $lte: moment(date, "DD.MM.YYYY").endOf("day").toDate(),
-        $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
       },
     }),
-    ...(typeof done !== "undefined" && {
+    ...(typeof done !== 'undefined' && {
       done,
     }),
   });
   const dataList = await Exercise.find({
     ...(date && {
       date: {
-        $lte: moment(date, "DD.MM.YYYY").endOf("day").toDate(),
-        $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
       },
     }),
     // ...(typeof done !== "undefined" && {
     //   done,
     // }),
-  })
+  });
   if (!dataList) {
     throw HttpError(404, 'Not found!');
   }
-    // .limit(+limit)
-    // .skip(startFrom);
+  // .limit(+limit)
+  // .skip(startFrom);
   res.status(200).json({
     dataList,
     // limit,
@@ -71,26 +69,51 @@ const getAllExercises = async (req, res) => {
 const createExercise = async (req, res) => {
   const { _id: owner } = req.user;
 
-const newExercise = await UserExercise.create({ ...req.body, owner }); 
+  const newExercise = await UserExercise.create({ ...req.body, owner });
   res.status(201).json(newExercise);
 };
 
-
-
 const getExercisesByDate = async (req, res) => {
   const { date } = req.query;
-  console.log("date", date)
+  // console.log('date', date);
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
   const { _id: owner } = req.user;
   // Check if exist
   const getExercise = await UserExercise.find({
-    date,
-    owner
-  }).populate("owner", "name email");
-    // .select("date");
+    date: formattedDate,
+    _id: owner,
+  });
+
   if (!getExercise) {
     throw HttpError(404, `The exercise with "${date}" not found`);
   }
-  res.status(200).json(getExercise);
+
+  const totalItems = await UserExercise.countDocuments({
+    owner,
+    ...(date && {
+      date: {
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
+      },
+    }),
+  });
+
+  const dataList = await UserExercise.find({
+    owner,
+    ...(date && {
+      date: {
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
+      },
+    }),
+  });
+  // .limit(+limit)
+  // .skip(startFrom);
+
+  if (!dataList) {
+    throw HttpError(404, 'Not found!');
+  }
+  res.status(200).json({ totalItems, dataList });
 };
 
 const deleteExercise = async (req, res) => {
@@ -101,32 +124,33 @@ const deleteExercise = async (req, res) => {
     throw HttpError(400, "Both 'exercise id' and 'date' must be provided in the request body");
   }
 
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+
   // Перевіряємо, чи існує вправа з вказаним id, датою та власником
   const getExercise = await UserExercise.findOne({
     exercise: id,
-    date,
-    owner,
-  }).select("id");
+    date: formattedDate,
+    owner: owner,
+  });
 
   if (!getExercise) {
-    throw HttpError(404, `The exercise with id "${id}", date "${date}", and owner "${owner}" not found`);
+    throw HttpError(
+      404,
+      `The exercise with id "${id}", date "${date}", and owner "${owner}" not found`
+    );
   }
 
   // Видаляємо вправу, враховуючи id, дату та власника
   await UserExercise.deleteOne({
     exercise: id,
-    date,
-    owner,
+    date: formattedDate,
+    owner: owner,
   });
 
   res.status(200).json({
     ok: `The exercise with id "${id}", date "${date}", and owner "${owner}" was successfully deleted`,
   });
 };
-
-
-
-
 
 // контролерів немає в тз
 const updateExercise = async (req, res) => {
@@ -135,7 +159,7 @@ const updateExercise = async (req, res) => {
   // Check if exist
   const getExercise = await UserExercise.findOne({
     _id: id,
-  }).select("_id");
+  }).select('_id');
   if (!getExercise) {
     throw HttpError(404, `The exercise with id "${id}" not found`);
   }
@@ -157,20 +181,21 @@ const getUserExercises = async (req, res) => {
   // ? додаємо id юзера
   const { _id: owner } = req.user;
 
-//   const { page = 1, limit = 10, favorite } = req.query;
+  //   const { page = 1, limit = 10, favorite } = req.query;
 
-
-//   // ? в find 3-й пар - дод налашт - є вбудовані skip та limit
-//   const skip = (page - 1) * limit;
+  //   // ? в find 3-й пар - дод налашт - є вбудовані skip та limit
+  //   const skip = (page - 1) * limit;
 
   // ? додаю id при отриманні контактів щоб видавалися контакти тільки цієї людини
-    const data = await UserExercise.find({ owner }, "-createdAt -updatedAt",
-//         {
-//     skip,
-//     limit,
-//     favorite,
-//   }).populate("owner", "name email"); // ? додаємо populate щоб отр повну інформацію по полю яке є аргументом/ !другий аргумент, це уточнення, якщо не потр все! // ? дозв підкл фільтрацію
-    ).populate("owner");
+  const data = await UserExercise.find(
+    { owner },
+    '-createdAt -updatedAt'
+    //         {
+    //     skip,
+    //     limit,
+    //     favorite,
+    //   }).populate("owner", "name email"); // ? додаємо populate щоб отр повну інформацію по полю яке є аргументом/ !другий аргумент, це уточнення, якщо не потр все! // ? дозв підкл фільтрацію
+  ).populate('owner');
   res.status(200).json(data);
 };
 const getExercise = async (req, res) => {
@@ -178,13 +203,12 @@ const getExercise = async (req, res) => {
   // Check if exist
   const getExercise = await UserExercise.findOne({
     _id: id,
-  }).select("_id");
+  }).select('_id');
   if (!getExercise) {
     throw HttpError(404, `The exercise with id "${id}" not found`);
   }
   res.status(200).json(getExercise);
 };
-
 
 // ? перероблені роути
 // const deleteExercise = async (req, res) => {
@@ -216,7 +240,7 @@ const getExercise = async (req, res) => {
 //   });
 // };
 
-// 
+//
 module.exports = {
   // updateURL: ctrlWrapper(updateURL),
   createExercise: ctrlWrapper(createExercise),
@@ -227,4 +251,3 @@ module.exports = {
   getAllExercises: ctrlWrapper(getAllExercises),
   getExercise: ctrlWrapper(getExercise),
 };
-

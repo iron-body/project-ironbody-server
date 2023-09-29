@@ -85,7 +85,7 @@ const calculateNormsCtrl = async (req, res, next) => {
     sex,
     levelActivity,
   } = req.body;
-  const { _id: owner } = req.user;
+  const { _id: owner, name, email } = req.user;
   const { error } = userDataSchemas.userDataSchema.validate(req.body);
   if (error) {
     throw HttpError(400, error.details[0].message);
@@ -131,6 +131,8 @@ const calculateNormsCtrl = async (req, res, next) => {
     throw HttpError(400, "Для даного користувача вже  існує запис userData");
   }
   const normsData = new UserData({
+    name,
+    email,
     height,
     currentWeight,
     desiredWeight,
@@ -148,47 +150,10 @@ const calculateNormsCtrl = async (req, res, next) => {
   res.status(200).json({ calorieNorm, sportTimeNorm });
 };
 
+
+
+
 // const updateUserCtrl = async (req, res) => {
-//   const { _id } = req.user;
-//   const { name, avatarUrl } = req.body;
-//   if (name || avatarUrl) {
-//     const updatedData = {};
-//     if (name) {
-//       updatedData.name = name;
-//     }
-//     if (avatarUrl) {
-//       updatedData.avatarUrl = avatarUrl;
-//     }
-//     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
-//       new: true,
-//     });
-//     if (!updatedUser) {
-//       throw HttpError(404, "User not found");
-//     }
-//     res.status(200).json({
-//       name: updatedUser.name,
-//       avatarUrl: updatedUser.avatarUrl,
-//     });
-//   } else {
-//     throw HttpError(400, "No changes provided");
-//   }
-// };
-
-// const updateAvatarCtrl = async (req, res) => {
-//   const { _id } = req.user;
-//   const { path: tempUpload, originalname } = req.file;
-//   const filename = `${_id}_${originalname}`;
-//   const resultUpload = path.join(avatarsDir, filename);
-//   await fs.rename(tempUpload, resultUpload);
-//   const image = await Jimp.read(resultUpload);
-//   await image.resize(250, 250).write(resultUpload);
-//   const avatarUrl = path.join("avatars", filename);
-//   await User.findByIdAndUpdate(_id, { avatarUrl });
-
-//   console.log(avatarUrl);
-//   res.json({ avatarUrl });
-// };
-// const updateNameAvatarCtrl = async (req, res) => {
 //   const { _id } = req.user;
 //   const { name, avatarUrl } = req.body;
 //   if (name || avatarUrl) {
@@ -315,7 +280,7 @@ const updateParamsUserCtrl = async (req, res) => {
   res.status(200).json(updatedUser);
   console.log("Updated user:", updatedUser);
 };
-const downloadCloudinary = async (req, res) => {};
+// const downloadCloudinary = async (req, res) => {};
 
 module.exports = {
   registerCtrl: ctrlWrapper(registerCtrl),
@@ -327,5 +292,5 @@ module.exports = {
   calculateNormsCtrl: ctrlWrapper(calculateNormsCtrl),
   updateNameAvatarCtrl: ctrlWrapper(updateNameAvatarCtrl),
   updateParamsUserCtrl: ctrlWrapper(updateParamsUserCtrl),
-  downloadCloudinary: ctrlWrapper(downloadCloudinary),
+  // downloadCloudinary: ctrlWrapper(downloadCloudinary),
 };

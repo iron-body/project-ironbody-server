@@ -6,7 +6,6 @@ const userProductsCtrl = require('../../controllers/userProducts');
 
 const { userProductsSchemas } = require('../../models/userProduct');
 
-// const { schemas } = require('../../models/productModel');
 const { validateBody, auth } = require('../../middlewares');
 
 router.get('/', auth, productsFilter);
@@ -19,13 +18,11 @@ router.get('/userproducts', auth, userProductsCtrl.getAllUserProducts);
 router.get('/userproducts/:userProductId', auth, userProductsCtrl.getUserProduct);
 router.delete('/userproducts/:userProductId', auth, userProductsCtrl.deleteUserProduct);
 router.post(
-  '/',
+  '/userproducts',
   auth,
   validateBody(userProductsSchemas.addUserProductsSchema),
   userProductsCtrl.createUserProduct
 );
 router.patch('/userproducts/:id', auth, validateBody(userProductsSchemas.updateUserProductsSchema));
-
-
 
 module.exports = router;
