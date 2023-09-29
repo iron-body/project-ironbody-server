@@ -82,15 +82,40 @@ const getExercisesByDate = async (req, res) => {
   console.log("date", date)
   const { _id: owner } = req.user;
   // Check if exist
-  const getExercise = await UserExercise.find({
-    date,
-    owner
-  }).populate("owner", "name email");
-    // .select("date");
-  if (!getExercise) {
-    throw HttpError(404, `The exercise with "${date}" not found`);
+  // const getExercise = await UserExercise.find({
+  //   date,
+  //   owner
+  // })
+  //   // .select("date");
+  // if (!getExercise) {
+  //   throw HttpError(404, `The exercise with "${date}" not found`);
+  // }
+   const totalItems = await UserExercise.countDocuments({
+    owner,
+    ...(date && {
+      date: {
+        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
+        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+      },
+    }),
+  });
+
+  const dataList = await UserExercise.find({
+    owner,
+    ...(date && {
+      date: {
+        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
+        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+      },
+    }),
+  })
+    // .limit(+limit)
+    // .skip(startFrom);
+
+  if (!dataList) {
+    throw HttpError(404, 'Not found!');
   }
-  res.status(200).json(getExercise);
+  res.status(200).json({totalItems, dataList});
 };
 
 const deleteExercise = async (req, res) => {
@@ -101,10 +126,14 @@ const deleteExercise = async (req, res) => {
     throw HttpError(400, "Both 'exercise id' and 'date' must be provided in the request body");
   }
 
+ const formattedDate = new Date(date).toISOString();
+
+ 
+
   // Перевіряємо, чи існує вправа з вказаним id, датою та власником
   const getExercise = await UserExercise.findOne({
     exercise: id,
-    date,
+    formattedDate,
     owner,
   }).select("id");
 
