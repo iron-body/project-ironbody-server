@@ -19,12 +19,12 @@ router.post(
 router.post("/login", validateBody(schemas.loginSchema), ctrl.loginCtrl);
 router.get("/current", auth, ctrl.getCurrentCtrl);
 router.post("/logout", auth, ctrl.logoutCtrl);
-router.patch(
-  "/",
-  auth,
-  validateBody(userDataSchemas.updateUserSchema),
-  ctrl.updateUserCtrl
-);
+// router.patch(
+//   "/",
+//   auth,
+//   validateBody(userDataSchemas.updateUserSchema),
+//   ctrl.updateUserCtrl
+// );
 // Оновлення імені і/або аватара користувача
 router.patch(
   "/updateProfile",
@@ -32,7 +32,7 @@ router.patch(
   validateBody(schemas.updateNameAvatarSchema),
   ctrl.updateNameAvatarCtrl
 );
-router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
+// router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
 router.post(
   "/calculate",
   auth,
