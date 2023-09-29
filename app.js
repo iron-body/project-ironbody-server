@@ -13,7 +13,7 @@ const productsRouter = require('./routes/api/productsRoute');
 // const userProductsRouter = require('./routes/api/userProducts');
 
 
-const calculateNormsRouter = require('./routes/api/calculateNorms');
+// const calculateNormsRouter = require('./routes/api/calculateNorms');
 
 
 const exercisesRouter = require('./routes/api/exercises');
@@ -35,7 +35,7 @@ app.use(express.static("public"));
 // app.use('/api/userData', userDataRouter);
 // ! необх перенести
 
-app.use('/api/calculateNorms', calculateNormsRouter);
+// app.use('/api/calculateNorms', calculateNormsRouter);
 
 // new
 app.use('/api/users', usersRouter);
