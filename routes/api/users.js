@@ -3,7 +3,13 @@ const router = express.Router();
 const { schemas } = require("../../models/user");
 // const { updateNameAvatarSchema } = require("../../models/user");
 const { validateBody, auth, upload } = require("../../middlewares");
-const ctrl = require("../../controllers/auth");
+const ctrl = require("../../controllers/users");
+const ctrlUd = require("../../controllers/userData");
+// const cloudCtrl = require('../../controllers/cloudinary')
+// const bdExCtrl = require('../../controllers/exercises')
+// const bdCtrl = require('../../controllers/filters')
+
+const { userDataSchemas } = require("../../models/user_data");
 
 router.post(
   "/register",
@@ -16,7 +22,7 @@ router.post("/logout", auth, ctrl.logoutCtrl);
 router.patch(
   "/",
   auth,
-  validateBody(schemas.updateUserSchema),
+  validateBody(userDataSchemas.updateUserSchema),
   ctrl.updateUserCtrl
 );
 // Оновлення імені і/або аватара користувача
@@ -27,20 +33,28 @@ router.patch(
   ctrl.updateNameAvatarCtrl
 );
 router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
+router.post(
+  "/calculate",
+  auth,
+  validateBody(userDataSchemas.calculateSchema),
+  ctrl.calculateNormsCtrl
+);
+// оновлення даних користувача
+router.patch(
+  "/updateParamsUser",
+  auth,
+  validateBody(userDataSchemas.updateParamsUserSchema),
+  ctrl.updateParamsUserCtrl
+);
 
-// // оновлення даних користувача
-// router.patch(
-//   "/updateParamsUser",
-//   auth,
-//   validateBody(userDataSchemas.updateParamsUserSchema),
-//   ctrl.updateParamsUserCtrl
-// );
+// отримання даних корістувача
+router.get("/userData", auth, ctrlUd.getAll);
 
-// // завантаж клоудінарі
+// завантаж клоудінарі
 // router.post('/cloudinary', cloudCtrl.onceUploadFilesAndChangeUrl);
-// // оновл в базі
+// оновл в базі
 
 // router.patch("/updateURL",  bdExCtrl.updateURL);
-// // router.patch("/updateURL",  bdCtrl.updateURL);
+// router.patch("/updateURL",  bdCtrl.updateURL);
 
-// module.exports = router;
+module.exports = router;

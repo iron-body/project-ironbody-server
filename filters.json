@@ -2,7 +2,7 @@
   {
     "filter": "Body parts",
     "name": "back",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/back_wzzphw.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/back_wzzphw.jpg"
   },
   {
     "filter": "Body parts",
@@ -52,7 +52,7 @@
   {
     "filter": "Equipment",
     "name": "assisted",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/assisted_gukduh.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/assisted_gukduh.jpg"
   },
   {
     "filter": "Equipment",
@@ -82,27 +82,27 @@
   {
     "filter": "Equipment",
     "name": "dumbbell",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/dumbbell_uakfyd.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/dumbbell_uakfyd.jpg"
   },
   {
     "filter": "Equipment",
     "name": "elliptical machine",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/elliptical_machine_wgwuxq.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/elliptical_machine_wgwuxq.jpg"
   },
   {
     "filter": "Equipment",
     "name": "ez barbell",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/ez_barbell_vjkcrp.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/ez_barbell_vjkcrp.jpg"
   },
   {
     "filter": "Equipment",
     "name": "hammer",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/hammer_rkogqp.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/hammer_rkogqp.jpg"
   },
   {
     "filter": "Equipment",
     "name": "kettlebell",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553685/kettlebell_tnr2tr.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/kettlebell_tnr2tr.jpg"
   },
   {
     "filter": "Equipment",
@@ -227,7 +227,7 @@
   {
     "filter": "Muscles",
     "name": "forearms",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553684/forearms_bw15z9.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553684/categories/forearms_bw15z9.jpg"
   },
   {
     "filter": "Muscles",
@@ -277,7 +277,7 @@
   {
     "filter": "Muscles",
     "name": "triceps",
-    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553684/triceps_koatge.jpg"
+    "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694553684/categories/triceps_koatge.jpg"
   },
   {
     "filter": "Muscles",

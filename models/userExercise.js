@@ -1,7 +1,18 @@
 const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
+const Joi = require("joi");
 
-const exerciseSchema = new Schema(
+const userExerciseSchema = new Schema(
   {
+    exercise: {
+      type: String,
+      required: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
     time: {
       type: Number,
       required: true,
@@ -34,29 +45,20 @@ const exerciseSchema = new Schema(
         message: "Invalid date format",
       },
     },
-    name: {
-      type: String,
-      required: true,
-    },
-    // // done: {
-    // //   type: Boolean,
-    // //   required: true,
-    // // },
+    
   },
 
   { versionKey: false, timestamps: true }
 );
 
-const Exercise = model("Exercise", exerciseSchema);
-exerciseSchema.post("save", handleMongooseError);
+const UserExercise = model("user_exercise", userExerciseSchema);
+userExerciseSchema.post("save", handleMongooseError);
 
 const addExerciseSchema = Joi.object({
-  owner: Joi.object().required(),
+  exercise: Joi.string().required(),
   time: Joi.number().min(1).required(),
   calories: Joi.number().min(1).required(),
   date: Joi.date().iso().required(),
-  name: Joi.string().required(),
-  done: Joi.boolean().required(),
 });
 
 const updateExerciseSchema = Joi.boolean().required();
@@ -66,4 +68,4 @@ const schemas = {
   updateExerciseSchema,
 };
 
-module.exports = { Exercise, schemas };
+module.exports = { UserExercise, schemas };
