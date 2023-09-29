@@ -181,15 +181,15 @@ const calculateNormsCtrl = async (req, res, next) => {
 const updateNameAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
   const { name, avatarUrl } = req.body;
-  const { path: tempUpload, originalname } = req.file;
+  // const { path: tempUpload, originalname } = req.file;
 
   try {
-    const filename = `${_id}_${originalname}`;
-    const resultUpload = path.join(avatarsDir, filename);
-    const resizeImage = await Jimp.read(tempUpload);
-    await resizeImage.resize(250, 250);
-    await resizeImage.writeAsync(tempUpload);
-    await fs.rename(tempUpload, resultUpload);
+    // const filename = `${_id}_${originalname}`;
+    // const resultUpload = path.join(avatarsDir, filename);
+    // const resizeImage = await Jimp.read(tempUpload);
+    // await resizeImage.resize(250, 250);
+    // await resizeImage.writeAsync(tempUpload);
+    // await fs.rename(tempUpload, resultUpload);
 
     const updatedData = {};
     if (name) {
