@@ -30,9 +30,15 @@ router.patch(
   "/updateProfile",
   auth,
   validateBody(schemas.updateNameAvatarSchema),
+  upload.single("avatar"),
   ctrl.updateNameAvatarCtrl
 );
-router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
+
+router.patch(
+  "/updateProfile",
+  upload.single("avatar"),
+  ctrl.updateNameAvatarCtrl
+);
 router.post(
   "/calculate",
   auth,

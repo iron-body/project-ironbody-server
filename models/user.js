@@ -76,7 +76,23 @@ const updateNameAvatarSchema = Joi.object({
   name: Joi.string().min(2),
   avatarUrl: Joi.string().uri(),
 });
+// const baseUserSchema = {
+//   name: Joi.string().min(2),
+//   email: Joi.string().pattern(emailRegex),
+//   password: Joi.string().pattern(passwordRegex).messages({
+//     "string.pattern.base":
+//       "Пароль повинен мати всього 7 символів і включати 6 букв та 1 цифру",
+//     "any.required": "Пароль обов'язковий для заповнення",
+//   }),
+//   avatarUrl: Joi.string().uri(),
+// };
 
+// const updateUserSchema = Joi.object({
+//   ...baseUserSchema,
+// });
+// const updateNameAvatarSchema = Joi.object({
+//   ...baseUserSchema,
+// });
 const schemas = {
   registerSchema,
   loginSchema,
