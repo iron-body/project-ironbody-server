@@ -8,14 +8,21 @@ router.get("/", auth, ctrl.getAllExercises);
 // router.get("/", auth, ctrl.getExercisesByDate);
 // router.get("/:id", auth, ctrl.getExercise);
 
-
-
 router.delete("/", auth, ctrl.deleteExercise);
-router.post("/", auth, validateBody(schemas.addExerciseSchema), ctrl.createExercise);
-router.patch("/:id", auth, validateBody(schemas.updateExerciseSchema));
+router.post(
+  "/",
+  auth,
+  validateBody(schemas.addExerciseSchema),
+  ctrl.createExercise
+);
+router.put(
+  "/:id",
+  auth,
+  validateBody(schemas.updateExerciseSchema),
+  ctrl.updateExercise
+);
 
 // from userExerc
 router.get("/byDate", auth, ctrl.getExercisesByDate);
-
 
 module.exports = router;

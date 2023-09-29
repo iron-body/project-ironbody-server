@@ -1,19 +1,19 @@
-const { Schema, model } = require('mongoose');
-const { handleMongooseError } = require('../helpers');
-const Joi = require('joi');
+const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
+const Joi = require("joi");
 
 const userProductsSchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'users',
+      ref: "users",
       required: true,
     },
     title: {
       type: String,
       required: true,
     },
-    category: { type: String, required: [true, 'You forget to add category'] },
+    category: { type: String, required: [true, "You forget to add category"] },
     calories: {
       type: Number,
       required: true,
@@ -22,12 +22,12 @@ const userProductsSchema = new Schema(
         validator: function (value) {
           return value >= 1;
         },
-        message: 'Calories must be greater than or equal to 1',
+        message: "Calories must be greater than or equal to 1",
       },
     },
     amount: {
       type: Number,
-      required: [true, 'Enter amount of products in gramm'],
+      required: [true, "Enter amount of products in gramm"],
       min: 1,
       default: 100,
     },
@@ -42,18 +42,18 @@ const userProductsSchema = new Schema(
     },
     productid: {
       type: Schema.Types.ObjectId,
-      ref: 'products',
+      ref: "products",
       required: true,
     },
   },
   {
     versionKey: false,
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
   }
 );
 
-userProductsSchema.post('save', handleMongooseError);
-const UserProduct = model('user_product', userProductsSchema);
+userProductsSchema.post("save", handleMongooseError);
+const UserProduct = model("user_product", userProductsSchema);
 
 const addUserProductsSchema = Joi.object({
   title: Joi.string().required(),
@@ -67,6 +67,8 @@ const addUserProductsSchema = Joi.object({
 
 const updateUserProductsSchema = Joi.object({
   done: Joi.boolean().required(),
+  calories: Joi.number().min(1).required(),
+  amount: Joi.number().min(1).required(),
 });
 
 const userProductsSchemas = {

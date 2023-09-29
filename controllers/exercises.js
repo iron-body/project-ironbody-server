@@ -2,34 +2,29 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 const { Exercise } = require("../models/exercise");
 const { UserExercise } = require("../models/userExercise");
 const moment = require("moment");
+const { UserProduct } = require("../models/userProduct");
 
-
-const updateURL = async (req,res)=>{
-
-const updateResult = await Exercise.updateMany(
-    { },
-    [
-      {
-        $set: {
-          gifUrl: {
-            $concat: [
-              "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/", //ваша частина url
-              { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] }
-            ]
-          }
-        }
-      }
-    ]
-  );
-  res.status(201).json(updateResult)
-}
-
-
+const updateURL = async (req, res) => {
+  const updateResult = await Exercise.updateMany({}, [
+    {
+      $set: {
+        gifUrl: {
+          $concat: [
+            "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/", //ваша частина url
+            { $arrayElemAt: [{ $split: ["$gifUrl", "/"] }, -1] },
+          ],
+        },
+      },
+    },
+  ]);
+  res.status(201).json(updateResult);
+};
 
 const getAllExercises = async (req, res) => {
   const {
     // limit = 25, page = 1,
-    date, done
+    date,
+    done,
   } = req.query;
   // const startFrom = (+page - 1) * +limit;
   // Get total items
@@ -54,9 +49,9 @@ const getAllExercises = async (req, res) => {
     ...(typeof done !== "undefined" && {
       done,
     }),
-  })
-    // .limit(+limit)
-    // .skip(startFrom);
+  });
+  // .limit(+limit)
+  // .skip(startFrom);
   res.status(200).json({
     dataList,
     // limit,
@@ -68,22 +63,20 @@ const getAllExercises = async (req, res) => {
 const createExercise = async (req, res) => {
   const { _id: owner } = req.user;
 
-const newExercise = await UserExercise.create({ ...req.body, owner }); 
+  const newExercise = await UserExercise.create({ ...req.body, owner });
   res.status(201).json(newExercise);
 };
 
-
-
 const getExercisesByDate = async (req, res) => {
   const { date } = req.query;
-  console.log("date", date)
+  console.log("date", date);
   const { _id: owner } = req.user;
   // Check if exist
   const getExercise = await UserExercise.find({
     date,
-    owner
-  }).populate("owner", "name email");
-    // .select("date");
+    owner,
+  });
+  // .select("date");
   if (!getExercise) {
     throw HttpError(404, `The exercise with "${date}" not found`);
   }
@@ -95,7 +88,10 @@ const deleteExercise = async (req, res) => {
   const { _id: owner } = req.user;
 
   if (!id || !date) {
-    throw HttpError(400, "Both 'exercise id' and 'date' must be provided in the request body");
+    throw HttpError(
+      400,
+      "Both 'exercise id' and 'date' must be provided in the request body"
+    );
   }
 
   // Перевіряємо, чи існує вправа з вказаним id, датою та власником
@@ -106,7 +102,10 @@ const deleteExercise = async (req, res) => {
   }).select("id");
 
   if (!getExercise) {
-    throw HttpError(404, `The exercise with id "${id}", date "${date}", and owner "${owner}" not found`);
+    throw HttpError(
+      404,
+      `The exercise with id "${id}", date "${date}", and owner "${owner}" not found`
+    );
   }
 
   // Видаляємо вправу, враховуючи id, дату та власника
@@ -121,32 +120,27 @@ const deleteExercise = async (req, res) => {
   });
 };
 
-
-
-
-
 // контролерів немає в тз
 const updateExercise = async (req, res) => {
-  const { id } = req.params;
-  const { done = false } = req.body;
-  // Check if exist
+  const { body, user, params } = req;
   const getExercise = await UserExercise.findOne({
-    _id: id,
+    _id: params.id,
+    owner: user._id,
   }).select("_id");
   if (!getExercise) {
-    throw HttpError(404, `The exercise with id "${id}" not found`);
+    throw HttpError(404, `The exercise with id "${params.id}" not found`);
   }
-  // Update exercise
-  await UserExercise.updateOne(
+  const updatedExercise = await UserExercise.updateOne(
     {
-      _id: id,
+      _id: params.id,
+      owner: user._id,
     },
     {
-      done,
+      ...body,
     }
   );
   res.status(200).json({
-    ok: `The exercise with id "${id}" was successfully updated`,
+    updatedExercise,
   });
 };
 
@@ -154,20 +148,21 @@ const getUserExercises = async (req, res) => {
   // ? додаємо id юзера
   const { _id: owner } = req.user;
 
-//   const { page = 1, limit = 10, favorite } = req.query;
+  //   const { page = 1, limit = 10, favorite } = req.query;
 
-
-//   // ? в find 3-й пар - дод налашт - є вбудовані skip та limit
-//   const skip = (page - 1) * limit;
+  //   // ? в find 3-й пар - дод налашт - є вбудовані skip та limit
+  //   const skip = (page - 1) * limit;
 
   // ? додаю id при отриманні контактів щоб видавалися контакти тільки цієї людини
-    const data = await UserExercise.find({ owner }, "-createdAt -updatedAt",
-//         {
-//     skip,
-//     limit,
-//     favorite,
-//   }).populate("owner", "name email"); // ? додаємо populate щоб отр повну інформацію по полю яке є аргументом/ !другий аргумент, це уточнення, якщо не потр все! // ? дозв підкл фільтрацію
-    ).populate("owner");
+  const data = await UserExercise.find(
+    { owner },
+    "-createdAt -updatedAt"
+    //         {
+    //     skip,
+    //     limit,
+    //     favorite,
+    //   }).populate("owner", "name email"); // ? додаємо populate щоб отр повну інформацію по полю яке є аргументом/ !другий аргумент, це уточнення, якщо не потр все! // ? дозв підкл фільтрацію
+  ).populate("owner");
   res.status(200).json(data);
 };
 const getExercise = async (req, res) => {
@@ -181,7 +176,6 @@ const getExercise = async (req, res) => {
   }
   res.status(200).json(getExercise);
 };
-
 
 // ? перероблені роути
 // const deleteExercise = async (req, res) => {
@@ -213,7 +207,7 @@ const getExercise = async (req, res) => {
 //   });
 // };
 
-// 
+//
 module.exports = {
   updateURL: ctrlWrapper(updateURL),
   createExercise: ctrlWrapper(createExercise),
@@ -224,4 +218,3 @@ module.exports = {
   getAllExercises: ctrlWrapper(getAllExercises),
   getExercise: ctrlWrapper(getExercise),
 };
-

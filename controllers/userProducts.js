@@ -1,6 +1,6 @@
-const { HttpError, ctrlWrapper } = require('../helpers');
-const { UserProduct } = require('../models/userProduct');
-const moment = require('moment');
+const { HttpError, ctrlWrapper } = require("../helpers");
+const { UserProduct } = require("../models/userProduct");
+const moment = require("moment");
 
 const getUserProduct = async (req, res) => {
   const { userProductId, date } = req.params;
@@ -32,8 +32,8 @@ const getAllUserProducts = async (req, res) => {
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+        $lte: moment(date, "DD.MM.YYYY").endOf("day").toDate(),
+        $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
       },
     }),
   });
@@ -42,8 +42,8 @@ const getAllUserProducts = async (req, res) => {
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD.MM.YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD.MM.YYYY').startOf('day').toDate(),
+        $lte: moment(date, "DD.MM.YYYY").endOf("day").toDate(),
+        $gte: moment(date, "DD.MM.YYYY").startOf("day").toDate(),
       },
     }),
   })
@@ -51,7 +51,7 @@ const getAllUserProducts = async (req, res) => {
     .skip(startFrom);
 
   if (!dataList) {
-    throw HttpError(404, 'Not found!');
+    throw HttpError(404, "Not found!");
   }
 
   const summCalories = dataList.reduce((acuum, product) => {
@@ -88,14 +88,34 @@ const createUserProduct = async (req, res) => {
   });
 };
 
+const updateUserProduct = async (req, res) => {
+  const { body, user, params } = req;
+  const getProduct = await UserProduct.findOne({
+    _id: params.id,
+    owner: user._id,
+  }).select("_id");
+  if (!getProduct) {
+    throw HttpError(404, `The product with id "${params.id}" not found`);
+  }
+  const updatedProduct = await UserProduct.updateOne(
+    {
+      _id: params.id,
+      owner: user._id,
+    },
+    {
+      ...body,
+    }
+  );
+  res.status(200).json({
+    updatedProduct,
+  });
+};
+
 const deleteUserProduct = async (req, res) => {
   const { userProductId } = req.params;
   const { date } = req.query;
   const { _id: userId } = req.user;
 
-  if (!userProductId || !date) {
-    throw HttpError(400, 'For deleting a product you need to provide date and product ID');
-  }
   const formattedDate = new Date(date).toISOString();
 
   const query = {};
@@ -123,4 +143,5 @@ module.exports = {
   deleteUserProduct: ctrlWrapper(deleteUserProduct),
   getAllUserProducts: ctrlWrapper(getAllUserProducts),
   getUserProduct: ctrlWrapper(getUserProduct),
+  updateUserProduct: ctrlWrapper(updateUserProduct),
 };

@@ -45,7 +45,6 @@ const userExerciseSchema = new Schema(
         message: "Invalid date format",
       },
     },
-    
   },
 
   { versionKey: false, timestamps: true }
@@ -61,7 +60,11 @@ const addExerciseSchema = Joi.object({
   date: Joi.date().iso().required(),
 });
 
-const updateExerciseSchema = Joi.boolean().required();
+const updateExerciseSchema = Joi.object({
+  done: Joi.boolean().required(),
+  calories: Joi.number().min(1).required(),
+  time: Joi.number().min(1).required(),
+});
 
 const schemas = {
   addExerciseSchema,

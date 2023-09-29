@@ -25,16 +25,6 @@ const dataUsersSchema = new Schema(
     //   type: String,
     //   required: true,
     // },
-    name: {
-      type: String,
-      // required: [true, "Name is required"],
-    },
-    email: {
-      type: String,
-      // match: emailRegex,
-      // unique: true,
-      // required: true,
-    },
     height: {
       type: Number,
       min: 150,
@@ -89,11 +79,12 @@ const dataUsersSchema = new Schema(
     },
     calorieNorm: {
       type: Number,
-   
+
       // required: true,
-    },sportTimeNorm: {
+    },
+    sportTimeNorm: {
       type: Number,
-   
+
       // required: true,
     },
 
@@ -102,8 +93,6 @@ const dataUsersSchema = new Schema(
       ref: "user", // ? ref - це назва колекції з якої це id
       requered: true,
     },
-   
-
   },
   { versionKey: false, timestamps: true }
 );
