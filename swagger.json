@@ -1172,7 +1172,7 @@
             "userId": {
               "type": "number",
               "description": "User's id",
-              "example": "32143232436545474"
+              "example": "650f09feadd4989aaf3cc959"
             }
         },
         "example": 
