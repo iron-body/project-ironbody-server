@@ -127,7 +127,7 @@
    
     "/users/current": {
       "get": {
-        "tags": ["UserPrifile"],
+        "tags": ["UserProfile"],
         "summary": "User's information",
         "security": [{ "Bearer": [] }],
         
@@ -151,7 +151,7 @@
     },
      "/users/updateProfile": {
       "post": {
-        "tags": ["UserPrifile"],
+        "tags": ["UserProfile"],
         "summary": "Update user's name or & user's avatar",
      
         "security": [{ "Bearer": [] }],
