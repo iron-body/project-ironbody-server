@@ -28,14 +28,14 @@ const getAllUserProducts = async (req, res) => {
   const { limit = 25, page = 1, date } = req.query;
   const startFrom = (+page - 1) * +limit;
 
-  const formattedDate = moment(date, 'DD/MM/YYYY');
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
   // Get total items
   const totalItems = await UserProduct.countDocuments({
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD/MM/YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD/MM/YYYY').startOf('day').toDate(),
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
       },
     }),
   });
@@ -44,8 +44,8 @@ const getAllUserProducts = async (req, res) => {
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(date, 'DD/MM/YYYY').endOf('day').toDate(),
-        $gte: moment(date, 'DD/MM/YYYY').startOf('day').toDate(),
+        $lte: moment(formattedDate).endOf('day').toDate(),
+        $gte: moment(formattedDate).startOf('day').toDate(),
       },
     }),
   })
