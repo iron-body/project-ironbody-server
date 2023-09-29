@@ -33,7 +33,12 @@ router.patch(
   ctrl.updateNameAvatarCtrl
 );
 router.patch("/avatars", auth, upload.single("avatar"), ctrl.updateAvatarCtrl);
-
+router.post(
+  "/calculate",
+  auth,
+  validateBody(userDataSchemas.calculateSchema),
+  ctrl.calculateNormsCtrl
+);
 // оновлення даних користувача
 router.patch(
   "/updateParamsUser",
@@ -43,8 +48,7 @@ router.patch(
 );
 
 // отримання даних корістувача
-router.get('/userData', auth, ctrlUd.getAll);
-
+router.get("/userData", auth, ctrlUd.getAll);
 
 // завантаж клоудінарі
 // router.post('/cloudinary', cloudCtrl.onceUploadFilesAndChangeUrl);
@@ -52,6 +56,5 @@ router.get('/userData', auth, ctrlUd.getAll);
 
 // router.patch("/updateURL",  bdExCtrl.updateURL);
 // router.patch("/updateURL",  bdCtrl.updateURL);
-
 
 module.exports = router;
