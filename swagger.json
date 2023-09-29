@@ -1228,7 +1228,7 @@
             "userId": {
               "type": "number",
               "description": "User's id",
-              "example": "32143232436545474"
+              "example": "65129e077a2e6f57adbfeceb"
             },
             "name": {
               "type": "string",
@@ -1240,13 +1240,15 @@
             "description": "User's email",
             "format": "email"
           },
-            "userPhoto": {
+            "avatarUrl": {
               "type": "string",
-              "description": "User's photo URL"
+              "description": "User's avatar URL"
             } 
         },
         "example": 
-          { "name": "VictorD", "email": "mail1@gmail.com", "userId": "1",  "userPhoto": "???"} 
+          { "name": "Dnipro9",
+    "email": "dnipro9@mail.com",
+    "avatarUrl": "//www.gravatar.com/avatar/f5b7f1ac0be48d98b46a157a22c0332f"} 
       },
 
       "RefreshingRequest": {
