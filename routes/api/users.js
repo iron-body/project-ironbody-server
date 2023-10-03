@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const { schemas } = require("../../models/user");
 // const { updateNameAvatarSchema } = require("../../models/user");
-const { validateBody, auth, upload } = require("../../middlewares");
+const { validateBody, auth } = require("../../middlewares");
 const ctrl = require("../../controllers/users");
 const ctrlUd = require("../../controllers/userData");
 // const cloudCtrl = require('../../controllers/cloudinary')
 // const bdExCtrl = require('../../controllers/exercises')
 // const bdCtrl = require('../../controllers/filters')
+const upload = require("../../middlewares/upload");
 
 const { userDataSchemas } = require("../../models/user_data");
 
@@ -26,19 +27,27 @@ router.post("/logout", auth, ctrl.logoutCtrl);
 //   ctrl.updateUserCtrl
 // );
 // Оновлення імені і/або аватара користувача
-router.patch(
-  "/updateProfile",
-  auth,
-  validateBody(schemas.updateNameAvatarSchema),
-  upload.single("avatar"),
-  ctrl.updateNameAvatarCtrl
-);
+// router.patch(
+//   "/updateProfile",
+//   auth,
+//   validateBody(schemas.updateNameAvatarSchema),
+//   // upload.single("avatar"),
+//   ctrl.updateNameAvatarCtrl
+// );
 
 router.patch(
   "/updateProfile",
+  auth,
   upload.single("avatar"),
+  validateBody(schemas.updateNameAvatarSchema),
   ctrl.updateNameAvatarCtrl
 );
+
+// router.patch(
+//   "/updateProfile",
+//   upload.single("avatar"),
+//   ctrl.updateNameAvatarCtrl
+// );
 router.post(
   "/calculate",
   auth,

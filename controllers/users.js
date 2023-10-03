@@ -150,9 +150,6 @@ const calculateNormsCtrl = async (req, res, next) => {
   res.status(200).json({ calorieNorm, sportTimeNorm });
 };
 
-
-
-
 // const updateUserCtrl = async (req, res) => {
 //   const { _id } = req.user;
 //   const { name, avatarUrl } = req.body;
@@ -178,33 +175,92 @@ const calculateNormsCtrl = async (req, res, next) => {
 //     throw HttpError(400, "No changes provided");
 //   }
 // };
+// ---------------------------попередня ф-я---------------------
+// const updateNameAvatarCtrl = async (req, res) => {
+//   const { _id } = req.user;
+//   const { name } = req.body;
+//   console.log("req.body.name>>>", req.body.name);
+
+//   const { path: tempUpload, originalname } = req.file;
+//   console.log("req.file>>>", req.file);
+//   const filename = `${_id}_${originalname}`;
+
+//   try {
+//     const updatedData = {};
+
+//     if (req.file) {
+//       // const { path: tempUpload, originalname } = req.file;
+//       // const filename = `${_id}_${originalname}`;
+//       const resultUpload = path.join(avatarsDir, filename);
+//       const resizeImage = await Jimp.read(tempUpload);
+//       await resizeImage.resize(250, 250);
+//       await resizeImage.writeAsync(tempUpload);
+//       await fs.rename(tempUpload, resultUpload);
+
+//       updatedData.avatarUrl = path.join("public", "avatars", filename);
+//     }
+
+//     if (name) {
+//       updatedData.name = name;
+//     }
+
+//     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+//       new: true,
+//     });
+
+//     if (!updatedUser) {
+//       throw HttpError(404, "User not found");
+//     }
+
+//     res.status(200).json({
+//       name: updatedUser.name,
+//       avatarUrl: updatedUser.avatarUrl,
+//     });
+//   } catch (error) {
+//     if (req.file) {
+//       // await fs.unlink(req.file.path);
+//       await fs.unlink(tempUpload);
+//     }
+//     throw error;
+//   }
+// };
+// -------------------------------------------------
 const updateNameAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
-  const { name, avatarUrl } = req.body;
-  const { path: tempUpload, originalname } = req.file;
+  const { name } = req.body;
 
-  try {
+  const updatedData = {};
+
+  if (req.file) {
+    const { path: tempUpload, originalname } = req.file;
     const filename = `${_id}_${originalname}`;
     const resultUpload = path.join(avatarsDir, filename);
-    const resizeImage = await Jimp.read(tempUpload);
-    await resizeImage.resize(250, 250);
-    await resizeImage.writeAsync(tempUpload);
-    await fs.rename(tempUpload, resultUpload);
 
-    const updatedData = {};
-    if (name) {
-      updatedData.name = name;
-    }
-    if (avatarUrl) {
+    // Перевіряємо, чи tempUpload існує перед тим, як його перейменовувати
+    if (tempUpload && fs.existsSync(tempUpload)) {
+      const resizeImage = await Jimp.read(tempUpload);
+      await resizeImage.resize(250, 250);
+      await resizeImage.writeAsync(resultUpload);
+      await fs.unlink(tempUpload); // Видаляємо тимчасовий файл
       updatedData.avatarUrl = path.join("public", "avatars", filename);
+    } else {
+      res.status(400).json({ error: "Invalid file" });
+      return;
     }
+  }
 
+  if (name) {
+    updatedData.name = name;
+  }
+
+  try {
     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
       new: true,
     });
 
     if (!updatedUser) {
-      throw HttpError(404, "User not found");
+      res.status(404).json({ error: "User not found" });
+      return;
     }
 
     res.status(200).json({
@@ -212,10 +268,49 @@ const updateNameAvatarCtrl = async (req, res) => {
       avatarUrl: updatedUser.avatarUrl,
     });
   } catch (error) {
-    await fs.unlink(tempUpload);
-    throw error;
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// ============================================================
+// const updateNameAvatarCtrl = async (req, res) => {
+//   const { _id } = req.user;
+//   const { name, avatarUrl } = req.body;
+//   const { path: tempUpload, originalname } = req.file;
+
+//   try {
+//     const filename = `${_id}_${originalname}`;
+//     const resultUpload = path.join(avatarsDir, filename);
+//     const resizeImage = await Jimp.read(tempUpload);
+//     await resizeImage.resize(250, 250);
+//     await resizeImage.writeAsync(tempUpload);
+//     await fs.rename(tempUpload, resultUpload);
+
+//     const updatedData = {};
+//     if (name) {
+//       updatedData.name = name;
+//     }
+//     if (avatarUrl) {
+//       updatedData.avatarUrl = path.join("public", "avatars", filename);
+//     }
+
+//     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+//       new: true,
+//     });
+
+//     if (!updatedUser) {
+//       throw HttpError(404, "User not found");
+//     }
+
+//     res.status(200).json({
+//       name: updatedUser.name,
+//       avatarUrl: updatedUser.avatarUrl,
+//     });
+//   } catch (error) {
+//     await fs.unlink(tempUpload);
+//     throw error;
+//   }
+// };
 
 // оновлення даних користувача
 const updateParamsUserCtrl = async (req, res) => {
