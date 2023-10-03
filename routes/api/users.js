@@ -38,7 +38,7 @@ router.post("/logout", auth, ctrl.logoutCtrl);
 router.patch(
   "/updateProfile",
   auth,
-  upload.single("avatar"),
+  upload.single("avatarUrl"),
   validateBody(schemas.updateNameAvatarSchema),
   ctrl.updateNameAvatarCtrl
 );

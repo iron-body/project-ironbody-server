@@ -1,17 +1,30 @@
-const { ctrlWrapper, HttpError } = require("../helpers");
-const { User } = require("../models/user");
+// const { ctrlWrapper, HttpError } = require("../helpers");
+// const { User } = require("../models/user");
+// const { UserData, userDataSchemas } = require("../models/user_data");
+// const bcrypt = require("bcrypt");
+// const jwt = require("jsonwebtoken");
+// const gravatar = require("gravatar");
+// const Jimp = require("jimp");
+// const path = require("path");
+// const fs = require("fs/promises");
+
+// const { SECRET_KEY } = process.env;
+// const avatarsDir = path.join(__dirname, "../", "public", "avatars");
+
 const { UserData, userDataSchemas } = require("../models/user_data");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
-const Jimp = require("jimp");
 const path = require("path");
-const fs = require("fs/promises");
+const { access, constants } = require("fs").promises;
+const fs = require("fs").promises;
+const Jimp = require("jimp");
+const { ctrlWrapper, HttpError } = require("../helpers");
+const { User } = require("../models/user");
 
-const { SECRET_KEY } = process.env;
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
-// дата реєстраціі
+const { SECRET_KEY } = process.env;
 
 // Функція для реєстрації нового користувача
 const registerCtrl = async (req, res, next) => {
@@ -224,11 +237,124 @@ const calculateNormsCtrl = async (req, res, next) => {
 //     throw error;
 //   }
 // };
-// -------------------------------------------------
+// -------------------БІЛЬЩ НОВИЙ КОД------------------------------
+// const updateNameAvatarCtrl = async (req, res) => {
+//   const { _id } = req.user;
+//   const { name } = req.body;
+
+//   const updatedData = {};
+
+//   if (req.file) {
+//     const { path: tempUpload, originalname } = req.file;
+//     const filename = `${_id}_${originalname}`;
+//     const resultUpload = path.join(avatarsDir, filename);
+
+//     // Перевіряємо, чи tempUpload існує перед тим, як його перейменовувати
+//     if (tempUpload && fs.existsSync(tempUpload)) {
+//       const resizeImage = await Jimp.read(tempUpload);
+//       await resizeImage.resize(250, 250);
+//       await resizeImage.writeAsync(resultUpload);
+//       console.log("Шлях до зображення>>>>>: ", resultUpload);
+
+//       await fs.unlink(tempUpload); // Видаляємо тимчасовий файл
+//       updatedData.avatarUrl = path.join(
+//         __dirname,
+//         "public",
+//         "avatars",
+//         filename
+//       );
+//     } else {
+//       res.status(400).json({ error: "Invalid file" });
+//       return;
+//     }
+//   }
+
+//   if (name) {
+//     updatedData.name = name;
+//   }
+
+//   try {
+//     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+//       new: true,
+//     });
+
+//     if (!updatedUser) {
+//       res.status(404).json({ error: "User not found" });
+//       return;
+//     }
+
+//     res.status(200).json({
+//       name: updatedUser.name,
+//       avatarUrl: updatedUser.avatarUrl,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+// ===================ДОДАВ TRY|CATCH===============================================
+// const updateNameAvatarCtrl = async (req, res) => {
+//   const { _id } = req.user;
+//   const { name } = req.body;
+//   const updatedData = {};
+
+//   if (req.file) {
+//     const { path: tempUpload, originalname } = req.file;
+//     const filename = `${_id}_${originalname}`;
+//     const resultUpload = path.join(avatarsDir, filename);
+
+//     // Перевіряємо, чи tempUpload існує перед тим, як його перейменовувати
+//     if (tempUpload && fs.existsSync(tempUpload)) {
+//       try {
+//         const resizeImage = await Jimp.read(tempUpload);
+//         await resizeImage.resize(250, 250);
+//         await resizeImage.writeAsync(resultUpload);
+//         console.log("Шлях до зображення: ", resultUpload);
+
+//         await fs.unlink(tempUpload); // Видаляємо тимчасовий файл
+//         updatedData.avatarUrl = path.join(
+//           __dirname,
+//           "public",
+//           "avatars",
+//           filename
+//         );
+//       } catch (error) {
+//         console.error("Помилка при обробці зображення:", error);
+//         res.status(500).json({ error: "Internal server error" });
+//         return;
+//       }
+//     } else {
+//       res.status(400).json({ error: "Invalid file" });
+//       return;
+//     }
+//   }
+
+//   if (name) {
+//     updatedData.name = name;
+//   }
+
+//   try {
+//     const updatedUser = await User.findByIdAndUpdate(_id, updatedData, {
+//       new: true,
+//     });
+
+//     if (!updatedUser) {
+//       res.status(404).json({ error: "User not found" });
+//       return;
+//     }
+
+//     res.status(200).json({
+//       name: updatedUser.name,
+//       avatarUrl: updatedUser.avatarUrl,
+//     });
+//   } catch (error) {
+//     console.error("Помилка при оновленні користувача:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+// ====================додав промис acces b constatans===============================
 const updateNameAvatarCtrl = async (req, res) => {
   const { _id } = req.user;
   const { name } = req.body;
-
   const updatedData = {};
 
   if (req.file) {
@@ -236,15 +362,30 @@ const updateNameAvatarCtrl = async (req, res) => {
     const filename = `${_id}_${originalname}`;
     const resultUpload = path.join(avatarsDir, filename);
 
-    // Перевіряємо, чи tempUpload існує перед тим, як його перейменовувати
-    if (tempUpload && fs.existsSync(tempUpload)) {
+    try {
+      await access(tempUpload, constants.F_OK);
+    } catch (error) {
+      console.error("Файл не существует или произошла ошибка:", error);
+      res.status(400).json({ error: "Invalid file" });
+      return;
+    }
+
+    try {
       const resizeImage = await Jimp.read(tempUpload);
       await resizeImage.resize(250, 250);
       await resizeImage.writeAsync(resultUpload);
+      console.log("Шлях до зображення: ", resultUpload);
+
       await fs.unlink(tempUpload); // Видаляємо тимчасовий файл
-      updatedData.avatarUrl = path.join("public", "avatars", filename);
-    } else {
-      res.status(400).json({ error: "Invalid file" });
+      updatedData.avatarUrl = path.join(
+        __dirname,
+        "public",
+        "avatars",
+        filename
+      );
+    } catch (error) {
+      console.error("Помилка при обробці зображення:", error);
+      res.status(500).json({ error: "Internal server error" });
       return;
     }
   }
@@ -259,8 +400,7 @@ const updateNameAvatarCtrl = async (req, res) => {
     });
 
     if (!updatedUser) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      throw HttpError(404, "User not found");
     }
 
     res.status(200).json({
@@ -268,8 +408,13 @@ const updateNameAvatarCtrl = async (req, res) => {
       avatarUrl: updatedUser.avatarUrl,
     });
   } catch (error) {
+    console.error("Помилка при оновленні користувача:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+module.exports = {
+  updateNameAvatarCtrl: ctrlWrapper(updateNameAvatarCtrl),
 };
 
 // ============================================================
