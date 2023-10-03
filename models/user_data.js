@@ -85,9 +85,21 @@ const dataUsersSchema = new Schema(
 dataUsersSchema.post("save", handleMongooseError);
 
 const userDataSchema = Joi.object({
-  height: Joi.number().min(150).required(),
-  currentWeight: Joi.number().min(35).required(),
-  desiredWeight: Joi.number().min(35).required(),
+  height: Joi.number().min(150).max(250).required().messages({
+    "number.min": "Мінімальний зріст повиннен бути більше 150 см",
+    "number.max": "Максимальний зріст повиннен бути менше 250 см",
+    "any.required": "Параметри зросту обов'язкові для заповнення",
+  }),
+  currentWeight: Joi.number().min(35).max(200).required().messages({
+    "number.min": "Мінімальна вага повинна бути більше 35 кг",
+    "number.max": "Максимальна вага повинна бути менше 200 кг",
+    "any.required": "Поточна вага обов'язкова для заповнення",
+  }),
+  desiredWeight: Joi.number().min(35).max(200).required().messages({
+    "number.min": "Мінімальна бажана вага повинна бути більше 35 кг",
+    "number.max": "Максимальна бажана вага повинна бути менше 200 кг",
+    "any.required": "Бажана вага обов'язкова для заповнення",
+  }),
   birthday: Joi.date()
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000)) // Встановлюємо максимальну дату, яка відповідає 18 рокам назад
     .iso()
@@ -114,9 +126,18 @@ const userDataSchema = Joi.object({
   },
 });
 const calculateSchema = Joi.object({
-  height: Joi.number().min(150).required(),
-  currentWeight: Joi.number().min(35).required(),
-  desiredWeight: Joi.number().min(35).required(),
+  height: Joi.number().min(150).max(250).required().messages({
+    "number.min": "Мінімальний зріст повиннен бути більше 150 см",
+    "number.max": "Максимальний зріст повиннен бути менше 250 см",
+  }),
+  currentWeight: Joi.number().min(35).max(200).required().messages({
+    "number.min": "Мінімальна вага повинна бути більше 35 кг",
+    "number.max": "Максимальна вага повинна бути менше 200 кг",
+  }),
+  desiredWeight: Joi.number().min(35).required().max(200).required().messages({
+    "number.min": "Мінімальна бажана вага повинна бути більше 35 кг",
+    "number.max": "Максимальна бажана вага повинна бути менше 200 кг",
+  }),
   birthday: Joi.date()
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
     .iso()
@@ -133,9 +154,18 @@ const calculateSchema = Joi.object({
 });
 // оновлення даних користувача
 const updateParamsUserSchema = Joi.object({
-  height: Joi.number().min(150),
-  currentWeight: Joi.number().min(35),
-  desiredWeight: Joi.number().min(35),
+  height: Joi.number().min(150).max(250).messages({
+    "number.min": "Мінімальний зріст повиннен бути більше 150 см",
+    "number.max": "Максимальний зріст повиннен бути менше 250 см",
+  }),
+  currentWeight: Joi.number().min(35).max(200).messages({
+    "number.min": "Мінімальна вага повинна бути більше 35 кг",
+    "number.max": "Максимальна вага повинна бути менше 200 кг",
+  }),
+  desiredWeight: Joi.number().min(35).max(200).messages({
+    "number.min": "Мінімальна бажана вага повинна бути більше 35 кг",
+    "number.max": "Максимальна бажана вага повинна бути менше 200 кг",
+  }),
   birthday: Joi.date()
     .max(new Date(Date.now() - 18 * 365 * 24 * 60 * 60 * 1000))
     .iso(),
