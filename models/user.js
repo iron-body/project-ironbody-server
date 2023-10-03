@@ -3,7 +3,7 @@ const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
 
 const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-const passwordRegex = /^(?=.*[a-zA-Z]{6})(?=.*\d)[a-zA-Z\d]{7}$/;
+const passwordRegex = /^(?=.*[a-zA-Z]{6})(?=.*\d)[a-zA-Z\d]{7,}$/;
 
 const userSchema = new Schema(
   {
