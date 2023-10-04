@@ -34,11 +34,12 @@ router.patch(
   ctrl.updateNameAvatarCtrl
 );
 
-router.patch(
-  "/updateProfile",
-  upload.single("avatar"),
-  ctrl.updateNameAvatarCtrl
-);
+// router.patch(
+//   "/updateProfile",
+//   auth,
+//   upload.single("avatar"),
+//   ctrl.updateNameAvatarCtrl
+// );
 router.post(
   "/calculate",
   auth,

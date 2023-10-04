@@ -1,7 +1,7 @@
+const moment = require('moment');
 const { HttpError, ctrlWrapper } = require('../helpers');
 const { Exercise } = require('../models/exercise');
 const { UserExercise } = require('../models/userExercise');
-const moment = require('moment');
 
 // const updateURL = async (req,res)=>{
 
@@ -68,14 +68,23 @@ const getAllExercises = async (req, res) => {
 };
 const createExercise = async (req, res) => {
   const { _id: owner } = req.user;
+  const { date, exercise } = req.body;
+  const exerciseData = await Exercise.findById(exercise, "-_id name bodyPart gifUrl");
+  const { name, bodyPart, gifUrl } = exerciseData;
+  console.log(exerciseData)
+ if (!exerciseData) {
+    throw HttpError(404, `The exercise with id "${exercise}" not found`);
+  }
 
-  const newExercise = await UserExercise.create({ ...req.body, owner });
+  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+
+  const newExercise = await UserExercise.create({ ...req.body, name, bodyPart, gifUrl, date: formattedDate, owner });
   res.status(201).json(newExercise);
 };
 
 const getExercisesByDate = async (req, res) => {
   const { date } = req.query;
-  // console.log('date', date);
+  
   const formattedDate = moment.utc(date, 'DD/MM/YYYY');
   const { _id: owner } = req.user;
   // Check if exist

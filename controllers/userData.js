@@ -25,7 +25,7 @@ const getAll = async (req, res) => {
 //     limit,
 //     favorite,
 //   }).populate("owner", "name email"); // ? додаємо populate щоб отр повну інформацію по полю яке є аргументом/ !другий аргумент, це уточнення, якщо не потр все! // ? дозв підкл фільтрацію
-    ).populate("owner", "name email");
+    )
   res.status(200).json(data);
 };
 

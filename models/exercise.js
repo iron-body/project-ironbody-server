@@ -26,23 +26,30 @@ const exerciseSchema = new Schema(
       },
     },
     date: {
-      type: Date,
+       type: Date,
       required: true,
-      validate: {
-        validator: function (value) {
-          return !isNaN(value);
-        },
-        message: "Invalid date format",
-      },
+      default: Date.now,
+      // type: Date,
+      // required: true,
+      // validate: {
+      //   validator: function (value) {
+      //     return !isNaN(value);
+      //   },
+      //   message: "Invalid date format",
+      // },
     },
     name: {
       type: String,
       required: true,
     },
-    // // done: {
-    // //   type: Boolean,
-    // //   required: true,
-    // // },
+    bodyPart: {
+      type: String,
+      
+    },
+    gifUrl: {
+      type: String,
+    },
+   
   },
 
   { versionKey: false, timestamps: true }

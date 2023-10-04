@@ -8,6 +8,16 @@ const userExerciseSchema = new Schema(
       type: String,
       required: true,
     },
+    name: {
+      type: String,
+    },
+    bodyPart: {
+      type: String,
+     
+    },
+    gifUrl: {
+      type: String,
+    },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user",
@@ -38,12 +48,15 @@ const userExerciseSchema = new Schema(
     date: {
       type: Date,
       required: true,
-      validate: {
-        validator: function (value) {
-          return !isNaN(value);
-        },
-        message: "Invalid date format",
-      },
+      default: Date.now,
+      // type: Date,
+      // required: true,
+      // validate: {
+      //   validator: function (value) {
+      //     return !isNaN(value);
+      //   },
+      //   message: "Invalid date format",
+      // },
     },
     
   },
@@ -58,7 +71,7 @@ const addExerciseSchema = Joi.object({
   exercise: Joi.string().required(),
   time: Joi.number().min(1).required(),
   calories: Joi.number().min(1).required(),
-  date: Joi.date().iso().required(),
+  date: Joi.allow().required(),
 });
 
 const updateExerciseSchema = Joi.boolean().required();

@@ -93,6 +93,7 @@ const calculateNormsCtrl = async (req, res, next) => {
 
   const formattedBirthday = new Date(birthday).toISOString();
 
+
   // Перевірка чи є користувач повнолітнім
   const today = new Date();
   const birthDate = new Date(formattedBirthday);
@@ -256,7 +257,7 @@ const updateParamsUserCtrl = async (req, res) => {
   if (levelActivity) {
     updatedData.levelActivity = levelActivity;
   }
-  console.log(owner);
+
   // перевіряємо, чи існує запис  userData для даного користувача
   const existingUserData = await UserData.findOne({ owner: owner });
   if (!existingUserData) {

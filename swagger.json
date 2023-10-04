@@ -150,7 +150,7 @@
       }
     },
      "/users/updateProfile": {
-      "post": {
+      "patch": {
         "tags": ["UserProfile"],
         "summary": "Update user's name or & user's avatar",
      
@@ -202,7 +202,7 @@
        
         "responses": {
           "200": {
-            "description": "Successful logout"
+            "description": "Logout success"
             
           },
           "401": {
@@ -213,10 +213,10 @@
       }
     },
 
-    "/calculateNorms/calculate":{
+    "/users/calculate":{
       "post":{
         "tags": ["UserParams"],
-        "summary": "User's parameters",
+        "summary": "Add user's parameters",
         "security": [{ "Bearer": [] }],
         "parameters": [],
       
@@ -250,10 +250,10 @@
         }
       }
     },
-      "/userData": {
+      "/users/userData": {
       "get": {
         "tags": ["UserParams"],
-        "summary": "User info",
+        "summary": "Get user params",
         "security": [{ "Bearer": [] }],
         
         "responses": {
@@ -929,51 +929,7 @@
         }
       }
     },
-     "/exercises?query=01/09/2023": {
-      "get": {
-        "tags": ["Exercises"],
-        "summary": "Exercises list",
-        "security": [{ "Bearer": [] }],
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
-            "description": "exercise's date",
-            "required": true,
-            "schema": {
-              "type": "string"
-           
-            }
-          }
-         
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetExercisesResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {}
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/exercises": {
+        "/exercises": {
       "post": {
         "tags": ["Exercises"],
         "summary": "User add info about exercise by date",
@@ -1013,6 +969,50 @@
         }
       }
     },
+     "/exercises/byDate?date": {
+      "get": {
+        "tags": ["Exercises"],
+        "summary": "Exercises list",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "exercise's date",
+            "required": true,
+            "schema": {
+              "type": "string"
+           
+            }
+          }
+         
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetExercisesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
     "/exercises?exerciseId=12345&date=01/09/2023": {
       "delete": {
         "tags": ["Exercises"],
@@ -1026,7 +1026,6 @@
             "required": true,
             "schema": {
               "type": "string"
-           
             }
           },
           {
@@ -1152,7 +1151,7 @@
           "password": {
             "type": "string",
             "description": "User's password",
-            "example": "Qwerty12"
+            "example": "Qwerty1"
           }
         }
       },
@@ -1169,11 +1168,17 @@
               "description": "User's email",
               "format": "email"
             },
-            "userId": {
-              "type": "number",
-              "description": "User's id",
-              "example": "650f09feadd4989aaf3cc959"
+
+              "accessToken": {
+              "type": "string",
+              "description": "User's accessToken"
+            },
+             "registrationDate": {
+              "type": "string",
+              "description": "User registration date"
             }
+        
+        
         },
         "example": 
           { 
@@ -1181,7 +1186,8 @@
     "name": "string",
     "email": "user@example.com"
   },
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTQ1NzNkNTIwZmY0MWI1NmRiZGJjYiIsImlhdCI6MTY5NTgzMTg2OSwiZXhwIjoxNjk1ODc1MDY5fQ.jM9xj5OtB00vQBelTK-24PJf7ipa44x6BtyBPgKY-60"
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTQ1NzNkNTIwZmY0MWI1NmRiZGJjYiIsImlhdCI6MTY5NTgzMTg2OSwiZXhwIjoxNjk1ODc1MDY5fQ.jM9xj5OtB00vQBelTK-24PJf7ipa44x6BtyBPgKY-60",
+  "registrationDate": "2023-10-02T16:38:56.706Z"
 }
       },
       "AuthentificationRequest": {
@@ -1197,7 +1203,7 @@
           "password": {
             "type": "string",
             "description": "User's password",
-            "example": "Qwerty12"
+            "example": "Qwerty1"
           }
         }
       },
@@ -1208,12 +1214,7 @@
             "accessToken": {
               "type": "string",
               "description": "User's accessToken"
-           
-            },
-            "refreshToken": {
-              "type": "string",
-              "description": "User's refreshToken"
-            } 
+            }
         },
         "example": 
           { 
@@ -1334,7 +1335,10 @@
             "description": "User's levelActivity",
             "enum": [1, 2, 3, 4, 5]
           }
-        }
+        },
+        "example": 
+          { "height": 180, "currentWeight": 100, "desiredWeight": 90,
+           "birthday": "23-12-1989", "blood": 1, "sex": "male", "levelActivity": 2 }
       },
       "UserAddDataResponse": {
         
@@ -1351,8 +1355,7 @@
             } 
         },
         "example": 
-          { "height": 180, "currentWeight": 100, "desiredWeight": 90,
-           "birthday": "23-12-1989", "blood": 1, "sex": "male", "levelActivity": 2 }
+          { "caloriesNorm": 2039, "sportTimeNorm": 100 }
       },
       "UserDataResponse":{
        
@@ -1362,7 +1365,7 @@
           "properties": {
             "_id": {
               "type": "number",
-              "description": "data id",
+              "description": "user data id",
               "example": "32143232436545474"
             },
              "height": {
@@ -1399,13 +1402,37 @@
             "description": "User's levelActivity",
             "enum": [1, 2, 3, 4, 5]
           },
+          "caloriesNorm": {
+              "type": "number",
+              "description": "calculated user's caloriesNorm"
+           
+            },
+            "sportTimeNorm": {
+              "type": "number",
+              "description": "user's sportTimeNorm"
+            },
           "owner": {
               "type": "object",
               "description": "ownerData"
            
             }
           }
-        }
+        },
+        "example": 
+          { "_id": "651b0be75d641eec637f664f",
+    "name": "string",
+    "email": "user1@example.com",
+    "height": 180,
+    "currentWeight": 100,
+    "desiredWeight": 90,
+    "birthday": "Sat Dec 23 1989 03:00:00 GMT+0300 (Eastern European Standard Time)",
+    "blood": 1,
+    "sex": "male",
+    "levelActivity": 2,
+    "calorieNorm": 3730,
+    "sportTimeNorm": 110,
+    "owner": "651af8225e51fc81bf7f82cb" 
+  }
       },
 
       "AllCategoriesResponse":{
@@ -1937,7 +1964,7 @@
         "type": "object",
         "required": ["exercise_id","date", "duration_minutes","calories_burned"],
         "properties": {
-          "exercise_id": {
+          "exercise": {
             "type": "string",
             "description": "exercise_id"
           },
@@ -1946,50 +1973,62 @@
             "description": "exersices date",
             "format": "date"
           },
-          "duration_minutes": {
+          "time": {
             "type": "integer",
             "description": "exersices duration"
            
           },
-          "calories_burned": {
+          "calories": {
             "type": "integer",
             "description": "amount of burned calories"
 
           }
         },
         "example": 
-          { "exercise_id": 12345, "date": "15/09/2023", "duration_minutes": 30, "calories_burned": 200 }
+          { "exercise": "1234df5", "date": "15-09-2023", "time": 30, "calories": 200 }
       },
        
       
       "User'sExerciseResponse": {
           "type": "object",
           "properties": {
-          "exercise_id": {
+             "_id":{
+            "type": "string",
+            "description": "exercise original id"
+          },
+          "exercise": {
             "type": "string",
             "description": "exercise_id"
+          },
+          "owner": {
+              "type": "object",
+              "description": "ownerData"
+           
+            }, "time": {
+            "type": "integer",
+            "description": "exersices duration"
+           
+          },"calories": {
+            "type": "integer",
+            "description": "amount of burned calories"
           },
           "date": {
             "type": "string",
             "description": "exersices date",
             "format": "date"
-          },
-          "duration_minutes": {
-            "type": "integer",
-            "description": "exersices duration"
-           
-          },
-          "calories_burned": {
-            "type": "integer",
-            "description": "amount of burned calories"
-
-          },
-            "owner": {
-              "type": "object",
-              "description": "ownerData"
-           
-            }
-        }
+          }
+            
+        },
+        "example": 
+          { 
+                "_id": "651b15f7fdead099bdf8be9a",
+    "exercise": "5555vv55",
+    "owner": "651af8225e51fc81bf7f82cb",
+    "time": 6,
+    "calories": 500,
+    "date": "2023-12-23T00:00:00.000Z",
+    "createdAt": "2023-10-02T19:11:51.024Z",
+    "updatedAt": "2023-10-02T19:11:51.024Z" }
        
       },
       "UserUpdateExerciseRequest":{
