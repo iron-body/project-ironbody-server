@@ -413,9 +413,9 @@ const updateNameAvatarCtrl = async (req, res) => {
   }
 };
 
-module.exports = {
-  updateNameAvatarCtrl: ctrlWrapper(updateNameAvatarCtrl),
-};
+// module.exports = {
+//   updateNameAvatarCtrl: ctrlWrapper(updateNameAvatarCtrl),
+// };
 
 // ============================================================
 // const updateNameAvatarCtrl = async (req, res) => {
