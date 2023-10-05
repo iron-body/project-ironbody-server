@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { schemas } = require("../../models/exercise");
-const { validateBody, auth } = require("../../middlewares");
+const { auth } = require("../../middlewares");
 const ctrl = require("../../controllers/filters");
 router.get("/", auth, ctrl.getAllFilters);
 router.get("/filtered", auth, ctrl.getFilters);
