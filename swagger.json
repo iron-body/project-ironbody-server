@@ -16,8 +16,9 @@
   "produces": ["application/json", "multipart/form-data"],
   "servers": 
   [
-{ "url": "http://localhost:3000/api" },
-  { "url": "https://iron-body-project-backend.onrender.com/api" }
+    { "url": "https://iron-body-project-backend.onrender.com/api" },
+   { "url": "http://localhost:3000/api" }
+  
 ],
   "tags": [
     {
