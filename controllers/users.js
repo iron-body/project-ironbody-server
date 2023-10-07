@@ -132,7 +132,6 @@ const calculateNormsCtrl = async (req, res, next) => {
     throw HttpError(400, "Invalid data");
   }
 
-  console.log("birthDate :>> ", birthDate);
   // Денна норма калорій
   const calorieNorm = bmr;
   // Денна норма часу, присвяченого спорту
@@ -462,7 +461,6 @@ const updateParamsUserCtrl = async (req, res) => {
   console.log("Received updateParamsUser request", req.body);
   const { _id: owner } = req.user;
 
-  console.log(owner);
   const {
     height,
     currentWeight,
@@ -496,7 +494,6 @@ const updateParamsUserCtrl = async (req, res) => {
   if (levelActivity) {
     updatedData.levelActivity = levelActivity;
   }
-  console.log(owner);
   // перевіряємо, чи існує запис  userData для даного користувача
   const existingUserData = await UserData.findOne({ owner: owner });
   if (!existingUserData) {
@@ -514,11 +511,8 @@ const updateParamsUserCtrl = async (req, res) => {
   if (!updatedUser) {
     throw HttpError(404, "User not found");
   }
-
-  console.log("Updated user:", updatedUser);
-
   res.status(200).json(updatedUser);
-  console.log("Updated user:", updatedUser);
+
 };
 // const downloadCloudinary = async (req, res) => {};
 

@@ -39,7 +39,11 @@
     },
     {
       "name": "Exercises",
-      "description": "User's exercises"
+      "description": "Exercises endpoints"
+    },
+    {
+      "name": "Filters",
+      "description": "Filters endpoints"
     }
 
   ],
@@ -234,7 +238,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserAddDataResponse"
+                  "$ref": "#/components/schemas/UserParamsResponse"
                 }
               }
             }
@@ -268,6 +272,43 @@
             "description": "'Unauthorized'",
             "content": {}
           }
+        }
+      }
+    },
+    "/users/updateParamsUser":{
+      "patch":{
+        "tags": ["UserParams"],
+        "summary": "Update user's parameters",
+        "security": [{ "Bearer": [] }],
+        "parameters": [],
+      
+        "requestBody": {
+          "description": "User's data object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+          
         }
       }
     },
@@ -464,7 +505,6 @@
            
             }
           }
-         
         ],
         "responses": {
           "200": {
@@ -492,33 +532,23 @@
         }
       }
     },
-    "/exercises?exerciseId=12345&date=01/09/2023": {
+    "/exercises/del": {
       "delete": {
         "tags": ["Exercises"],
         "summary": "Delete exercise by id & date",
         "security": [{ "Bearer": [] }],
-        "parameters": [
-          {
-            "name": "exerciseId",
-            "in": "query",
-            "description": "exercise's id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "date",
-            "in": "query",
-            "description": "exercise's date",
-            "required": true,
-            "schema": {
-              "type": "string"
-           
+        "parameters": [],
+         "requestBody": {
+          "description": "deleting exercise info object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User'sDelExerciseRequest"
+              }
             }
           }
-         
-        ],
+        },
         "responses": {
           "200": {
             "description": "Exercise successful deleted",
@@ -539,12 +569,33 @@
         }
       }
     },
-    "/exercises?exerciseId=12345&date=15/09/2023": {
+    "/exercises/:id": {
       "patch": {
         "tags": ["Exercises"],
         "summary": "User update info about exercise by date",
          "security": [{ "Bearer": [] }],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "exerciseId",
+            "in": "path",
+            "description": "exercise's id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "exercise's date",
+            "required": true,
+            "schema": {
+              "type": "string"
+           
+            }
+          }
+         
+        ],
       
         "requestBody": {
           "description": "User exercise info object",
@@ -574,6 +625,73 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {}
+          }
+        }
+      }
+    },
+      "/filters": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Get all filters",
+        "security": [{ "Bearer": [] }],
+        
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllFiltersResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "'Unauthorized'",
+            "content": {}
+          }
+        }
+      }
+    },
+      "/filters/filtered": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Filtered list",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "category of filter",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Equipment"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFilteredDataResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
             "content": {}
           }
         }
@@ -790,7 +908,41 @@
           { "height": 180, "currentWeight": 100, "desiredWeight": 90,
            "birthday": "23-12-1989", "blood": 1, "sex": "male", "levelActivity": 2 }
       },
-      "UserAddDataResponse": {
+       "UserUpdateDataRequest": {
+        "type": "object",
+        "properties": {
+         
+          "height": {
+            "type": "number",
+            "description": "User's height",
+            "minimum": 150
+          },
+          "currentWeight": {
+            "type": "number",
+            "description": "User's currentWeight",
+            "minimum": 35
+          },
+          "desiredWeight": {
+            "type": "number",
+            "description": "User's desiredWeight",
+            "minimum": 35
+          },
+          "sex": {
+            "type": "string",
+            "description": "User's sex",
+            "enum": ["male","female"]
+          },
+          "levelActivity": {
+            "type": "number",
+            "description": "User's levelActivity",
+            "enum": [1, 2, 3, 4, 5]
+          }
+        },
+        "example": 
+          {  "currentWeight": 90, "desiredWeight": 85,"levelActivity": 1 }
+      },
+      
+      "UserParamsResponse": {
         
           "type": "object",
           "properties": {
@@ -1479,7 +1631,11 @@
           }
         },
         "example": 
-          { "exercise": "1234df5", "date": "15-09-2023", "time": 30, "calories": 200 }
+          { "exercise": "6512b57892792387ef9e1036",
+            "date": "23-08-2023",
+            "time": 20,
+            "calories": 1500 
+          }
       },
        
       
@@ -1528,17 +1684,36 @@
         "example": 
           { 
                 "exercise": "6512b57892792387ef9e1036",
-    "name": "45° side bend",
-    "bodyPart": "waist",
-    "gifUrl": "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/0002.gif",
-    "owner": "651e383c11313d0c8c36fe42",
-    "time": 6,
-    "calories": 500,
-    "date": "2023-08-23T00:00:00.000Z",
-    "_id": "651e4240b209a1d4b4a6e8ef",
-    "createdAt": "2023-10-05T04:57:36.444Z",
-    "updatedAt": "2023-10-05T04:57:36.444Z" }
+                "name": "45° side bend",
+                "bodyPart": "waist",
+                "gifUrl": "https://res.cloudinary.com/dw1ybwpgb/image/upload/v1695659838/exercises/0002.gif",
+                "owner": "651e383c11313d0c8c36fe42",
+                "time": 6,
+                "calories": 500,
+                "date": "2023-08-23T00:00:00.000Z",
+                "_id": "651e4240b209a1d4b4a6e8ef",
+                "createdAt": "2023-10-05T04:57:36.444Z",
+                "updatedAt": "2023-10-05T04:57:36.444Z" }
        
+      },
+      "User'sDelExerciseRequest":{
+        "type": "object",
+        "required": [ "id","date"],
+        "properties": {
+          
+          "id": {
+            "type": "string",
+            "description": "exersice id"
+           
+          },
+          "date": {
+            "type": "date",
+            "description": "exercise's date"
+
+          }
+        },
+        "example": 
+          { "id": "6512b57892792387ef9e1036", "date": "23-08-2023"}
       },
       "UserUpdateExerciseRequest":{
           "type": "object",
@@ -1559,8 +1734,93 @@
         "example": 
           { "duration_minutes": 25, "calories_burned": 250 }
       },
-       "AllDiaryProductsResponse":{},
-
+       "AllFiltersResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "filter's id"
+            
+            },
+            "filter": {
+              "type": "string",
+              "description": "filters category"
+           
+            },
+            "name": {
+              "type": "string",
+              "description": "searched query"
+           
+            },
+            "imgURL": {
+              "type": "string",
+              "description": "link for image of searched query"
+           
+            }
+          },
+          "example":
+          [
+            {
+                "_id": "6512900592792387ef9e0add",
+                "filter": "Equipment",
+                "name": "skierg machine",
+                "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469567/categories/skierg_machine_sfkvol.jpg"
+            },
+            {
+                "_id": "6512900592792387ef9e0ac2",
+                "filter": "Body parts",
+                "name": "back",
+                "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469563/categories/back_wzzphw.jpg"
+            }
+          ]
+        }
+   
+      },
+             "GetFilteredDataResponse":{
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "filter's id"
+            
+            },
+            "filter": {
+              "type": "string",
+              "description": "filters category"
+           
+            },
+            "name": {
+              "type": "string",
+              "description": "searched query"
+           
+            },
+            "imgURL": {
+              "type": "string",
+              "description": "link for image of searched query"
+           
+            }
+          },
+          "example":
+          [
+            {
+                "_id": "6512900592792387ef9e0add",
+                "filter": "Equipment",
+                "name": "skierg machine",
+                "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469567/categories/skierg_machine_sfkvol.jpg"
+            },
+            {
+                "_id": "6512900592792387ef9e0acd",
+                "filter": "Equipment",
+                "name": "band",
+                "imgURL": "https://res.cloudinary.com/dn4iogcf4/image/upload/v1694469572/categories/band_ri4mww.jpg"
+            }
+          ]
+        }
+      },
       "Request": {
         "type": "object",
         "required": ["email", "password"],
