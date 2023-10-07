@@ -12,7 +12,7 @@ router.get("/", auth, ctrl.getAllExercises);
 
 router.delete("/del", auth, ctrl.deleteExercise);
 router.post("/", auth, validateBody(schemas.addExerciseSchema), ctrl.createExercise);
-router.patch("/:id", auth, validateBody(schemas.updateExerciseSchema));
+router.patch("/:id", auth, validateBody(schemas.updateExerciseSchema), ctrl.updateExercise);
 
 // from userExerc
 router.get("/byDate", auth, ctrl.getExercisesByDate);

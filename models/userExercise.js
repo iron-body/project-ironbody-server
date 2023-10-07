@@ -74,8 +74,12 @@ const addExerciseSchema = Joi.object({
   date: Joi.allow().required(),
 });
 
-const updateExerciseSchema = Joi.boolean().required();
-
+const updateExerciseSchema = Joi.object({
+  
+  time: Joi.number().min(1),
+  calories: Joi.number().min(1),
+  
+});
 const schemas = {
   addExerciseSchema,
   updateExerciseSchema,

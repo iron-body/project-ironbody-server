@@ -569,7 +569,7 @@
         }
       }
     },
-    "/exercises/:id": {
+    "/exercises/{exerciseId}": {
       "patch": {
         "tags": ["Exercises"],
         "summary": "User update info about exercise by date",
@@ -581,24 +581,13 @@
             "description": "exercise's id",
             "required": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "date",
-            "in": "query",
-            "description": "exercise's date",
-            "required": true,
-            "schema": {
-              "type": "string"
-           
+              "type": "string",
+              "example": "6512b57892792387ef9e1035"
             }
           }
-         
         ],
-      
         "requestBody": {
-          "description": "User exercise info object",
+          "description": "Exercise upadating object",
           "required": true,
           "content": {
             "application/json": {
@@ -610,14 +599,8 @@
         },
         "responses": {
           "201": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User'sExerciseResponse"
-                }
-              }
-            }
+            "description": "The exercise with id was successfully updated"
+           
           },
           "400": {
             "description": "Bad request (invalid request body)",
@@ -1720,19 +1703,18 @@
         "required": [ "duration_minutes","calories_burned"],
         "properties": {
           
-          "duration_minutes": {
+          "time": {
             "type": "integer",
             "description": "exersices duration"
            
           },
-          "calories_burned": {
+          "calories": {
             "type": "integer",
             "description": "amount of burned calories"
-
           }
         },
         "example": 
-          { "duration_minutes": 25, "calories_burned": 250 }
+          { "time": 25, "calories": 2000 }
       },
        "AllFiltersResponse":{
         "type": "array",

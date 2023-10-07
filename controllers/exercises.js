@@ -66,6 +66,7 @@ const getAllExercises = async (req, res) => {
     // totalPages: totalItems ? Math.ceil(+totalItems / +limit) : 0,
   });
 };
+
 const createExercise = async (req, res) => {
   const { _id: owner } = req.user;
   const { date, exercise } = req.body;
@@ -77,6 +78,14 @@ const createExercise = async (req, res) => {
   }
 
   const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+
+  // перевірка на наявність вправи
+
+  const existingExercise = await UserExercise.findOne({ owner, exercise, date: formattedDate });
+  if (existingExercise) {
+      console.log(existingExercise)
+    throw HttpError(400, "This exercise already exist's in this date");
+  }
 
   const newExercise = await UserExercise.create({ ...req.body, name, bodyPart, gifUrl, date: formattedDate, owner });
   res.status(201).json(newExercise);
@@ -161,30 +170,48 @@ const deleteExercise = async (req, res) => {
   });
 };
 
-// контролерів немає в тз
 const updateExercise = async (req, res) => {
-  const { id } = req.params;
-  const { done = false } = req.body;
-  // Check if exist
-  const getExercise = await UserExercise.findOne({
-    _id: id,
-  }).select('_id');
-  if (!getExercise) {
-    throw HttpError(404, `The exercise with id "${id}" not found`);
+   const { id } = req.params;
+console.log(id)
+
+  // перевірка на наявність вправи
+
+  const existingExercise = await UserExercise.findByIdAndUpdate({ _id: id }, {...req.body});
+  if (!existingExercise) {
+    throw HttpError(400, "This no such exercise in this date");
   }
-  // Update exercise
-  await UserExercise.updateOne(
-    {
-      _id: id,
-    },
-    {
-      done,
-    }
-  );
+
+  // const updatedExercise = await UserExercise.updateOne({ ...req.body, name, bodyPart, gifUrl, date: formattedDate, owner });
+  // res.status(201).json(newExercise);
+
   res.status(200).json({
     ok: `The exercise with id "${id}" was successfully updated`,
   });
 };
+// контролерів немає в тз
+// const updateExercise = async (req, res) => {
+//   const { id } = req.params;
+//   const { done = false } = req.body;
+//   // Check if exist
+//   const getExercise = await UserExercise.findOne({
+//     _id: id,
+//   }).select('_id');
+//   if (!getExercise) {
+//     throw HttpError(404, `The exercise with id "${id}" not found`);
+//   }
+//   // Update exercise
+//   await UserExercise.updateOne(
+//     {
+//       _id: id,
+//     },
+//     {
+//       done,
+//     }
+//   );
+//   res.status(200).json({
+//     ok: `The exercise with id "${id}" was successfully updated`,
+//   });
+// };
 
 const getUserExercises = async (req, res) => {
   // ? додаємо id юзера
