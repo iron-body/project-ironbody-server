@@ -19,12 +19,20 @@ const path = require("path");
 const { access, constants } = require("fs").promises;
 const fs = require("fs").promises;
 const Jimp = require("jimp");
+const cloudinary = require('cloudinary').v2;
+
 const { ctrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/user");
 
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = process.env;
+
+cloudinary.config({
+  cloud_name: CLOUDINARY_NAME,
+  api_key: CLOUDINARY_KEY,
+  api_secret: CLOUDINARY_SECRET,
+});
 
 // Функція для реєстрації нового користувача
 const registerCtrl = async (req, res, next) => {
@@ -376,12 +384,23 @@ const updateNameAvatarCtrl = async (req, res) => {
       console.log("Шлях до зображення: ", resultUpload);
 
       await fs.unlink(tempUpload); // Видаляємо тимчасовий файл
-      updatedData.avatarUrl = path.join(
-        __dirname,
-        "public",
-        "avatars",
-        filename
-      );
+      await cloudinary.uploader.upload(resultUpload, (error, result) => {
+        if (error) {
+          console.error(error);
+        } else {
+          // Отримання посилання на завантажене зображення (аватарку)
+          const avatarCloudUrl = result.secure_url;
+          console.log(`Посилання на аватарку: ${avatarCloudUrl}`);
+           updatedData.avatarUrl = avatarCloudUrl;
+        }
+      });
+     
+      // updatedData.avatarUrl = path.join(
+      //   __dirname,
+      //   "public",
+      //   "avatars",
+      //   filename
+      // );
     } catch (error) {
       console.error("Помилка при обробці зображення:", error);
       res.status(500).json({ error: "Internal server error" });
