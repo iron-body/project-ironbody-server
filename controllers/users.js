@@ -11,20 +11,20 @@
 // const { SECRET_KEY } = process.env;
 // const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
-const { UserData, userDataSchemas } = require("../models/user_data");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const gravatar = require("gravatar");
-const path = require("path");
-const { access, constants } = require("fs").promises;
-const fs = require("fs").promises;
-const Jimp = require("jimp");
+const { UserData, userDataSchemas } = require('../models/user_data');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
+const path = require('path');
+const { access, constants } = require('fs').promises;
+const fs = require('fs').promises;
+const Jimp = require('jimp');
 const cloudinary = require('cloudinary').v2;
 
-const { ctrlWrapper, HttpError } = require("../helpers");
-const { User } = require("../models/user");
+const { ctrlWrapper, HttpError } = require('../helpers');
+const { User } = require('../models/user');
 
-const avatarsDir = path.join(__dirname, "../", "public", "avatars");
+const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const { SECRET_KEY, CLOUDINARY_NAME, CLOUDINARY_KEY, CLOUDINARY_SECRET } = process.env;
 
@@ -39,7 +39,7 @@ const registerCtrl = async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    next(HttpError(409, "User with such email already exists"));
+    next(HttpError(409, 'User with such email already exists'));
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
@@ -52,7 +52,7 @@ const registerCtrl = async (req, res, next) => {
   const newUserDBData = await User.findOne({ email });
   const payload = { id: newUserDBData._id };
 
-  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '12h' });
   await User.findByIdAndUpdate(newUserDBData._id, {
     accessToken,
   });
@@ -69,18 +69,20 @@ const loginCtrl = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    throw HttpError(401, "Email or password is not valid"); // Помилка 401 - Не авторизовано
+    throw HttpError(401, 'Email or password is not valid'); // Помилка 401 - Не авторизовано
   }
   const comparePassword = await bcrypt.compare(password, user.password);
   if (!comparePassword) {
-    throw HttpError(401, "Email or password is not valid");
+    throw HttpError(401, 'Email or password is not valid');
   }
   const payload = { id: user._id };
 
-  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "12h" });
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '12h' });
   await User.findByIdAndUpdate(user._id, { accessToken });
+  const { createdAt } = user;
   res.status(200).json({
     accessToken,
+    createdAt,
   });
 };
 
@@ -92,20 +94,12 @@ const getCurrentCtrl = async (req, res) => {
 const logoutCtrl = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { accessToken: null });
-  res.json({ message: "Logout success" });
+  res.json({ message: 'Logout success' });
 };
 
 // Функція для обчислення норм
 const calculateNormsCtrl = async (req, res, next) => {
-  const {
-    height,
-    currentWeight,
-    desiredWeight,
-    birthday,
-    blood,
-    sex,
-    levelActivity,
-  } = req.body;
+  const { height, currentWeight, desiredWeight, birthday, blood, sex, levelActivity } = req.body;
   const { _id: owner, name, email } = req.user;
   const { error } = userDataSchemas.userDataSchema.validate(req.body);
   if (error) {
@@ -118,26 +112,23 @@ const calculateNormsCtrl = async (req, res, next) => {
   const today = new Date();
   const birthDate = new Date(formattedBirthday);
   let age;
-  if (
-    today <
-    new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())
-  ) {
+  if (today < new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())) {
     age = today.getFullYear() - birthDate.getFullYear() - 1;
   } else {
     age = today.getFullYear() - birthDate.getFullYear();
   }
   if (age < 18) {
-    next(HttpError(400, "Користувач повинен бути старше 18 років"));
+    next(HttpError(400, 'Користувач повинен бути старше 18 років'));
     return;
   }
   // Обчислення BMR (розрахункова кількість калорій в спокійному стані)
   let bmr;
-  if (sex === "male") {
+  if (sex === 'male') {
     bmr = (10 * desiredWeight + 6.25 * height - 5 * age + 5) * levelActivity;
-  } else if (sex === "female") {
+  } else if (sex === 'female') {
     bmr = (10 * desiredWeight + 6.25 * height - 5 * age - 161) * levelActivity;
   } else {
-    throw HttpError(400, "Invalid data");
+    throw HttpError(400, 'Invalid data');
   }
 
   // Денна норма калорій
@@ -148,7 +139,7 @@ const calculateNormsCtrl = async (req, res, next) => {
   const existingUserData = await UserData.findOne({ owner: owner });
   if (existingUserData) {
     // Якщо запис існує, то викидаємо помилку, оскільки запис "userData" для даного користувача вже існує.
-    throw HttpError(400, "Для даного користувача вже  існує запис userData");
+    throw HttpError(400, 'Для даного користувача вже  існує запис userData');
   }
   const normsData = new UserData({
     name,
@@ -372,8 +363,8 @@ const updateNameAvatarCtrl = async (req, res) => {
     try {
       await access(tempUpload, constants.F_OK);
     } catch (error) {
-      console.error("Файл не существует или произошла ошибка:", error);
-      res.status(400).json({ error: "Invalid file" });
+      console.error('Файл не существует или произошла ошибка:', error);
+      res.status(400).json({ error: 'Invalid file' });
       return;
     }
 
@@ -381,7 +372,7 @@ const updateNameAvatarCtrl = async (req, res) => {
       const resizeImage = await Jimp.read(tempUpload);
       await resizeImage.resize(250, 250);
       await resizeImage.writeAsync(resultUpload);
-      console.log("Шлях до зображення: ", resultUpload);
+      console.log('Шлях до зображення: ', resultUpload);
 
       await fs.unlink(tempUpload); // Видаляємо тимчасовий файл
       await cloudinary.uploader.upload(resultUpload, (error, result) => {
@@ -391,10 +382,10 @@ const updateNameAvatarCtrl = async (req, res) => {
           // Отримання посилання на завантажене зображення (аватарку)
           const avatarCloudUrl = result.secure_url;
           console.log(`Посилання на аватарку: ${avatarCloudUrl}`);
-           updatedData.avatarUrl = avatarCloudUrl;
+          updatedData.avatarUrl = avatarCloudUrl;
         }
       });
-     
+
       // updatedData.avatarUrl = path.join(
       //   __dirname,
       //   "public",
@@ -402,8 +393,8 @@ const updateNameAvatarCtrl = async (req, res) => {
       //   filename
       // );
     } catch (error) {
-      console.error("Помилка при обробці зображення:", error);
-      res.status(500).json({ error: "Internal server error" });
+      console.error('Помилка при обробці зображення:', error);
+      res.status(500).json({ error: 'Internal server error' });
       return;
     }
   }
@@ -418,7 +409,7 @@ const updateNameAvatarCtrl = async (req, res) => {
     });
 
     if (!updatedUser) {
-      throw HttpError(404, "User not found");
+      throw HttpError(404, 'User not found');
     }
 
     res.status(200).json({
@@ -426,8 +417,8 @@ const updateNameAvatarCtrl = async (req, res) => {
       avatarUrl: updatedUser.avatarUrl,
     });
   } catch (error) {
-    console.error("Помилка при оновленні користувача:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Помилка при оновленні користувача:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -477,18 +468,10 @@ const updateNameAvatarCtrl = async (req, res) => {
 
 // оновлення даних користувача
 const updateParamsUserCtrl = async (req, res) => {
-  console.log("Received updateParamsUser request", req.body);
+  console.log('Received updateParamsUser request', req.body);
   const { _id: owner } = req.user;
 
-  const {
-    height,
-    currentWeight,
-    desiredWeight,
-    birthday,
-    blood,
-    sex,
-    levelActivity,
-  } = req.body;
+  const { height, currentWeight, desiredWeight, birthday, blood, sex, levelActivity } = req.body;
 
   const updatedData = {};
 
@@ -517,21 +500,16 @@ const updateParamsUserCtrl = async (req, res) => {
   const existingUserData = await UserData.findOne({ owner: owner });
   if (!existingUserData) {
     // тут кидаємо помилку, так як запису userData для користувача немає
-    throw HttpError(404, "Запис userData для даного користувача не знайдена");
+    throw HttpError(404, 'Запис userData для даного користувача не знайдена');
   }
-  const updatedUser = await UserData.findOneAndUpdate(
-    { owner: owner },
-    updatedData,
-    {
-      new: true,
-    }
-  );
+  const updatedUser = await UserData.findOneAndUpdate({ owner: owner }, updatedData, {
+    new: true,
+  });
 
   if (!updatedUser) {
-    throw HttpError(404, "User not found");
+    throw HttpError(404, 'User not found');
   }
   res.status(200).json(updatedUser);
-
 };
 // const downloadCloudinary = async (req, res) => {};
 
