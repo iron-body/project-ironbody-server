@@ -5,13 +5,12 @@ const moment = require('moment');
 const getUserProduct = async (req, res) => {
   const { userProductId, date } = req.params;
   const { _id: userId } = req.user;
-  const formattedDate = moment(date, 'DD/MM/YYYY');
   // Check if exist
   const getProduct = await UserProduct.findOne(
     {
       owner: userId,
       productid: userProductId,
-      date: formattedDate,
+      date: date,
     },
     { createdAt: 0, updatedAt: 0, owner: 0 }
   );
@@ -72,16 +71,15 @@ const getAllUserProducts = async (req, res) => {
 
 const createUserProduct = async (req, res) => {
   const { date } = req.body;
-  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
 
   const newProduct = await UserProduct.create({
     ...req.body,
-    date: formattedDate,
+    date: date,
     owner: req.user._id,
   });
 
   const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: newProduct._id, owner: req.user._id, date: formattedDate },
+    { _id: newProduct._id, owner: req.user._id, date: date },
     {
       $mul: { calories: req.body.amount / 100 },
     },
