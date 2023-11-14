@@ -88,7 +88,11 @@ const loginCtrl = async (req, res) => {
 
 const getCurrentCtrl = async (req, res) => {
   const { name, email, avatarUrl } = req.user;
-  res.status(200).json({ name, email, avatarUrl });
+
+  const userInBase = await User.findOne({ email });
+  const { createdAt } = userInBase;
+
+  res.status(200).json({ name, email, avatarUrl, createdAt });
 };
 
 const logoutCtrl = async (req, res) => {
