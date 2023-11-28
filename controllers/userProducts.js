@@ -73,24 +73,50 @@ const getAllUserProducts = async (req, res) => {
 const createUserProduct = async (req, res) => {
   const { date, calories } = req.body;
 
+  const zeroHourDate = new Date(
+    `${new Date(date).getUTCFullYear()}-${new Date(date).getUTCMonth() + 1}-${new Date(
+      date
+    ).getUTCDate()}`
+  );
+  console.log(zeroHourDate);
+
+  const existingProduct = await UserProduct.findOne({
+    owner: req.user._id,
+    date: zeroHourDate,
+    title: req.body.title,
+  });
+  console.log(existingProduct);
+
+  if (existingProduct) {
+    const updatedExistingProduct = await UserProduct.findOneAndUpdate(
+      { title: req.body.title, owner: req.user._id, date: zeroHourDate },
+      { ...req.body, calories: Math.ceil((calories * req.body.amount) / 100), date: zeroHourDate },
+      { new: true }
+    );
+
+    return res.status(200).json({ updatedExistingProduct });
+  }
+
   const newProduct = await UserProduct.create({
     ...req.body,
-    date: date,
+    date: zeroHourDate,
     owner: req.user._id,
+    calories: Math.ceil((calories * req.body.amount) / 100),
   });
 
-  const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: newProduct._id, owner: req.user._id, date: date },
-    {
-      // $mul: { calories: req.body.amount / 100 }, // Old code, wich give to me a number with dot. But to much numbers after dot
-      calories: Math.ceil((calories * req.body.amount) / 100),
-    },
-    { new: true }
-  );
+  // const updatedProduct = await UserProduct.findOneAndUpdate(
+  //   { _id: newProduct._id, owner: req.user._id, date: zeroHourDate },
+  //   {
+  //     // $mul: { calories: req.body.amount / 100 }, // Old code, wich give to me a number with dot. But to much numbers after dot
+  //     calories: Math.ceil((calories * req.body.amount) / 100),
+
+  //   },
+  //   { new: true }
+  // );
 
   res.status(200).json({
     newProduct,
-    updatedProduct,
+    // updatedProduct,
   });
 };
 
