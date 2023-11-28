@@ -1,6 +1,7 @@
 const { HttpError, ctrlWrapper } = require('../helpers');
 const { UserProduct } = require('../models/userProduct');
 const moment = require('moment');
+const { registerCtrl } = require('./users');
 
 const getUserProduct = async (req, res) => {
   const { userProductId, date } = req.params;
@@ -70,7 +71,7 @@ const getAllUserProducts = async (req, res) => {
 };
 
 const createUserProduct = async (req, res) => {
-  const { date } = req.body;
+  const { date, calories } = req.body;
 
   const newProduct = await UserProduct.create({
     ...req.body,
@@ -81,7 +82,8 @@ const createUserProduct = async (req, res) => {
   const updatedProduct = await UserProduct.findOneAndUpdate(
     { _id: newProduct._id, owner: req.user._id, date: date },
     {
-      $mul: { calories: req.body.amount / 100 },
+      // $mul: { calories: req.body.amount / 100 }, // Old code, wich give to me a number with dot. But to much numbers after dot
+      calories: Math.ceil((calories * req.body.amount) / 100),
     },
     { new: true }
   );
