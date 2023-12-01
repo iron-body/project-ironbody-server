@@ -3,6 +3,13 @@ const { UserProduct } = require('../models/userProduct');
 const moment = require('moment');
 const { registerCtrl } = require('./users');
 
+const getDateWithZeroHour = date =>
+  new Date(
+    `${new Date(date).getUTCFullYear()}-${new Date(date).getUTCMonth() + 1}-${new Date(
+      date
+    ).getUTCDate()}`
+  );
+
 const getUserProduct = async (req, res) => {
   const { userProductId, date } = req.params;
   const { _id: userId } = req.user;
@@ -28,14 +35,15 @@ const getAllUserProducts = async (req, res) => {
   const { limit = 25, page = 1, date } = req.query;
   const startFrom = (+page - 1) * +limit;
 
-  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+  const dateWithZeroHour = getDateWithZeroHour(date);
+
   // Get total items
   const totalItems = await UserProduct.countDocuments({
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(formattedDate).endOf('day').toDate(),
-        $gte: moment(formattedDate).startOf('day').toDate(),
+        $lte: moment(dateWithZeroHour).endOf('day').toDate(),
+        $gte: moment(dateWithZeroHour).startOf('day').toDate(),
       },
     }),
   });
@@ -44,8 +52,8 @@ const getAllUserProducts = async (req, res) => {
     owner: userId,
     ...(date && {
       date: {
-        $lte: moment(formattedDate).endOf('day').toDate(),
-        $gte: moment(formattedDate).startOf('day').toDate(),
+        $lte: moment(dateWithZeroHour).endOf('day').toDate(),
+        $gte: moment(dateWithZeroHour).startOf('day').toDate(),
       },
     }),
   })
@@ -57,7 +65,7 @@ const getAllUserProducts = async (req, res) => {
   }
 
   const summCalories = dataList.reduce((acuum, product) => {
-    return product.calories + acuum;
+    return Math.ceil(product.calories + acuum);
   }, 0);
 
   res.status(200).json({
@@ -73,24 +81,46 @@ const getAllUserProducts = async (req, res) => {
 const createUserProduct = async (req, res) => {
   const { date, calories } = req.body;
 
+  const zeroHourDate = getDateWithZeroHour(date);
+  // console.log(zeroHourDate);
+
+  const existingProduct = await UserProduct.findOne({
+    owner: req.user._id,
+    date: zeroHourDate,
+    title: req.body.title,
+  });
+  // console.log(existingProduct);
+
+  if (existingProduct) {
+    const updatedExistingProduct = await UserProduct.findOneAndUpdate(
+      { title: req.body.title, owner: req.user._id, date: zeroHourDate },
+      { ...req.body, calories: Math.ceil((calories * req.body.amount) / 100), date: zeroHourDate },
+      { new: true }
+    );
+
+    return res.status(200).json({ updatedExistingProduct });
+  }
+
   const newProduct = await UserProduct.create({
     ...req.body,
-    date: date,
+    date: zeroHourDate,
     owner: req.user._id,
+    calories: Math.ceil((calories * req.body.amount) / 100),
   });
 
-  const updatedProduct = await UserProduct.findOneAndUpdate(
-    { _id: newProduct._id, owner: req.user._id, date: date },
-    {
-      // $mul: { calories: req.body.amount / 100 }, // Old code, wich give to me a number with dot. But to much numbers after dot
-      calories: Math.ceil((calories * req.body.amount) / 100),
-    },
-    { new: true }
-  );
+  // const updatedProduct = await UserProduct.findOneAndUpdate(
+  //   { _id: newProduct._id, owner: req.user._id, date: zeroHourDate },
+  //   {
+  //     // $mul: { calories: req.body.amount / 100 }, // Old code, wich give to me a number with dot. But to much numbers after dot
+  //     calories: Math.ceil((calories * req.body.amount) / 100),
+
+  //   },
+  //   { new: true }
+  // );
 
   res.status(200).json({
     newProduct,
-    updatedProduct,
+    // updatedProduct,
   });
 };
 
@@ -102,12 +132,13 @@ const deleteUserProduct = async (req, res) => {
   if (!userProductId || !date) {
     throw HttpError(400, 'For deleting a product you need to provide date and product ID');
   }
-  const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+  // const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+  const dateWithZeroHour = getDateWithZeroHour(date);
 
   const query = {};
-  userProductId && (query.productid = userProductId);
+  userProductId && (query._id = userProductId);
   userId && (query.owner = userId);
-  date && (query.date = formattedDate);
+  date && (query.date = dateWithZeroHour);
 
   // Check if exist
   const getProduct = await UserProduct.findOne(query);
@@ -121,6 +152,7 @@ const deleteUserProduct = async (req, res) => {
   res.status(200).json({
     ok: `The product with id "${userProductId}" was successfully deleted`,
     deletedProduct,
+    id: userProductId,
   });
 };
 
