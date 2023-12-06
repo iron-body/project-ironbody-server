@@ -82,14 +82,12 @@ const createUserProduct = async (req, res) => {
   const { date, calories } = req.body;
 
   const zeroHourDate = getDateWithZeroHour(date);
-  // console.log(zeroHourDate);
 
   const existingProduct = await UserProduct.findOne({
     owner: req.user._id,
     date: zeroHourDate,
     title: req.body.title,
   });
-  // console.log(existingProduct);
 
   if (existingProduct) {
     const updatedExistingProduct = await UserProduct.findOneAndUpdate(
@@ -108,19 +106,8 @@ const createUserProduct = async (req, res) => {
     calories: Math.ceil((calories * req.body.amount) / 100),
   });
 
-  // const updatedProduct = await UserProduct.findOneAndUpdate(
-  //   { _id: newProduct._id, owner: req.user._id, date: zeroHourDate },
-  //   {
-  //     // $mul: { calories: req.body.amount / 100 }, // Old code, wich give to me a number with dot. But to much numbers after dot
-  //     calories: Math.ceil((calories * req.body.amount) / 100),
-
-  //   },
-  //   { new: true }
-  // );
-
   res.status(200).json({
     newProduct,
-    // updatedProduct,
   });
 };
 
@@ -132,7 +119,7 @@ const deleteUserProduct = async (req, res) => {
   if (!userProductId || !date) {
     throw HttpError(400, 'For deleting a product you need to provide date and product ID');
   }
-  // const formattedDate = moment.utc(date, 'DD/MM/YYYY');
+
   const dateWithZeroHour = getDateWithZeroHour(date);
 
   const query = {};
@@ -146,14 +133,24 @@ const deleteUserProduct = async (req, res) => {
   if (!getProduct) {
     throw HttpError(404, `The product with id "${userProductId}" not found`);
   }
-  // Delete product
-  const deletedProduct = await UserProduct.deleteOne(query);
 
-  res.status(200).json({
-    ok: `The product with id "${userProductId}" was successfully deleted`,
-    deletedProduct,
-    id: userProductId,
+  // Delete product
+  const deletedProduct = await UserProduct.deleteOne(query, {
+    includeResultMetadata: false,
   });
+
+  if (deletedProduct.deletedCount === 1) {
+    return res.status(200).json({
+      ok: `The product with id "${userProductId}" was successfully deleted`,
+      deletedCount: deletedProduct.deletedCount,
+      id: userProductId,
+    });
+  } else
+    return res.status(404).json({
+      notOk: `The product with id "${userProductId}" not found`,
+      deleledCount: deletedProduct.deletedCount,
+      id: userProductId,
+    });
 };
 
 module.exports = {
